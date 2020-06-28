@@ -20,9 +20,9 @@ lec - FAN cells of the lateral entorhinal cortex
 
 
 basic_params = {
-    "Npyr" : 10,
-    "Nolm" : 2,
+    "Npyr" : 1,
     "Npvbas" : 2,
+    "Nolm" : 2,
     "Ncckbas" : 2,
     "Nivy" : 2,
     "Nngf" : 2,
@@ -30,15 +30,69 @@ basic_params = {
     "Naac" : 2,
     "Nsca" : 2,
     
-    "Nca3" : 10,
-    "Nmec" : 10,
-    "Nlec" : 10,
+    "Nca3" : 2,
+    "Nmec" : 2,
+    "Nlec" : 2,
 
-
-
-
-
+    "pyr2pvbas" : {
+        "prob" : 0.5,
+        "tau_rise" : 0.5,
+        "tau_decay" : 5.0,
+        "delay" : 1.0,
+        "Erev" : 0.0,
+        "gmax" : 0.01,
+        
+        "sourse_compartment" : "soma",
+        "target_compartment" : "dend",
+        
+        
+    },
+    
 
 
 
 }
+
+
+
+"""
+    "pyr2olm": {
+        "prob": 0.5,
+        "tau_rise": 0.5,
+        "tau_decay": 5.0,
+        "delay": 1.0,
+        "Erev": 0.0,
+        "gmax": 0.01,
+        
+        "sourse_compartment" : "soma",
+        "target_comartment" : "dend",
+    },
+"""
+
+
+"""
+
+
+
+
+    "pyr2cckbas": {
+        "prob": 0.5,
+        "tau_rise": 0.5,
+        "tau_decay": 5.0,
+        "delay": 1.0,
+        "Erev": 0.0,
+        "gmax": 0.01,
+    },
+    
+    
+    "pvbas2pvbas" : {
+    
+        "prob" : 0.5,
+        "tau_rise" : 0.5,
+        "tau_decay" : 5.0,
+        "delay" : 1.0,
+        "Erev" : -70.0,
+        "gmax" : 0.1,
+    
+    },
+"""

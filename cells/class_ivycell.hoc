@@ -8,7 +8,7 @@ public x, y, z, position, myroot, Vrest
 public NumSoma, NumApical, NumBasal, NumAxon
 
 // strings
-strdef myroot
+strdef myroot, celltype
 
 // objects
 objref syn, pre_list, templist, rootlist
@@ -27,7 +27,7 @@ create soma[NumSoma], dend[NumApical]
 proc init() {
 	gid = $1
 	randi = $2
-	
+	celltype = "ivy"
 	// morphology
 	connect_sections()	// local fcn: connect soma, dendrites, axon initial segment
 	size_sections()		// local fcn: set the size dimensions of each section
