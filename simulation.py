@@ -1,58 +1,200 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+import h5py
+import os
+import neuron
+import sys
+h = neuron.h
+h.load_file("stdgui.hoc")
+h.load_file("import3d.hoc")
+neuron.load_mechanisms("./mods/")
+h.cvode.use_fast_imem(1)
 
-def run_simulation(params, h):
+
+sys.path.append("../LFPsimpy/")
+from LFPsimpy import LfpElectrode
+
+
+cell_path = "./cells/"
+for file in os.listdir(cell_path):
+    if file.find(".hoc") != -1:
+        h.load_file(cell_path + file)
+
+
+def run_simulation(params):
 
     
-    neurons = h.List()
-
-
+    all_cells = h.List()
+    hh_cells = h.List()
+    artificial_cells = h.List()
+    
+    
+    pyramidal_sec_list = h.SectionList()
+ 
+    radius_for_pyramids = np.sqrt( params["Npyr"] / params["PyrDencity"] ) / np.pi 
+    
+    spike_count_obj = []
+    spike_times_vecs = []
+    
+    
     for idx in range(params["Npyr"]):
         cell = h.poolosyncell(0, 0)
-
-        neurons.append(cell)
+        
+        for sec in cell.all:
+            sec.insert("IextNoise")
+            sec.sigma_IextNoise = 0.005
+            sec.mean_IextNoise = 0.0005
+        
+        
+        for sec in cell.all:
+            pyramidal_sec_list.append(sec)
+        
+        pyr_coord_in_layer_x = radius_for_pyramids * 2 * (np.random.rand() - 0.5) # !!!! density of the pyramidal cells  
+        pyr_coord_in_layer_y = radius_for_pyramids * 2 * (np.random.rand() - 0.5) # !!!! density of the pyramidal cells  
+        
+        
+        cell.position(pyr_coord_in_layer_x, 0, pyr_coord_in_layer_y) 
+        
+        hh_cells.append(cell)
+        all_cells.append(cell)
 
     for idx in range(params["Npvbas"]):
         cell = h.pvbasketcell(0, 0)
-        neurons.append(cell)
+        
+        for sec in cell.all:
+            sec.insert("IextNoise")
+            sec.sigma_IextNoise = 0.005
+            sec.mean_IextNoise = 0.0005
+        
+        hh_cells.append(cell)
+        all_cells.append(cell)
 
     for idx in range(params["Nolm"]):
         cell = h.olmcell(0, 0)
-        neurons.append(cell)
+        for sec in cell.all:
+            sec.insert("IextNoise")
+            sec.sigma_IextNoise = 0.005
+            sec.mean_IextNoise = 0.0005
+        
+        hh_cells.append(cell)
+        all_cells.append(cell)
 
     for idx in range(params["Ncckbas"]):
         cell = h.cckcell(0, 0)
-        neurons.append(cell)
+        for sec in cell.all:
+            sec.insert("IextNoise")
+            sec.sigma_IextNoise = 0.005
+            sec.mean_IextNoise = 0.0005
+        
+        hh_cells.append(cell)
+        all_cells.append(cell)
 
     for idx in range(params["Nivy"]):
         cell = h.ivycell(0, 0)
-        neurons.append(cell)
+        for sec in cell.all:
+            sec.insert("IextNoise")
+            sec.sigma_IextNoise = 0.005
+            sec.mean_IextNoise = 0.0005
+        
+        hh_cells.append(cell)
+        all_cells.append(cell)
 
     for idx in range(params["Nngf"]):
         cell = h.ngfcell(0, 0)
-        neurons.append(cell)
+        for sec in cell.all:
+            sec.insert("IextNoise")
+            sec.sigma_IextNoise = 0.005
+            sec.mean_IextNoise = 0.0005
+        
+        hh_cells.append(cell)
+        all_cells.append(cell)
 
     for idx in range(params["Nbis"]):
         cell = h.bistratifiedcell(0, 0)
-        neurons.append(cell)
+        for sec in cell.all:
+            sec.insert("IextNoise")
+            sec.sigma_IextNoise = 0.005
+            sec.mean_IextNoise = 0.0005
+        
+        hh_cells.append(cell)
+        all_cells.append(cell)
 
     for idx in range(params["Naac"]):
         cell = h.axoaxoniccell(0, 0)
-        neurons.append(cell)
+        for sec in cell.all:
+            sec.insert("IextNoise")
+            sec.sigma_IextNoise = 0.005
+            sec.mean_IextNoise = 0.0005
+        
+        hh_cells.append(cell)
+        all_cells.append(cell)
 
     for idx in range(params["Nsca"]):
         cell = h.scacell(0, 0)
-        neurons.append(cell)
+        for sec in cell.all:
+            sec.insert("IextNoise")
+            sec.sigma_IextNoise = 0.005
+            sec.mean_IextNoise = 0.0005
+        
+        hh_cells.append(cell)
+        all_cells.append(cell)
 
+    # set artificial cells
+    for idx in range(params["Nca3"]):
+        cell = h.ArtificialRhytmicCell()
+        
+        artificial_cells.append(cell)
+        all_cells.append(cell)
     
+    
+    for idx in range(params["Nmec"]):
+        cell = h.ArtificialRhytmicCell()
+        
+        artificial_cells.append(cell)
+        all_cells.append(cell)
+    
+    for idx in range(params["Nlec"]):
+        cell = h.ArtificialRhytmicCell()
+        artificial_cells.append(cell)
+        all_cells.append(cell)
+    
+    
+    for idx in range(params["Nmsteevracells"]):
+        cell = h.ArtificialRhytmicCell()
+        
+        artificial_cells.append(cell)
+        all_cells.append(cell)
+    
+    for idx in range(params["Nmskomalicells"]):
+        cell = h.ArtificialRhytmicCell()
+        
+        artificial_cells.append(cell)
+        all_cells.append(cell)
+    
+    
+    # set counters for spike generation
+    for cell in hh_cells:
+        firing = h.APCount(cell.soma[0](0.5))
+        fring_vector = h.Vector()
+        firing.record(fring_vector)
+        spike_count_obj.append(firing)
+        spike_times_vecs.append(fring_vector)
+    
+    """
+    fring_vector = h.Vector()
+    conn.record(fring_vector)
+    
+    """
+    
+    # set connection
     connections = h.List()
     synapses = h.List()
-    # set connection
-    for pre_idx, presynaptic_cell in enumerate(neurons):
+    
+    for pre_idx, presynaptic_cell in enumerate(all_cells):
         
         # print(presynaptic_cell.celltype)
-        for post_idx, postsynaptic_cell in enumerate(neurons):
+        for post_idx, postsynaptic_cell in enumerate(all_cells):
             
             if pre_idx == post_idx:
                 continue
@@ -70,29 +212,53 @@ def run_simulation(params, h):
             
             print(conn_name)
             
-            pre_comp = getattr( presynaptic_cell, conn_data["sourse_compartment"] )[0]
-            post_comp = getattr( postsynaptic_cell, conn_data["target_compartment"] )[0]
-            print(pre_comp)
+            if np.random.rand() < conn_data["prob"]:
+                continue
             
-            syn = h.Exp2Syn( post_comp(0.5) ) # !!!!
+            
+            pre_comp = getattr( presynaptic_cell, conn_data["sourse_compartment"] )[-1]
+            post_comp = np.random.choice( getattr( postsynaptic_cell, conn_data["target_compartment"] ) )
+            
+            print(post_comp)
+             
+            
+            
+            syn = h.Exp2Syn( post_comp(0.5) ) 
             syn.e = conn_data["Erev"]
             syn.tau1 = conn_data["tau_rise"]
             syn.tau2 = conn_data["tau_decay"]
                 
-
+            conn = h.NetCon(pre_comp(1.0)._ref_v, syn, sec=pre_comp) # !!!!
             
-            conn = h.NetCon(pre_comp(0.5)._ref_v, syn, sec=pre_comp) # !!!!
-                       
-            conn.delay = conn_data["delay"]
-            conn.weight[0] = conn_data["gmax"] 
+            
+            # choce synaptic delay and weight from lognormal distribution 
+            conn.delay = np.random.lognormal(mean=np.log(conn_data["delay"]), sigma=conn_data["delay_std"])   
+            conn.weight[0] = np.random.lognormal(mean=np.log(conn_data["gmax"]), sigma=conn_data["gmax_std"]) 
+            
                
             connections.append(conn)
             synapses.append(syn)
 
 
+        
+
+
+    Nelecs = params["Nelecs"]
+    el_x = np.zeros(Nelecs)
+    el_y = np.linspace(0, 1000, Nelecs)
+    el_z = np.zeros(Nelecs)
     
-    cell1 = neurons[0]
-    cell2 = neurons[1]
+    electrodes = []
+    
+    for idx_el in range(Nelecs):
+        le = LfpElectrode(x=el_x[idx_el], y=el_y[idx_el], z=el_z[idx_el], sampling_period=h.dt, sec_list=pyramidal_sec_list)
+        electrodes.append(le)
+    
+    
+    
+    
+    cell1 = all_cells[0]
+    cell2 = all_cells[1]
     
     
  
@@ -124,9 +290,36 @@ def run_simulation(params, h):
     h.tstop = 100 # set the simulation time
     h.run()
     
+    if params["file_results"] != None:
+        with h5py.File(params["file_results"], 'w') as h5file:
+            
+            extracellular_group = h5file.create_group("extracellular")
+            ele_group = extracellular_group.create_group('electrode_1')
+            lfp_group = ele_group.create_group('lfp')
+            lfp_group.attrs['fd'] = 1 / h.dt
+            
+            
+            for idx_el, el in enumerate(electrodes):
+                lfp_group.create_dataset("channel_" + str(idx_el+1), data = el.values)
+                lfp_group.create_dataset("channel_" + str(idx_el+1) + "_times", data = el.times)
+   
+    
     plt.plot(t, soma1_v, color="blue", label="Pyr")
     plt.plot(t, soma2_v, color="red", label="PVBas")
     plt.legend()
+    
+    
+    plt.figure()
+    
+    # print(electrodes[3].times)
+    # plt.plot(electrodes[3].times, electrodes[3].values)
+    
+    for sp_t_idx, sp_t in enumerate(spike_times_vecs):
+        
+        if len(sp_t) > 0:
+            plt.scatter(sp_t, np.zeros(len(sp_t)) + sp_t_idx + 1, s = 1, color="blue")
+    
+    
     plt.show()
     
     
