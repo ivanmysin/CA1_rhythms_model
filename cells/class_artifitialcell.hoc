@@ -1,0 +1,15 @@
+begintemplate ArtifitialCell
+
+    public pattern_generator, acell, is_art
+    create pattern_generator
+    objref acell
+    strdef celltype
+
+    proc init() {
+        is_art = 1
+        pattern_generator acell  = new ArtificialRhytmicCell()
+        
+    }
+    
+
+endtemplate ArtifitialCell

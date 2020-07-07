@@ -142,50 +142,54 @@ def run_simulation(params):
 
     # set artificial cells
     for idx in range(params["Nca3"]):
-        cell = h.ArtificialRhytmicCell()
+        cell = h.ArtifitialCell()
+        cell.celltype = "ca3"
+        cell.acell.freqs=20
         
         artificial_cells.append(cell)
         all_cells.append(cell)
     
     
     for idx in range(params["Nmec"]):
-        cell = h.ArtificialRhytmicCell()
+        cell = h.ArtifitialCell()
+        cell.celltype = "mec"
         
         artificial_cells.append(cell)
         all_cells.append(cell)
     
     for idx in range(params["Nlec"]):
-        cell = h.ArtificialRhytmicCell()
+        cell = h.ArtifitialCell()
+        cell.celltype = "lec"
+        
         artificial_cells.append(cell)
         all_cells.append(cell)
     
     
     for idx in range(params["Nmsteevracells"]):
-        cell = h.ArtificialRhytmicCell()
+        cell = h.ArtifitialCell()
+        cell.celltype = "msteevracells"
         
         artificial_cells.append(cell)
         all_cells.append(cell)
     
     for idx in range(params["Nmskomalicells"]):
-        cell = h.ArtificialRhytmicCell()
+        cell = h.ArtifitialCell()
+        cell.celltype = "mskomalicells"
         
         artificial_cells.append(cell)
         all_cells.append(cell)
     
     
     # set counters for spike generation
+    list_of_celltypes = []
     for cell in hh_cells:
         firing = h.APCount(cell.soma[0](0.5))
         fring_vector = h.Vector()
         firing.record(fring_vector)
         spike_count_obj.append(firing)
         spike_times_vecs.append(fring_vector)
-    
-    """
-    fring_vector = h.Vector()
-    conn.record(fring_vector)
-    
-    """
+        list_of_celltypes.append(cell.celltype)
+
     
     # set connection
     connections = h.List()
@@ -210,16 +214,22 @@ def run_simulation(params):
                 continue
 
             
-            print(conn_name)
             
-            if np.random.rand() < conn_data["prob"]:
+            
+            if np.random.rand() > conn_data["prob"]:
                 continue
             
+            print(conn_name)
             
-            pre_comp = getattr( presynaptic_cell, conn_data["sourse_compartment"] )[-1]
+            if presynaptic_cell.is_art == 1:
+                pre_comp = getattr( presynaptic_cell, conn_data["sourse_compartment"] )
+            else:
+                pre_comp = getattr( presynaptic_cell, conn_data["sourse_compartment"] )[-1]
+            
+            
             post_comp = np.random.choice( getattr( postsynaptic_cell, conn_data["target_compartment"] ) )
             
-            print(post_comp)
+            # print(post_comp)
              
             
             
@@ -227,22 +237,32 @@ def run_simulation(params):
             syn.e = conn_data["Erev"]
             syn.tau1 = conn_data["tau_rise"]
             syn.tau2 = conn_data["tau_decay"]
-                
-            conn = h.NetCon(pre_comp(1.0)._ref_v, syn, sec=pre_comp) # !!!!
+            
+            if presynaptic_cell.is_art == 1:
+                conn = h.NetCon(pre_comp, syn, sec=post_comp)
+            else:
+                conn = h.NetCon(pre_comp(1.0)._ref_v, syn, sec=pre_comp) 
             
             
             # choce synaptic delay and weight from lognormal distribution 
-            conn.delay = np.random.lognormal(mean=np.log(conn_data["delay"]), sigma=conn_data["delay_std"])   
-            conn.weight[0] = np.random.lognormal(mean=np.log(conn_data["gmax"]), sigma=conn_data["gmax_std"]) 
+            conn.delay = 0  # np.random.lognormal(mean=np.log(conn_data["delay"]), sigma=conn_data["delay_std"])   
+            conn.weight[0] = conn_data["gmax"] # np.random.lognormal(mean=np.log(conn_data["gmax"]), sigma=conn_data["gmax_std"]) 
             
-               
+            
+            
+            if (presynaptic_cell.is_art == 1) and not(presynaptic_cell.celltype in list_of_celltypes):
+                fring_vector = h.Vector()
+                conn.record(fring_vector)
+                spike_times_vecs.append(fring_vector)
+                list_of_celltypes.append(presynaptic_cell.celltype)
+            
             connections.append(conn)
             synapses.append(syn)
 
 
         
 
-
+    """
     Nelecs = params["Nelecs"]
     el_x = np.zeros(Nelecs)
     el_y = np.linspace(0, 1000, Nelecs)
@@ -254,18 +274,19 @@ def run_simulation(params):
         le = LfpElectrode(x=el_x[idx_el], y=el_y[idx_el], z=el_z[idx_el], sampling_period=h.dt, sec_list=pyramidal_sec_list)
         electrodes.append(le)
     
+    """
     
-    
+    print(list_of_celltypes)
     
     cell1 = all_cells[0]
     cell2 = all_cells[1]
     
     
  
-    stim1 = h.IClamp(0.5, sec=cell1.soma[0])
-    stim1.dur   = 100
-    stim1.delay = 0
-    stim1.amp = 0.5
+    # stim1 = h.IClamp(0.5, sec=cell1.soma[0])
+    # stim1.dur   = 100
+    # stim1.delay = 0
+    # stim1.amp = 0.5
 
     # stim2 = h.IClamp(0.5, sec=cell2.soma[0])
     # stim2.dur   = 100
@@ -290,6 +311,8 @@ def run_simulation(params):
     h.tstop = 100 # set the simulation time
     h.run()
     
+    
+    """
     if params["file_results"] != None:
         with h5py.File(params["file_results"], 'w') as h5file:
             
@@ -303,9 +326,11 @@ def run_simulation(params):
                 lfp_group.create_dataset("channel_" + str(idx_el+1), data = el.values)
                 lfp_group.create_dataset("channel_" + str(idx_el+1) + "_times", data = el.times)
    
+    """
     
     plt.plot(t, soma1_v, color="blue", label="Pyr")
     plt.plot(t, soma2_v, color="red", label="PVBas")
+    plt.scatter(spike_times_vecs[-1], np.zeros_like(spike_times_vecs[-1]) + 50)
     plt.legend()
     
     

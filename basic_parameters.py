@@ -26,24 +26,27 @@ basic_params = {
     "file_results":  "/home/ivan/Data/CA1_simulation/test.hdf5", # None, #
     
     "Npyr" : 1,
-    "Npvbas" : 2,
-    "Nolm" : 2,
-    "Ncckbas" : 2,
-    "Nivy" : 2,
-    "Nngf" : 2,
-    "Nbis" : 2,
-    "Naac" : 2,
-    "Nsca" : 2,
+    "Npvbas" : 1,
+    "Nolm" : 0,
+    "Ncckbas" : 0,
+    "Nivy" : 0,
+    "Nngf" : 0,
+    "Nbis" : 0,
+    "Naac" : 0,
+    "Nsca" : 0,
     
     
     "Nca3" : 2,
-    "Nmec" : 2,
-    "Nlec" : 2,
-    "Nmsteevracells" : 1,
-    "Nmskomalicells" : 1,
+    "Nmec" : 0,
+    "Nlec" : 0,
+    "Nmsteevracells" : 0,
+    "Nmskomalicells" : 0,
+    
+    
+    "save_soma_" : None,
 
     "pyr2pvbas" : {
-        "prob" : 0.5,
+        "prob" : 1.0,
         "tau_rise" : 0.5,
         "tau_decay" : 5.0,
         
@@ -51,8 +54,8 @@ basic_params = {
         "delay_std" : 0.2,
         
         "Erev" : 0.0,
-        "gmax" : 0.01,
-        "gmax_std" : 0.5,
+        "gmax" : 0.05,
+        "gmax_std" : 0.0001,
         
         "sourse_compartment" : "axon",
         "target_compartment" : "dend",
@@ -60,6 +63,35 @@ basic_params = {
         
     },
 
+    "ca32pyr": {
+        "prob": 1.0,
+        "tau_rise": 0.5,
+        "tau_decay": 5.0,
+        "delay": 1.0,
+        "delay_std" : 0.2,
+        "Erev": 0.0,
+        "gmax": 0.05,
+        "gmax_std" : 0.0001,
+        
+        "sourse_compartment" : "acell",
+        "target_compartment" : "soma",
+    },
+
+
+
+    "ca32pvbas": {
+        "prob": 1.0,
+        "tau_rise": 0.5,
+        "tau_decay": 5.0,
+        "delay": 1.0,
+        "delay_std" : 0.2,
+        "Erev": 0.0,
+        "gmax": 0.005,
+        "gmax_std" : 0.0001,
+        
+        "sourse_compartment" : "acell",
+        "target_compartment" : "dend",
+    },
 
 
 
