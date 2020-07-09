@@ -6,10 +6,12 @@ begintemplate ArtifitialCell
     strdef celltype
 
     proc init() {
-        is_art = 1
+        
         pattern_generator acell  = new ArtificialRhytmicCell()
         
     }
+    
+    func is_art() {return 1} 
     
 
 endtemplate ArtifitialCell

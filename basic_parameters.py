@@ -43,7 +43,20 @@ basic_params = {
     "Nmskomalicells" : 0,
     
     
-    "save_soma_" : None,
+    "save_soma_v" : {
+        "pyr" : [0, ],
+        "pvbas" : [0, ],
+        "olm" : [0, ],
+        "cckbas" : [0, ],
+        "ivy" : [0, ],
+        "ngf" : [0, ],
+        "bis" : [0, ],
+        "aac" : [0, ],
+        "sca" : [0, ],
+    
+    
+    
+    },
 
     "pyr2pvbas" : {
         "prob" : 1.0,

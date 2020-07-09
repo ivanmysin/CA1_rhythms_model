@@ -144,7 +144,7 @@ def run_simulation(params):
     for idx in range(params["Nca3"]):
         cell = h.ArtifitialCell()
         cell.celltype = "ca3"
-        cell.acell.freqs=20
+        cell.acell.freqs = 5
         
         artificial_cells.append(cell)
         all_cells.append(cell)
@@ -196,8 +196,7 @@ def run_simulation(params):
     synapses = h.List()
     
     for pre_idx, presynaptic_cell in enumerate(all_cells):
-        
-        # print(presynaptic_cell.celltype)
+       
         for post_idx, postsynaptic_cell in enumerate(all_cells):
             
             if pre_idx == post_idx:
@@ -221,7 +220,7 @@ def run_simulation(params):
             
             print(conn_name)
             
-            if presynaptic_cell.is_art == 1:
+            if presynaptic_cell.is_art() == 1:
                 pre_comp = getattr( presynaptic_cell, conn_data["sourse_compartment"] )
             else:
                 pre_comp = getattr( presynaptic_cell, conn_data["sourse_compartment"] )[-1]
@@ -238,7 +237,7 @@ def run_simulation(params):
             syn.tau1 = conn_data["tau_rise"]
             syn.tau2 = conn_data["tau_decay"]
             
-            if presynaptic_cell.is_art == 1:
+            if presynaptic_cell.is_art() == 1:
                 conn = h.NetCon(pre_comp, syn, sec=post_comp)
             else:
                 conn = h.NetCon(pre_comp(1.0)._ref_v, syn, sec=pre_comp) 
@@ -247,22 +246,20 @@ def run_simulation(params):
             # choce synaptic delay and weight from lognormal distribution 
             conn.delay = 0  # np.random.lognormal(mean=np.log(conn_data["delay"]), sigma=conn_data["delay_std"])   
             conn.weight[0] = conn_data["gmax"] # np.random.lognormal(mean=np.log(conn_data["gmax"]), sigma=conn_data["gmax_std"]) 
-            
-            
-            
-            if (presynaptic_cell.is_art == 1) and not(presynaptic_cell.celltype in list_of_celltypes):
-                fring_vector = h.Vector()
-                conn.record(fring_vector)
-                spike_times_vecs.append(fring_vector)
-                list_of_celltypes.append(presynaptic_cell.celltype)
-            
+
             connections.append(conn)
             synapses.append(syn)
-
-
+            
+        if (presynaptic_cell.is_art() == 1):
+        
+            fring_vector = h.Vector()
+            conn.record(fring_vector)
+            spike_times_vecs.append(fring_vector)
+            list_of_celltypes.append(presynaptic_cell.celltype)
+        
         
 
-    """
+    
     Nelecs = params["Nelecs"]
     el_x = np.zeros(Nelecs)
     el_y = np.linspace(0, 1000, Nelecs)
@@ -274,12 +271,11 @@ def run_simulation(params):
         le = LfpElectrode(x=el_x[idx_el], y=el_y[idx_el], z=el_z[idx_el], sampling_period=h.dt, sec_list=pyramidal_sec_list)
         electrodes.append(le)
     
-    """
     
-    print(list_of_celltypes)
     
-    cell1 = all_cells[0]
-    cell2 = all_cells[1]
+    
+    # cell1 = all_cells[0]
+    # cell2 = all_cells[1]
     
     
  
@@ -293,14 +289,39 @@ def run_simulation(params):
     # stim2.delay = 0
     # stim2.amp = 0.8
     
+    soma_v_vecs = []
+    soma_v_cell_idx = []
     
+    for cell_type, list_of_idxes in params["save_soma_v"].items():
+        
+        for idx_v in list_of_idxes:
+            
+            try:
+                idxinall = list_of_celltypes.index(cell_type)
+            except ValueError:
+                break
+                
+                
+            cell = all_cells[idxinall + idx_v]
+            soma_v_cell_idx.append(idxinall + idx_v)
+            if cell.celltype == cell_type:
+            
+                soma_v = h.Vector()
+                soma_v.record(cell.soma[0](0.5)._ref_v)
+                soma_v_vecs.append(soma_v)
+        
+        #print(cell_type)
+        
     
+    # print(len(soma_v_vecs))
+    
+    """
     soma1_v = h.Vector()
     soma1_v.record(cell1.soma[0](0.5)._ref_v)
 
     soma2_v = h.Vector()
     soma2_v.record(cell2.soma[0](0.5)._ref_v)
-
+    """
     
 
 
@@ -312,9 +333,11 @@ def run_simulation(params):
     h.run()
     
     
-    """
+    
     if params["file_results"] != None:
         with h5py.File(params["file_results"], 'w') as h5file:
+            
+            h5file.create_dataset("time", data=t)
             
             extracellular_group = h5file.create_group("extracellular")
             ele_group = extracellular_group.create_group('electrode_1')
@@ -324,21 +347,31 @@ def run_simulation(params):
             
             for idx_el, el in enumerate(electrodes):
                 lfp_group.create_dataset("channel_" + str(idx_el+1), data = el.values)
-                lfp_group.create_dataset("channel_" + str(idx_el+1) + "_times", data = el.times)
-   
-    """
+            
     
-    plt.plot(t, soma1_v, color="blue", label="Pyr")
-    plt.plot(t, soma2_v, color="red", label="PVBas")
+            spike_raster_group = h5file.create_group("spike_raster")
+            
+            for cell_idx, sp_times in enumerate(spike_times_vecs):
+                cell_spikes_dataset = spike_raster_group.create_dataset("neuron_" + str(cell_idx+1), data=sp_times)
+                cell_spikes_dataset.attrs["celltype"] = list_of_celltypes[cell_idx]
+    
+    
+            intracellular_group = h5file.create_group("intracellular")
+            
+            for v_idx, soma_v in enumerate(soma_v_vecs):
+                soma_v_dataset = intracellular_group.create_dataset("neuron_" + str(soma_v_cell_idx[v_idx]+1) , data=soma_v)
+                soma_v_dataset.attrs["celltype"] = list_of_celltypes[soma_v_cell_idx[v_idx]]
+    
+    """
+    plt.plot(t, soma_v_vecs[0], color="blue", label="Pyr")
+    plt.plot(t, soma_v_vecs[1], color="red", label="PVBas")
     plt.scatter(spike_times_vecs[-1], np.zeros_like(spike_times_vecs[-1]) + 50)
     plt.legend()
     
     
     plt.figure()
     
-    # print(electrodes[3].times)
-    # plt.plot(electrodes[3].times, electrodes[3].values)
-    
+  
     for sp_t_idx, sp_t in enumerate(spike_times_vecs):
         
         if len(sp_t) > 0:
@@ -346,7 +379,7 @@ def run_simulation(params):
     
     
     plt.show()
-    
+    """
     
     print("End of the simultion!")
     return
