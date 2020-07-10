@@ -342,7 +342,7 @@ def run_simulation(params):
             extracellular_group = h5file.create_group("extracellular")
             ele_group = extracellular_group.create_group('electrode_1')
             lfp_group = ele_group.create_group('lfp')
-            lfp_group.attrs['fd'] = 1 / h.dt
+            lfp_group.attrs['SamplingRate'] = 1000 / h.dt   # dt in ms 
             
             
             for idx_el, el in enumerate(electrodes):

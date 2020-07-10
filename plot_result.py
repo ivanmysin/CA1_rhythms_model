@@ -62,7 +62,7 @@ def plot_lfp(filepath):
         t = h5file["time"][:]
         
         lfp_group = h5file["extracellular/electrode_1/lfp"]
-        fd = lfp_group.attrs["fd"]
+        fd = lfp_group.attrs["SamplingRate"]
         lfp_keys = lfp_group.keys()
         
         fig, axes = plt.subplots(nrows=len(lfp_keys))
