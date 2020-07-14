@@ -25,6 +25,7 @@ basic_params = {
     
     "file_results":  "/home/ivan/Data/CA1_simulation/test.hdf5", # None, #
     
+    "celltypes" : ["pyr", "pvbas", "olm", "cckbas", "ivy", "ngf", "bis", "aac", "sca", "ca3", "mec", "lec", "msteevracells", "mskomalicells"],
     "Npyr" : 1,
     "Npvbas" : 1,
     "Nolm" : 0,

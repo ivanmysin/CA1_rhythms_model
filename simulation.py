@@ -262,7 +262,7 @@ def run_simulation(params):
     
     Nelecs = params["Nelecs"]
     el_x = np.zeros(Nelecs)
-    el_y = np.linspace(0, 1000, Nelecs)
+    el_y = np.linspace(-200, 1000, Nelecs)
     el_z = np.zeros(Nelecs)
     
     electrodes = []
@@ -342,44 +342,36 @@ def run_simulation(params):
             extracellular_group = h5file.create_group("extracellular")
             ele_group = extracellular_group.create_group('electrode_1')
             lfp_group = ele_group.create_group('lfp')
-            lfp_group.attrs['SamplingRate'] = 1000 / h.dt   # dt in ms 
+            
+            lfp_group_origin = lfp_group.create_group('origin_data')
+            lfp_group_origin.attrs['SamplingRate'] = 1000 / h.dt   # dt in ms 
             
             
             for idx_el, el in enumerate(electrodes):
-                lfp_group.create_dataset("channel_" + str(idx_el+1), data = el.values)
+                lfp_group_origin.create_dataset("channel_" + str(idx_el+1), data = el.values)
             
     
-            spike_raster_group = h5file.create_group("spike_raster")
+            firing_group = h5file.create_group("extracellular/electrode_1/firing/origin_data")
             
-            for cell_idx, sp_times in enumerate(spike_times_vecs):
-                cell_spikes_dataset = spike_raster_group.create_dataset("neuron_" + str(cell_idx+1), data=sp_times)
-                cell_spikes_dataset.attrs["celltype"] = list_of_celltypes[cell_idx]
+            for celltype in params["celltypes"]:
+                cell_friring_group = firing_group.create_group(celltype)
+            
+            
+                for cell_idx, sp_times in enumerate(spike_times_vecs):
+                    if list_of_celltypes[cell_idx] != celltype:
+                        continue
+                    
+                    cell_spikes_dataset = cell_friring_group.create_dataset("neuron_" + str(cell_idx+1), data=sp_times)
+                
     
     
             intracellular_group = h5file.create_group("intracellular")
+            intracellular_group_origin = intracellular_group.create_group("origin_data")
             
             for v_idx, soma_v in enumerate(soma_v_vecs):
-                soma_v_dataset = intracellular_group.create_dataset("neuron_" + str(soma_v_cell_idx[v_idx]+1) , data=soma_v)
+                soma_v_dataset = intracellular_group_origin.create_dataset("neuron_" + str(soma_v_cell_idx[v_idx]+1) , data=soma_v)
                 soma_v_dataset.attrs["celltype"] = list_of_celltypes[soma_v_cell_idx[v_idx]]
     
-    """
-    plt.plot(t, soma_v_vecs[0], color="blue", label="Pyr")
-    plt.plot(t, soma_v_vecs[1], color="red", label="PVBas")
-    plt.scatter(spike_times_vecs[-1], np.zeros_like(spike_times_vecs[-1]) + 50)
-    plt.legend()
-    
-    
-    plt.figure()
-    
-  
-    for sp_t_idx, sp_t in enumerate(spike_times_vecs):
-        
-        if len(sp_t) > 0:
-            plt.scatter(sp_t, np.zeros(len(sp_t)) + sp_t_idx + 1, s = 1, color="blue")
-    
-    
-    plt.show()
-    """
-    
+ 
     print("End of the simultion!")
     return

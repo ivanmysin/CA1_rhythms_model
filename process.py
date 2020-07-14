@@ -2,21 +2,9 @@ import numpy as np
 from elephant import signal_processing as sigp 
 import matplotlib.pyplot as plt
 import h5py
+import processingLib as plib
 
-"""
-t = np.linspace(0, 1, 1000)
-s = np.cos(2 * np.pi * t * 5)
 
-freqs = np.linspace(1, 20, 40)
-
-W = sigp.wavelet_transform(s, freqs, nco=6.0, fs=1000)
-
-W = np.abs(W)
-
-plt.pcolor(t, freqs, W)
-
-plt.show()
-"""
 
 processing_param = {
 
@@ -44,28 +32,31 @@ with h5py.File(filepath, 'a') as h5file:
     t = h5file["time"][:]
         
     lfp_group = h5file["extracellular/electrode_1/lfp"]
-    fd = lfp_group.attrs["SamplingRate"]
+    lfp_group_origin = lfp_group["origin_data"]
     
-    lfp_keys = lfp_group.keys()
+    try:
+        process_group = lfp_group.create_group("processing")
+    except ValueError:
+        del h5file["extracellular/electrode_1/lfp/processing"]
+        process_group = lfp_group.create_group("processing")
+    
+    
+    fd = lfp_group_origin.attrs["SamplingRate"]
+    lfp_keys = lfp_group_origin.keys()
     
     for key_idx in range(len(lfp_keys)):
         key = "channel_" + str(key_idx + 1)
-        lfp = lfp_group[key][:]
+        lfp = lfp_group_origin[key][:]
     
         freqs = np.fft.rfftfreq(lfp.size, d=1/fd)
         freqs = freqs[1:]  # remove 0 frequency
         freqs = freqs[freqs <= processing_param["max_freq_lfp"] ]  # remove frequencies below 500 Hz
+   
+   
+        wavelet_group = process_group.create_group(key + "_wavelet")
         
-        
-               
-        try:
-            process_group = lfp_group.create_group(key + "_processing")
-        except ValueError:
-            del h5file["extracellular/electrode_1/lfp/" + key + "_processing"]
-            process_group = lfp_group.create_group(key + "_processing")
-            
-        process_group.create_dataset("frequecies", data=freqs)
-        wdset = process_group.create_dataset("wavelet_coeff", (len(freqs), len(lfp)), dtype="c16")
+        wavelet_group.create_dataset("frequecies", data=freqs)
+        wdset = wavelet_group.create_dataset(key + "wavelet_coeff", (len(freqs), len(lfp)), dtype="c16")
             
         for start_idx in range(0, freqs.size, processing_param["freqs_step"]):
             end_idx = start_idx + processing_param["freqs_step"]
@@ -76,30 +67,59 @@ with h5py.File(filepath, 'a') as h5file:
             W = sigp.wavelet_transform(lfp, freqs[start_idx:end_idx], nco=processing_param["morlet_w0"], fs=fd)
             wdset[start_idx:end_idx, : ] = W
         
-        
+        bands_group = process_group.create_group(key + "_bands")
         for band_name, freq_lims in processing_param["filt_bands"].items():
             
             filtered_signal = sigp.butter(lfp, highpass_freq=freq_lims[1], \
                 lowpass_freq=freq_lims[0], order= processing_param["butter_order"], fs=fd )
             
+            bands_group.create_dataset(band_name, data = filtered_signal)
             
-            process_group.create_dataset(band_name, data = filtered_signal)
-            
-            
-        # начать от сюда !!!!!!!
-        # 1. Создать набор данных правильного размера с правильным типом данных
-        # 2. Сделать вейвлеты в цикле по freqs и сложить их в набор данных
-        # 3. Сделать аналогично для фильтрованных сигналов в дельта, тета, гамма и риппл диапазонах !!!
         
+        
+       
         break
+    
+    firing_group = h5file["extracellular/electrode_1/firing"]
+    
+    try:
+        # тут можно сделать цикл по ритмам, пока берем только тета 
+        firing_process_group = firing_group.create_group("processing")
+    except ValueError:
+        del h5file["extracellular/electrode_1/firing/processing"]
+        firing_process_group = firing_group.create_group("processing")
+    
+    firing_origin = firing_group["origin_data"]
+    
+    firing_theta = firing_process_group.create_group("theta")
+    
+    # print( firing_origin.keys() )
+    
+    for celltype in firing_origin.keys():
+        
+        celltype_firings = np.empty(shape=0, dtype=np.float64)
+       
+        for dsetname, cell_firing_dset in firing_origin[celltype].items():
+
+            celltype_firings = np.append(celltype_firings, cell_firing_dset[:])
+        
+         # тут нужно взять канал из пирамидного слоя
+        theta_lfp = h5file["extracellular/electrode_1/lfp/processing/channel_1_bands/theta"][:]
+        bins, phase_distr = plib.get_phase_disrtibution(celltype_firings, theta_lfp, fd)
+        
+        
+        firing_theta.create_dataset(celltype, data = phase_distr)
+        
+        
+
+        
+        
+        
+    
+    
 
 
 
-"""        
-fig, axes = plt.subplots(nrows=len(lfp_keys))
-    axes[key_idx].plot(t[1:-1], lfp_group[key][:], label=key )
-    axes[key_idx].legend()
-plt.show()
-"""
+
 
 

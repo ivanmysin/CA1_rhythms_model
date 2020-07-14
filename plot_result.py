@@ -1,14 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import h5py
-
+from basic_parameters import basic_params
 
 def plot_v(filepath):
     
     with h5py.File(filepath, 'r') as h5file:
         t = h5file["time"][:]
         
-        intracellular_group = h5file["intracellular"]
+        intracellular_group = h5file["intracellular/origin_data"]
         
         intracell_keys = intracellular_group.keys()
         
@@ -27,26 +27,19 @@ def plot_v(filepath):
 def plot_spike_raster(filepath):
     
     with h5py.File(filepath, 'r') as h5file:
-        raster_group = h5file["spike_raster"]
-        spikes_keys = raster_group.keys()
-        
-        celltypes = [raster_group[key].attrs["celltype"]  for key in  spikes_keys   ]
-        uniq_celltypes = list(set(celltypes))
+        raster_group = h5file["extracellular/electrode_1/firing/origin_data"]
+                
+        uniq_celltypes = raster_group.keys()
         
         fig, axes = plt.subplots(nrows=len(uniq_celltypes))
         
         
         
-        for sp_idx, key in enumerate(spikes_keys):
+        for sp_idx, key in enumerate(uniq_celltypes):
+            for cell_key, firing in raster_group[key].items():
+                celltype_idx = int(cell_key.split("_")[-1])
             
-            firing = raster_group[key][:]
-            
-            # print(raster_group[key].attrs)
-            
-            
-            celltype_idx = uniq_celltypes.index(raster_group[key].attrs["celltype"])
-            
-            axes[celltype_idx].scatter(firing,  np.zeros(firing.size) + sp_idx + 1, color="b", s=1 )
+                axes[celltype_idx].scatter(firing,  np.zeros(firing.size) + sp_idx + 1, color="b", s=1 )
         
         
         
@@ -61,14 +54,14 @@ def plot_lfp(filepath):
     with h5py.File(filepath, 'r') as h5file:
         t = h5file["time"][:]
         
-        lfp_group = h5file["extracellular/electrode_1/lfp"]
-        fd = lfp_group.attrs["SamplingRate"]
-        lfp_keys = lfp_group.keys()
+        lfp_group = h5file["extracellular/electrode_1/lfp/origin_data"]
+
+        lfp_keys = sorted(lfp_group.keys())
+    
         
         fig, axes = plt.subplots(nrows=len(lfp_keys))
-        
-        for key_idx in range(len(lfp_keys)):
-            key = "channel_" + str(key_idx + 1)
+
+        for key_idx, key in enumerate(lfp_keys):
             axes[key_idx].plot(t[1:-1], lfp_group[key][:], label=key )
             axes[key_idx].legend()
         
@@ -76,9 +69,37 @@ def plot_lfp(filepath):
         plt.show()
 
 
+def plot_phase_disrtibution(filepath):
+    with h5py.File(filepath, 'r') as h5file:
+        distr_group = h5file["extracellular/electrode_1/firing/processing/theta"]
+        
+        keys = distr_group.keys()
+        
+        fig, axes = plt.subplots(nrows=len(keys), figsize=(4, 20))
+
+        for key_idx, key in enumerate(keys):
+            
+            phase_distr = distr_group[key][:]
+            phases = np.linspace(-np.pi, np.pi, phase_distr.size)
+            axes[key_idx].plot(phases, phase_distr, label=key )
+            axes[key_idx].legend()
+        
+        plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
+        plt.show()
+
+
+
+
+
 
 path = "/home/ivan/Data/CA1_simulation/test.hdf5"
 
 # plot_v(path)
 # plot_spike_raster(path)
-plot_lfp(path)
+# plot_lfp(path)
+plot_phase_disrtibution(path)
+
+
+
+
+
