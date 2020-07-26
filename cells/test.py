@@ -13,7 +13,7 @@ neuron.load_mechanisms("../mods/")
 
 
 
-# h.load_file("class_cckcell.hoc")
+h.load_file("class_cckcell.hoc")
 # h.load_file("class_ivycell.hoc")
 # h.load_file("class_axoaxoniccell.hoc")
 # h.load_file("class_bistratifiedcell.hoc")
@@ -24,11 +24,12 @@ h.load_file("class_poolosyncell.hoc")
 h.load_file("class_pvbasketcell.hoc")
 # h.load_file("class_scacell.hoc")
 
-# cell = h.bistratifiedcell(0, 0) # h.axoaxoniccell(0, 0) # h.ivycell(0, 0) # h.cckcell(0, 0)
+# cell = h.bistratifiedcell(0, 0) # h.axoaxoniccell(0, 0) # h.ivycell(0, 0)
+cell = h.cckcell(0, 0)
 # cell = h.cutsuridiscell(0, 0) 
 # cell = h.ngfcell(0, 0) 
 # cell = h.olmcell(0, 0) 
-cell = h.poolosyncell(0, 0) 
+# cell = h.poolosyncell(0, 0) 
 # cell = h.pvbasketcell() 
 # cell = h.scacell(0, 0) 
 
@@ -46,7 +47,7 @@ stim.delay = 150
 stim_current = h.Vector()
 stim_current.record(stim._ref_i)
 
-syn = h.epsp(cell.apical[10](0.9))
+syn = h.epsp(cell.dend[10](0.9))
 syn.tau0  = 0.5
 syn.tau1 = 5
 syn.onset    = stim.delay + 5
@@ -61,7 +62,7 @@ soma_v = h.Vector()
 soma_v.record(cell.soma[0](0.5)._ref_v)
 
 nexus_v = h.Vector()
-nexus_v.record(cell.apical[10](0.9)._ref_v)
+nexus_v.record(cell.dend[10](0.9)._ref_v)
 
 
 ##======================== general settings ===================================

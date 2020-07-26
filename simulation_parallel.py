@@ -1,29 +1,41 @@
+from neuron import h, load_mechanisms
+from neuron.units import ms, mV
+h.nrnmpi_init()
+
+
+from mpi4py import MPI
 import numpy as np
 import matplotlib.pyplot as plt
-
 import h5py
 import os
-import neuron
 import sys
-h = neuron.h
-h.load_file("stdgui.hoc")
-h.load_file("import3d.hoc")
-neuron.load_mechanisms("./mods/")
-h.cvode.use_fast_imem(1)
 
 
-sys.path.append("../LFPsimpy/")
-from LFPsimpy import LfpElectrode
-
-
-cell_path = "./cells/"
-for file in os.listdir(cell_path):
-    if file.find(".hoc") != -1:
-        h.load_file(cell_path + file)
 
 
 def run_simulation(params):
+    pc = h.ParallelContext()
+    
+    if pc.id() != 0:
+        return
+    
+    h.load_file("stdgui.hoc")
+    h.load_file("import3d.hoc")
+    load_mechanisms("./mods/")
+    h.cvode.use_fast_imem(1)
 
+    sys.path.append("../LFPsimpy/")
+    from LFPsimpy import LfpElectrode
+
+
+    cell_path = "./cells/"
+    for file in os.listdir(cell_path):
+        if file.find(".hoc") != -1:
+            h.load_file(cell_path + file)
+    
+    ncells = len(params["celltypes"])  # whole number of cells in the model
+    gid_vect = np.arange( pc.id(), ncells, pc.nhost(), dtype=np.int )
+    
     
     all_cells = h.List()
     hh_cells = h.List()
@@ -38,9 +50,54 @@ def run_simulation(params):
     spike_times_vecs = []
     
     
-    for idx in range(params["CellNumbers"]["Npyr"]):
-        cell = h.poolosyncell(0, 0)
+    for gid in gid_vect:
+        """
+        if params["celltypes"][gid] == "pyr":
+            cell_class = h.poolosyncell
         
+        elif params["celltypes"][gid] == "pvbas":
+            cell_class = h.pvbasketcell
+        
+        elif params["celltypes"][gid] == "olm":
+            cell_class = h.olmcell
+        
+        elif params["celltypes"][gid] == "cckbas":
+            cell_class = h.cckcell
+        
+        elif params["celltypes"][gid] == "ivy":
+            cell_class = h.ivycell
+        
+        elif params["celltypes"][gid] == "ngf":
+            cell_class = h.ngfcell
+        
+        elif params["celltypes"][gid] == "aac":
+            cell_class = h.axoaxoniccell
+        
+        elif params["celltypes"][gid] == "bis":
+            cell_class = h.bistratifiedcell
+        
+        elif params["celltypes"][gid] == "sca":
+            cell_class = h.scacell
+        
+        elif params["celltypes"][gid] == "ca3":
+            cell_class = h.ArtifitialCell
+        
+        elif params["celltypes"][gid] == "mec":
+            cell_class = h.ArtifitialCell
+        
+        elif params["celltypes"][gid] == "lec":
+            cell_class = h.ArtifitialCell
+        
+        elif params["celltypes"][gid] == "msteevracells":
+            cell_class = h.ArtifitialCell
+        
+        elif params["celltypes"][gid] == "mskomalicells":
+            cell_class = h.ArtifitialCell
+        """
+        print("hello")
+        cell =  h.cckcell(gid, 0)
+        
+        """
         for sec in cell.all:
             sec.insert("IextNoise")
             sec.sigma_IextNoise = 0.005
@@ -59,7 +116,7 @@ def run_simulation(params):
         hh_cells.append(cell)
         all_cells.append(cell)
 
-    for idx in range(params["CellNumbers"]["Npvbas"]):
+    for idx in range(params["Npvbas"]):
         cell = h.pvbasketcell(0, 0)
         
         for sec in cell.all:
@@ -70,7 +127,7 @@ def run_simulation(params):
         hh_cells.append(cell)
         all_cells.append(cell)
 
-    for idx in range(params["CellNumbers"]["Nolm"]):
+    for idx in range(params["Nolm"]):
         cell = h.olmcell(0, 0)
         for sec in cell.all:
             sec.insert("IextNoise")
@@ -80,7 +137,7 @@ def run_simulation(params):
         hh_cells.append(cell)
         all_cells.append(cell)
 
-    for idx in range(params["CellNumbers"]["Ncckbas"]):
+    for idx in range(params["Ncckbas"]):
         cell = h.cckcell(0, 0)
         for sec in cell.all:
             sec.insert("IextNoise")
@@ -90,7 +147,7 @@ def run_simulation(params):
         hh_cells.append(cell)
         all_cells.append(cell)
 
-    for idx in range(params["CellNumbers"]["Nivy"]):
+    for idx in range(params["Nivy"]):
         cell = h.ivycell(0, 0)
         for sec in cell.all:
             sec.insert("IextNoise")
@@ -100,7 +157,7 @@ def run_simulation(params):
         hh_cells.append(cell)
         all_cells.append(cell)
 
-    for idx in range(params["CellNumbers"]["Nngf"]):
+    for idx in range(params["Nngf"]):
         cell = h.ngfcell(0, 0)
         for sec in cell.all:
             sec.insert("IextNoise")
@@ -110,7 +167,7 @@ def run_simulation(params):
         hh_cells.append(cell)
         all_cells.append(cell)
 
-    for idx in range(params["CellNumbers"]["Nbis"]):
+    for idx in range(params["Nbis"]):
         cell = h.bistratifiedcell(0, 0)
         for sec in cell.all:
             sec.insert("IextNoise")
@@ -120,7 +177,7 @@ def run_simulation(params):
         hh_cells.append(cell)
         all_cells.append(cell)
 
-    for idx in range(params["CellNumbers"]["Naac"]):
+    for idx in range(params["Naac"]):
         cell = h.axoaxoniccell(0, 0)
         for sec in cell.all:
             sec.insert("IextNoise")
@@ -130,7 +187,7 @@ def run_simulation(params):
         hh_cells.append(cell)
         all_cells.append(cell)
 
-    for idx in range(params["CellNumbers"]["Nsca"]):
+    for idx in range(params["Nsca"]):
         cell = h.scacell(0, 0)
         for sec in cell.all:
             sec.insert("IextNoise")
@@ -141,8 +198,8 @@ def run_simulation(params):
         all_cells.append(cell)
 
     # set artificial cells
-    for idx in range(params["CellNumbers"]["Nca3"]):
-        cell = h.ArtifitialCell(0, 0)
+    for idx in range(params["Nca3"]):
+        cell = h.ArtifitialCell()
         cell.celltype = "ca3"
         cell.acell.freqs = 5
         
@@ -150,30 +207,30 @@ def run_simulation(params):
         all_cells.append(cell)
     
     
-    for idx in range(params["CellNumbers"]["Nmec"]):
-        cell = h.ArtifitialCell(0, 0)
+    for idx in range(params["Nmec"]):
+        cell = h.ArtifitialCell()
         cell.celltype = "mec"
         
         artificial_cells.append(cell)
         all_cells.append(cell)
     
-    for idx in range(params["CellNumbers"]["Nlec"]):
-        cell = h.ArtifitialCell(0, 0)
+    for idx in range(params["Nlec"]):
+        cell = h.ArtifitialCell()
         cell.celltype = "lec"
         
         artificial_cells.append(cell)
         all_cells.append(cell)
     
     
-    for idx in range(params["CellNumbers"]["Nmsteevracells"]):
-        cell = h.ArtifitialCell(0, 0)
+    for idx in range(params["Nmsteevracells"]):
+        cell = h.ArtifitialCell()
         cell.celltype = "msteevracells"
         
         artificial_cells.append(cell)
         all_cells.append(cell)
     
-    for idx in range(params["CellNumbers"]["Nmskomalicells"]):
-        cell = h.ArtifitialCell(0, 0)
+    for idx in range(params["Nmskomalicells"]):
+        cell = h.ArtifitialCell()
         cell.celltype = "mskomalicells"
         
         artificial_cells.append(cell)
@@ -315,13 +372,13 @@ def run_simulation(params):
     
     # print(len(soma_v_vecs))
     
-    """
-    soma1_v = h.Vector()
-    soma1_v.record(cell1.soma[0](0.5)._ref_v)
+   
+    # soma1_v = h.Vector()
+    # soma1_v.record(cell1.soma[0](0.5)._ref_v)
 
-    soma2_v = h.Vector()
-    soma2_v.record(cell2.soma[0](0.5)._ref_v)
-    """
+    # soma2_v = h.Vector()
+    # soma2_v.record(cell2.soma[0](0.5)._ref_v)
+    
     
 
 
@@ -374,4 +431,9 @@ def run_simulation(params):
     
  
     print("End of the simultion!")
+        """
+    
+    pc.done()
+    h.quit()
+
     return

@@ -1,11 +1,13 @@
 begintemplate ArtifitialCell
 
-    public pattern_generator, acell, is_art
+    public pattern_generator, acell, is_art, gid
     create pattern_generator
     objref acell
     strdef celltype
 
     proc init() {
+        gid = $1
+        rand = $2
         
         pattern_generator acell  = new ArtificialRhytmicCell()
         
