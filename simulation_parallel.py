@@ -16,13 +16,11 @@ import sys
 def run_simulation(params):
     pc = h.ParallelContext()
     
-    if pc.id() != 0:
-        return
-    
+   
     h.load_file("stdgui.hoc")
     h.load_file("import3d.hoc")
     load_mechanisms("./mods/")
-    h.cvode.use_fast_imem(1)
+    # h.cvode.use_fast_imem(1)
 
     sys.path.append("../LFPsimpy/")
     from LFPsimpy import LfpElectrode
@@ -51,7 +49,7 @@ def run_simulation(params):
     
     
     for gid in gid_vect:
-        """
+       
         if params["celltypes"][gid] == "pyr":
             cell_class = h.poolosyncell
         
@@ -93,17 +91,21 @@ def run_simulation(params):
         
         elif params["celltypes"][gid] == "mskomalicells":
             cell_class = h.ArtifitialCell
-        """
-        print("hello")
-        cell =  h.cckcell(gid, 0)
+       
+       
+        cell = cell_class(gid, 0)
         
-        """
+        pc.set_gid2node(gid, pc.id())
+        # print("hello")
+        
+        
+        
         for sec in cell.all:
             sec.insert("IextNoise")
-            sec.sigma_IextNoise = 0.005
+            sec.sigma_IextNoise = 0.0005
             sec.mean_IextNoise = 0.0005
         
-        
+        """
         for sec in cell.all:
             pyramidal_sec_list.append(sec)
         
@@ -112,131 +114,13 @@ def run_simulation(params):
         
         
         cell.position(pyr_coord_in_layer_x, 0, pyr_coord_in_layer_y) 
-        
+        """
         hh_cells.append(cell)
         all_cells.append(cell)
 
-    for idx in range(params["Npvbas"]):
-        cell = h.pvbasketcell(0, 0)
-        
-        for sec in cell.all:
-            sec.insert("IextNoise")
-            sec.sigma_IextNoise = 0.005
-            sec.mean_IextNoise = 0.0005
-        
-        hh_cells.append(cell)
-        all_cells.append(cell)
 
-    for idx in range(params["Nolm"]):
-        cell = h.olmcell(0, 0)
-        for sec in cell.all:
-            sec.insert("IextNoise")
-            sec.sigma_IextNoise = 0.005
-            sec.mean_IextNoise = 0.0005
-        
-        hh_cells.append(cell)
-        all_cells.append(cell)
-
-    for idx in range(params["Ncckbas"]):
-        cell = h.cckcell(0, 0)
-        for sec in cell.all:
-            sec.insert("IextNoise")
-            sec.sigma_IextNoise = 0.005
-            sec.mean_IextNoise = 0.0005
-        
-        hh_cells.append(cell)
-        all_cells.append(cell)
-
-    for idx in range(params["Nivy"]):
-        cell = h.ivycell(0, 0)
-        for sec in cell.all:
-            sec.insert("IextNoise")
-            sec.sigma_IextNoise = 0.005
-            sec.mean_IextNoise = 0.0005
-        
-        hh_cells.append(cell)
-        all_cells.append(cell)
-
-    for idx in range(params["Nngf"]):
-        cell = h.ngfcell(0, 0)
-        for sec in cell.all:
-            sec.insert("IextNoise")
-            sec.sigma_IextNoise = 0.005
-            sec.mean_IextNoise = 0.0005
-        
-        hh_cells.append(cell)
-        all_cells.append(cell)
-
-    for idx in range(params["Nbis"]):
-        cell = h.bistratifiedcell(0, 0)
-        for sec in cell.all:
-            sec.insert("IextNoise")
-            sec.sigma_IextNoise = 0.005
-            sec.mean_IextNoise = 0.0005
-        
-        hh_cells.append(cell)
-        all_cells.append(cell)
-
-    for idx in range(params["Naac"]):
-        cell = h.axoaxoniccell(0, 0)
-        for sec in cell.all:
-            sec.insert("IextNoise")
-            sec.sigma_IextNoise = 0.005
-            sec.mean_IextNoise = 0.0005
-        
-        hh_cells.append(cell)
-        all_cells.append(cell)
-
-    for idx in range(params["Nsca"]):
-        cell = h.scacell(0, 0)
-        for sec in cell.all:
-            sec.insert("IextNoise")
-            sec.sigma_IextNoise = 0.005
-            sec.mean_IextNoise = 0.0005
-        
-        hh_cells.append(cell)
-        all_cells.append(cell)
-
-    # set artificial cells
-    for idx in range(params["Nca3"]):
-        cell = h.ArtifitialCell()
-        cell.celltype = "ca3"
-        cell.acell.freqs = 5
-        
-        artificial_cells.append(cell)
-        all_cells.append(cell)
     
-    
-    for idx in range(params["Nmec"]):
-        cell = h.ArtifitialCell()
-        cell.celltype = "mec"
-        
-        artificial_cells.append(cell)
-        all_cells.append(cell)
-    
-    for idx in range(params["Nlec"]):
-        cell = h.ArtifitialCell()
-        cell.celltype = "lec"
-        
-        artificial_cells.append(cell)
-        all_cells.append(cell)
-    
-    
-    for idx in range(params["Nmsteevracells"]):
-        cell = h.ArtifitialCell()
-        cell.celltype = "msteevracells"
-        
-        artificial_cells.append(cell)
-        all_cells.append(cell)
-    
-    for idx in range(params["Nmskomalicells"]):
-        cell = h.ArtifitialCell()
-        cell.celltype = "mskomalicells"
-        
-        artificial_cells.append(cell)
-        all_cells.append(cell)
-    
-    
+    """
     # set counters for spike generation
     list_of_celltypes = []
     for cell in hh_cells:
@@ -372,25 +256,45 @@ def run_simulation(params):
     
     # print(len(soma_v_vecs))
     
-   
-    # soma1_v = h.Vector()
-    # soma1_v.record(cell1.soma[0](0.5)._ref_v)
+    """
+    
+    h.finitialize()
+    
+    soma1_v = None
+    if pc.id() == 0:
+        print( len(hh_cells) )
+        print( hh_cells[0].celltype )
+        soma1_v = h.Vector()
+        soma1_v.record(hh_cells[0].soma[0](0.5)._ref_v)
 
     # soma2_v = h.Vector()
     # soma2_v.record(cell2.soma[0](0.5)._ref_v)
     
-    
+  
 
-
+    # h.finalize()
     t = h.Vector()
     t.record(h._ref_t)
+    
 
+    
+    pc.barrier()
+    pc.set_maxstep(10)
     # run simulation
-    h.tstop = 100 # set the simulation time
+    pc.psolve(10000) # set the simulation time
     h.run()
+    pc.barrier()
+    
+    
+    if pc.id() == 0:
+        soma1_v = np.asarray(soma1_v)
+        # print(soma1_v)
+        plt.plot(t, soma1_v)
+        plt.show()
     
     
     
+    """
     if params["file_results"] != None:
         with h5py.File(params["file_results"], 'w') as h5file:
             
@@ -430,10 +334,12 @@ def run_simulation(params):
                 soma_v_dataset.attrs["celltype"] = list_of_celltypes[soma_v_cell_idx[v_idx]]
     
  
-    print("End of the simultion!")
+    
         """
     
     pc.done()
     h.quit()
-
+    
+    
+    print("End of the simultion!")
     return

@@ -31,19 +31,19 @@ basic_params = {
         "Npyr" : 2,
         "Npvbas" : 2,
         "Nolm" : 2,
-        "Ncckbas" : 2,
-        "Nivy" : 0,
+        "Ncckbas" : 1,
+        "Nivy" : 2,
         "Nngf" : 0,
         "Nbis" : 0,
         "Naac" : 0,
         "Nsca" : 0,
         
         
-        "Nca3" : 1,
-        "Nmec" : 1,
-        "Nlec" : 1,
-        "Nmsteevracells" : 2,
-        "Nmskomalicells" : 1,
+        "Nca3" : 0,
+        "Nmec" : 0,
+        "Nlec" : 0,
+        "Nmsteevracells" : 0,
+        "Nmskomalicells" : 0,
     },
     
     "save_soma_v" : {

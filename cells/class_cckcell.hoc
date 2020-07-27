@@ -41,7 +41,6 @@ proc init() {
     
     // electrophysiology
     mechinit()          // local fcn: set values for max conductances and reversal potentials of ion channels and other ephys parameters that are subject to fitting
-    print "hello from hoc"
     insert_mechs()      // local fcn: insert ion channels and actually set values determined in the mechinit fcn
     
     set_chanparams()    // local fcn: after all channels have been inserted, then their other parameters can be set 
@@ -287,21 +286,15 @@ proc insert_mechs() {
 
     access  soma
     
-    print "hello from insert_mechs"
-    // distance() 
+    distance() 
     
     forsec dendrite_list {
         insert ch_leak
         gmax_ch_leak = 1/RmDend
         cm = CmDend
-    /*    
+        
         for (x,0) {
-            
-            print "hello before distance"
-            len = distance(x)
-            print x, len
-            print "hello after distance"
-            if ( len < 100) {
+            if ( distance(x) < 100) {
                 insert ch_Navcck
                 gmax_ch_Navcck=gNav*.5
                 ena = enaval
@@ -311,7 +304,7 @@ proc insert_mechs() {
                 gmax_ch_KvGroup = gKGroup*2
             }
         }
-    */ 
+    
     }
  
 }
