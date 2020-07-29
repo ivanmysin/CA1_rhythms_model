@@ -1,9 +1,9 @@
+from mpi4py import MPI
 from neuron import h, load_mechanisms
 from neuron.units import ms, mV
 h.nrnmpi_init()
 
 
-from mpi4py import MPI
 import numpy as np
 import matplotlib.pyplot as plt
 import h5py
@@ -41,7 +41,7 @@ def run_simulation(params):
     
     
     pyramidal_sec_list = h.SectionList()
- 
+    is_pyrs_thread = False
     radius_for_pyramids = np.sqrt( params["CellNumbers"]["Npyr"] / params["PyrDencity"] ) / np.pi 
     
     spike_count_obj = []
@@ -105,22 +105,23 @@ def run_simulation(params):
             sec.sigma_IextNoise = 0.0005
             sec.mean_IextNoise = 0.0005
         
-        """
-        for sec in cell.all:
-            pyramidal_sec_list.append(sec)
+        if params["celltypes"][gid] == "pyr":
+            is_pyrs_thread = True
+            for sec in cell.all:
+                pyramidal_sec_list.append(sec)
         
-        pyr_coord_in_layer_x = radius_for_pyramids * 2 * (np.random.rand() - 0.5) # !!!! density of the pyramidal cells  
-        pyr_coord_in_layer_y = radius_for_pyramids * 2 * (np.random.rand() - 0.5) # !!!! density of the pyramidal cells  
+            pyr_coord_in_layer_x = radius_for_pyramids * 2 * (np.random.rand() - 0.5) # !!!! density of the pyramidal cells  
+            pyr_coord_in_layer_y = radius_for_pyramids * 2 * (np.random.rand() - 0.5) # !!!! density of the pyramidal cells  
         
         
-        cell.position(pyr_coord_in_layer_x, 0, pyr_coord_in_layer_y) 
-        """
+            cell.position(pyr_coord_in_layer_x, 0, pyr_coord_in_layer_y) 
+        
         hh_cells.append(cell)
         all_cells.append(cell)
 
 
     
-    """
+    
     # set counters for spike generation
     list_of_celltypes = []
     for cell in hh_cells:
@@ -131,7 +132,7 @@ def run_simulation(params):
         spike_times_vecs.append(fring_vector)
         list_of_celltypes.append(cell.celltype)
 
-    
+    """
     # set connection
     connections = h.List()
     synapses = h.List()
@@ -197,7 +198,7 @@ def run_simulation(params):
             conn.record(fring_vector)
             spike_times_vecs.append(fring_vector)
             list_of_celltypes.append(presynaptic_cell.celltype)
-        
+    """    
         
 
     
@@ -208,43 +209,30 @@ def run_simulation(params):
     
     electrodes = []
     
-    for idx_el in range(Nelecs):
-        le = LfpElectrode(x=el_x[idx_el], y=el_y[idx_el], z=el_z[idx_el], sampling_period=h.dt, sec_list=pyramidal_sec_list)
-        electrodes.append(le)
+    if is_pyrs_thread:
+    
+        for idx_el in range(Nelecs):
+            le = LfpElectrode(x=el_x[idx_el], y=el_y[idx_el], z=el_z[idx_el], sampling_period=h.dt, sec_list=pyramidal_sec_list)
+            electrodes.append(le)
+    else:
+        le = None
     
     
-    
-    
-    # cell1 = all_cells[0]
-    # cell2 = all_cells[1]
-    
-    
- 
-    # stim1 = h.IClamp(0.5, sec=cell1.soma[0])
-    # stim1.dur   = 100
-    # stim1.delay = 0
-    # stim1.amp = 0.5
-
-    # stim2 = h.IClamp(0.5, sec=cell2.soma[0])
-    # stim2.dur   = 100
-    # stim2.delay = 0
-    # stim2.amp = 0.8
-    
+   
     soma_v_vecs = []
     soma_v_cell_idx = []
     
-    for cell_type, list_of_idxes in params["save_soma_v"].items():
+    for cell_type, vect_of_idxes in params["save_soma_v"].items():
         
-        for idx_v in list_of_idxes:
+        for idx_v in vect_of_idxes:
             
-            try:
-                idxinall = list_of_celltypes.index(cell_type)
-            except ValueError:
-                break
+            if np.sum(gid_vect == idx_v) == 0:
+                continue
+            
+            indx_of_cells = int (idx_v % pc.nhost() )
                 
-                
-            cell = all_cells[idxinall + idx_v]
-            soma_v_cell_idx.append(idxinall + idx_v)
+            cell = all_cells[indx_of_cells]
+            soma_v_cell_idx.append(indx_of_cells)
             if cell.celltype == cell_type:
             
                 soma_v = h.Vector()
@@ -255,11 +243,9 @@ def run_simulation(params):
         
     
     # print(len(soma_v_vecs))
+
     
-    """
-    
-    h.finitialize()
-    
+   
     soma1_v = None
     if pc.id() == 0:
         print( len(hh_cells) )
@@ -267,30 +253,25 @@ def run_simulation(params):
         soma1_v = h.Vector()
         soma1_v.record(hh_cells[0].soma[0](0.5)._ref_v)
 
-    # soma2_v = h.Vector()
-    # soma2_v.record(cell2.soma[0](0.5)._ref_v)
-    
-  
 
-    # h.finalize()
     t = h.Vector()
     t.record(h._ref_t)
     
-
+    h.tstop = 50 * ms
     
+    pc.set_maxstep(10 * ms)
+    h.finitialize(-64 * mV)
     pc.barrier()
-    pc.set_maxstep(10)
-    # run simulation
-    pc.psolve(10000) # set the simulation time
-    h.run()
+    pc.psolve(50 * ms)
     pc.barrier()
     
-    
+    print("Hello")
     if pc.id() == 0:
         soma1_v = np.asarray(soma1_v)
         # print(soma1_v)
         plt.plot(t, soma1_v)
-        plt.show()
+        plt.savefig("../../Data/test.png")
+        # plt.show()
     
     
     
