@@ -10,6 +10,29 @@ import h5py
 import os
 import sys
 
+def join_lfp(comm, electrodes):
+    rank = comm.Get_rank()
+
+    lfp_data = []
+    for el in electrodes:
+        if el is None:
+            sended = None
+        else:
+            sended = el.value
+        reseved = comm.gather(sended, root=0)
+        
+        if rank == 0:
+            lfp_el = []
+            for var_tmp in reseved:
+                if not var_tmp is None:
+                    lfp_el.append(var_tmp) 
+    
+            lfp_el = np.vstack(lfp_el)
+            lfp_el = np.sum(lfp_el, axis=0)
+            
+            lfp_data.append(lfp_el)
+    
+    return lfp_data
 
 
 
@@ -209,13 +232,14 @@ def run_simulation(params):
     
     electrodes = []
     
-    if is_pyrs_thread:
     
-        for idx_el in range(Nelecs):
+    
+    for idx_el in range(Nelecs):
+        if is_pyrs_thread:
             le = LfpElectrode(x=el_x[idx_el], y=el_y[idx_el], z=el_z[idx_el], sampling_period=h.dt, sec_list=pyramidal_sec_list)
             electrodes.append(le)
-    else:
-        le = None
+        else:
+            electrodes.append(None)
     
     
    
@@ -273,13 +297,16 @@ def run_simulation(params):
         plt.savefig("../../Data/test.png")
         # plt.show()
     
+    # unite data from all threads to 0 thread
+    comm = MPI.COMM_WORLD
     
+    lfp_data = join_lfp(comm, electrodes)
     
     """
     if params["file_results"] != None:
         with h5py.File(params["file_results"], 'w') as h5file:
             
-            h5file.create_dataset("time", data=t)
+            h5file.create_dataset("time", data = np.asarray(t) )
             
             extracellular_group = h5file.create_group("extracellular")
             ele_group = extracellular_group.create_group('electrode_1')

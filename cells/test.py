@@ -70,6 +70,8 @@ h.v_init = -80
 h.tstop = 250
 h.celsius = 37
 
+
+
 #============================= plotting  function ================================
 def plot_result(t, soma_v, nexus_v, stim_current, syn_current, show_from = 4400):
     t = np.array(t)[show_from:]
