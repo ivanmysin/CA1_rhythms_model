@@ -34,7 +34,21 @@ def join_lfp(comm, electrodes):
     
     return lfp_data
 
+def join_spike_trains(comm, spike_times_vecs, gid_vect):
+    
+    spike_train = []
 
+    all_gid = comm.gather(gid_vect, root=0)
+
+    for sp in spike_times_vecs:
+        reseved = comm.gather(sp, root=0)
+        if rank == 0:
+            spike_train.extend(reseved)
+    
+    if rank == 0:
+        all_gid = np.hstack(all_gid).ravel()
+        spike_train = [x for _, x in sorted(zip(all_gid, spike_train), key=lambda pair: pair[0])]
+    return spike_train
 
 def run_simulation(params):
     pc = h.ParallelContext()
@@ -154,6 +168,8 @@ def run_simulation(params):
         spike_count_obj.append(firing)
         spike_times_vecs.append(fring_vector)
         list_of_celltypes.append(cell.celltype)
+    
+    # тут следует написать NetCon с пустым таргетом и записью спайков
 
     """
     # set connection
@@ -301,6 +317,7 @@ def run_simulation(params):
     comm = MPI.COMM_WORLD
     
     lfp_data = join_lfp(comm, electrodes)
+    spike_trains = join_spike_trains(comm, spike_times_vecs, gid_vect)
     
     """
     if params["file_results"] != None:
