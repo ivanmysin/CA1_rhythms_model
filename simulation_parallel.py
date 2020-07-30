@@ -34,21 +34,24 @@ def join_lfp(comm, electrodes):
     
     return lfp_data
 
-def join_spike_trains(comm, spike_times_vecs, gid_vect):
+def join_vect_lists(comm, vect_list, gid_vect):
     
-    spike_train = []
+    jointed = []
 
     all_gid = comm.gather(gid_vect, root=0)
 
-    for sp in spike_times_vecs:
+    for sp in vect_list:
         reseved = comm.gather(sp, root=0)
         if rank == 0:
-            spike_train.extend(reseved)
+            jointed.extend(reseved)
     
     if rank == 0:
         all_gid = np.hstack(all_gid).ravel()
-        spike_train = [x for _, x in sorted(zip(all_gid, spike_train), key=lambda pair: pair[0])]
-    return spike_train
+        jointed = [x for _, x in sorted(zip(all_gid, jointed), key=lambda pair: pair[0])]
+    return jointed
+
+
+
 
 def run_simulation(params):
     pc = h.ParallelContext()
@@ -83,6 +86,8 @@ def run_simulation(params):
     
     spike_count_obj = []
     spike_times_vecs = []
+    
+    soma_v_vecs = []
     
     
     for gid in gid_vect:
@@ -133,7 +138,12 @@ def run_simulation(params):
         cell = cell_class(gid, 0)
         
         pc.set_gid2node(gid, pc.id())
-        # print("hello")
+        
+        # check is need to save Vm of soma
+        if np.sum(params["save_soma_v"]["vect_idxes"] == gid) == 1:
+            soma_v = h.Vector()
+            soma_v.record(cell.soma[0](0.5)._ref_v)
+            soma_v_vecs.append(soma_v)
         
         
         
@@ -160,14 +170,13 @@ def run_simulation(params):
     
     
     # set counters for spike generation
-    list_of_celltypes = []
     for cell in hh_cells:
         firing = h.APCount(cell.soma[0](0.5))
         fring_vector = h.Vector()
         firing.record(fring_vector)
         spike_count_obj.append(firing)
         spike_times_vecs.append(fring_vector)
-        list_of_celltypes.append(cell.celltype)
+
     
     # тут следует написать NetCon с пустым таргетом и записью спайков
 
@@ -259,32 +268,8 @@ def run_simulation(params):
     
     
    
-    soma_v_vecs = []
-    soma_v_cell_idx = []
-    
-    for cell_type, vect_of_idxes in params["save_soma_v"].items():
-        
-        for idx_v in vect_of_idxes:
-            
-            if np.sum(gid_vect == idx_v) == 0:
-                continue
-            
-            indx_of_cells = int (idx_v % pc.nhost() )
-                
-            cell = all_cells[indx_of_cells]
-            soma_v_cell_idx.append(indx_of_cells)
-            if cell.celltype == cell_type:
-            
-                soma_v = h.Vector()
-                soma_v.record(cell.soma[0](0.5)._ref_v)
-                soma_v_vecs.append(soma_v)
-        
-        #print(cell_type)
-        
-    
-    # print(len(soma_v_vecs))
 
-    
+
    
     soma1_v = None
     if pc.id() == 0:
@@ -293,10 +278,12 @@ def run_simulation(params):
         soma1_v = h.Vector()
         soma1_v.record(hh_cells[0].soma[0](0.5)._ref_v)
 
-
-    t = h.Vector()
-    t.record(h._ref_t)
-    
+    if pc.id() == 0:
+        t_sim = h.Vector()
+        t_sim.record(h._ref_t)
+    else:
+        t_sim = None
+        
     h.tstop = 50 * ms
     
     pc.set_maxstep(10 * ms)
@@ -317,13 +304,14 @@ def run_simulation(params):
     comm = MPI.COMM_WORLD
     
     lfp_data = join_lfp(comm, electrodes)
-    spike_trains = join_spike_trains(comm, spike_times_vecs, gid_vect)
+    spike_trains = join_vect_lists(comm, spike_times_vecs, gid_vect)
+    soma_v_list = join_vect_lists(comm, soma_v_vecs, gid_vect)
     
-    """
-    if params["file_results"] != None:
+    
+    if (pc.id() == 0) and (params["file_results"] != None):
         with h5py.File(params["file_results"], 'w') as h5file:
             
-            h5file.create_dataset("time", data = np.asarray(t) )
+            h5file.create_dataset("time", data = np.asarray(t_sim) )
             
             extracellular_group = h5file.create_group("extracellular")
             ele_group = extracellular_group.create_group('electrode_1')
@@ -333,34 +321,34 @@ def run_simulation(params):
             lfp_group_origin.attrs['SamplingRate'] = 1000 / h.dt   # dt in ms 
             
             
-            for idx_el, el in enumerate(electrodes):
-                lfp_group_origin.create_dataset("channel_" + str(idx_el+1), data = el.values)
+            for idx_el, lfp in enumerate(lfp_data):
+                lfp_group_origin.create_dataset("channel_" + str(idx_el+1), data = lfp)
             
-    
             firing_group = h5file.create_group("extracellular/electrode_1/firing/origin_data")
             
-            for celltype in params["celltypes"]:
+            
+            for celltype in set(params["celltypes"]):
                 cell_friring_group = firing_group.create_group(celltype)
             
             
-                for cell_idx, sp_times in enumerate(spike_times_vecs):
-                    if list_of_celltypes[cell_idx] != celltype:
+                for cell_idx, sp_times in enumerate(spike_trains):
+                    if params["celltypes"][cell_idx] != celltype:
                         continue
                     
                     cell_spikes_dataset = cell_friring_group.create_dataset("neuron_" + str(cell_idx+1), data=sp_times)
-                
+            
     
     
             intracellular_group = h5file.create_group("intracellular")
             intracellular_group_origin = intracellular_group.create_group("origin_data")
             
             for v_idx, soma_v in enumerate(soma_v_vecs):
-                soma_v_dataset = intracellular_group_origin.create_dataset("neuron_" + str(soma_v_cell_idx[v_idx]+1) , data=soma_v)
-                soma_v_dataset.attrs["celltype"] = list_of_celltypes[soma_v_cell_idx[v_idx]]
+                soma_v_dataset = intracellular_group_origin.create_dataset("neuron_" + str(v_idx+1), data=soma_v)
+                soma_v_dataset.attrs["celltype"] = params["celltypes"][params["save_soma_v"]["vect_idxes"][v_idx]]
     
  
     
-        """
+        
     
     pc.done()
     h.quit()

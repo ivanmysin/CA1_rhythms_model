@@ -1,4 +1,4 @@
-
+import numpy as np
 """
 pyr - CA1 piramidal cells
 olm - Oriens-Lacunosum/Moleculare (OLM) Cells
@@ -57,7 +57,7 @@ basic_params = {
         "aac" : [0, ],
         "sca" : [0, ],
     
-    
+        "vect_idxes" : [],
     
     },
 
@@ -127,7 +127,23 @@ basic_params["celltypes"] = cell_types_in_model
 
 
 
-# print(cell_types_in_model)
+save_soma_v_idx = np.empty(shape=0, dtype=np.int)
+for celltype, list_idx in basic_params["save_soma_v"].items(): 
+    
+    
+    indices = [i for i, x in enumerate(basic_params["celltypes"]) if x == celltype]
+    if len(indices) == 0:
+        continue
+
+    indices = np.asarray(indices)
+    list_idx = np.asarray(list_idx)
+    
+    save_soma_v_idx = np.append(save_soma_v_idx, indices[list_idx])
+    
+    
+basic_params["save_soma_v"]["vect_idxes"] = save_soma_v_idx
+
+# print(save_soma_v_idx)
 
 
 
