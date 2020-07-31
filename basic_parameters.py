@@ -39,7 +39,7 @@ basic_params = {
         "Nsca" : 0,
         
         
-        "Nca3" : 2,
+        "Nca3" : 0,
         "Nmec" : 0,
         "Nlec" : 0,
         "Nmsteevracells" : 0,

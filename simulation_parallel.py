@@ -26,16 +26,19 @@ def join_lfp(comm, electrodes):
             for var_tmp in reseved:
                 if not var_tmp is None:
                     lfp_el.append(var_tmp) 
-    
-            lfp_el = np.vstack(lfp_el)
-            lfp_el = np.sum(lfp_el, axis=0)
             
+            if len(lfp_el) > 0:
+                lfp_el = np.vstack(lfp_el)
+                lfp_el = np.sum(lfp_el, axis=0)
+            else:
+                lfp_el = np.zeros(2)
             lfp_data.append(lfp_el)
     
     return lfp_data
 
 def join_vect_lists(comm, vect_list, gid_vect):
-    
+    # Разобраться с этой функцией !!!!!
+    rank = comm.Get_rank()
     jointed = []
 
     all_gid = comm.gather(gid_vect, root=0)
@@ -58,8 +61,11 @@ def run_simulation(params):
     
    
     h.load_file("stdgui.hoc")
+    h.load_file("stdrun.hoc")
     h.load_file("import3d.hoc")
+
     load_mechanisms("./mods/")
+
     # h.cvode.use_fast_imem(1)
 
     sys.path.append("../LFPsimpy/")
@@ -272,7 +278,7 @@ def run_simulation(params):
     else:
         t_sim = None
         
-    # h.tstop = 50 * ms
+    h.tstop = 50 * ms
     
     pc.set_maxstep(10 * ms)
     h.finitialize(-64 * mV)
@@ -280,23 +286,28 @@ def run_simulation(params):
     pc.psolve(50 * ms)
     pc.barrier()
     
-    print("Hello")
+
     if pc.id() == 0:
         soma1_v = np.asarray(soma1_v)
         # print(soma1_v)
-        plt.plot(t, soma1_v)
+        plt.plot(t_sim, soma1_v)
         plt.savefig("../../Data/test.png")
         # plt.show()
     
     # unite data from all threads to 0 thread
     comm = MPI.COMM_WORLD
     
+    print(pc.id(), "Join lfp data")
     lfp_data = join_lfp(comm, electrodes)
+    print(pc.id(), "Join spike train")
     spike_trains = join_vect_lists(comm, spike_times_vecs, gid_vect)
-    soma_v_list = join_vect_lists(comm, soma_v_vecs, gid_vect)
+    print(pc.id(), "Join Vm of soma")
+    print("len of soma_v_vecs",  len(soma_v_vecs) )
+    #soma_v_list = join_vect_lists(comm, soma_v_vecs, gid_vect)
     
-    
+    print(pc.id(), "Start saving results to file")
     if (pc.id() == 0) and (params["file_results"] != None):
+        
         with h5py.File(params["file_results"], 'w') as h5file:
             
             h5file.create_dataset("time", data = np.asarray(t_sim) )

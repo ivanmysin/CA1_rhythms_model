@@ -6,7 +6,7 @@ from neuron import h #  , gui
 h.load_file("stdgui.hoc")
 h.load_file("stdrun.hoc")
 h.load_file("import3d.hoc")
-# h.nrn_load_dll("./mods/x86_64/.libs/libnrnmech.so")
+# h.nrn_load_dll("../mods/x86_64/.libs/libnrnmech.so")
 neuron.load_mechanisms("../mods/")
 
 # from neuron import gui
