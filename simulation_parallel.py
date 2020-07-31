@@ -93,57 +93,75 @@ def run_simulation(params):
     for gid in gid_vect:
        
         if params["celltypes"][gid] == "pyr":
-            cell_class = h.poolosyncell
+            cell = h.poolosyncell(gid, 0)
+            
+            is_pyrs_thread = True
+            for sec in cell.all:
+                pyramidal_sec_list.append(sec)
+        
+            pyr_coord_in_layer_x = radius_for_pyramids * 2 * (np.random.rand() - 0.5) # !!!! density of the pyramidal cells  
+            pyr_coord_in_layer_y = radius_for_pyramids * 2 * (np.random.rand() - 0.5) # !!!! density of the pyramidal cells  
+
+            cell.position(pyr_coord_in_layer_x, 0, pyr_coord_in_layer_y)
         
         elif params["celltypes"][gid] == "pvbas":
-            cell_class = h.pvbasketcell
+            cell = h.pvbasketcell(gid, 0)
         
         elif params["celltypes"][gid] == "olm":
-            cell_class = h.olmcell
+            cell = h.olmcell(gid, 0)
         
         elif params["celltypes"][gid] == "cckbas":
-            cell_class = h.cckcell
+            cell = h.cckcell(gid, 0)
         
         elif params["celltypes"][gid] == "ivy":
-            cell_class = h.ivycell
+            cell = h.ivycell(gid, 0)
         
         elif params["celltypes"][gid] == "ngf":
-            cell_class = h.ngfcell
+            cell = h.ngfcell(gid, 0)
         
         elif params["celltypes"][gid] == "aac":
-            cell_class = h.axoaxoniccell
+            cell = h.axoaxoniccell(gid, 0)
         
         elif params["celltypes"][gid] == "bis":
-            cell_class = h.bistratifiedcell
+            cell= h.bistratifiedcell(gid, 0)
         
         elif params["celltypes"][gid] == "sca":
-            cell_class = h.scacell
+            cell = h.scacell(gid, 0)
         
         elif params["celltypes"][gid] == "ca3":
-            cell_class = h.ArtifitialCell
+            cell = h.ArtifitialCell(gid, 0)
+            cell.celltype = "ca3"
         
         elif params["celltypes"][gid] == "mec":
-            cell_class = h.ArtifitialCell
+            cell = h.ArtifitialCell(gid, 0)
+            cell.celltype = "mec"
         
         elif params["celltypes"][gid] == "lec":
-            cell_class = h.ArtifitialCell
+            cell = h.ArtifitialCell(gid, 0)
+            cell.celltype = "lec"
         
         elif params["celltypes"][gid] == "msteevracells":
-            cell_class = h.ArtifitialCell
+            cell = h.ArtifitialCell(gid, 0)
+            cell.celltype = "msteevracells"
         
         elif params["celltypes"][gid] == "mskomalicells":
-            cell_class = h.ArtifitialCell
+            cell = h.ArtifitialCell(gid, 0)
+            cell.celltype = "mskomalicells"
        
-       
-        cell = cell_class(gid, 0)
         pc.set_gid2node(gid, pc.id())
         
         # set counters for spike generation
-        if cell.is_art() == 1:
+        if cell.is_art() == 0:
+            for sec in cell.all:
+                sec.insert("IextNoise")
+                sec.sigma_IextNoise = 0.0005
+                sec.mean_IextNoise = 0.0005
+            
             firing = h.NetCon(cell.soma[0](0.5)._ref_v, None, sec=cell.soma[0])
             firing.threshold = -40 * mV
+
         else:
-            firing = h.NetCon(cell.acell, None, sec=cell.acell)
+            firing = h.NetCon(cell.acell, None)
         
         pc.cell(gid, firing)
         fring_vector = h.Vector()
@@ -160,23 +178,10 @@ def run_simulation(params):
         
         
         
-        for sec in cell.all:
-            sec.insert("IextNoise")
-            sec.sigma_IextNoise = 0.0005
-            sec.mean_IextNoise = 0.0005
+
+        if cell.is_art() == 0:
+            hh_cells.append(cell)
         
-        if params["celltypes"][gid] == "pyr":
-            is_pyrs_thread = True
-            for sec in cell.all:
-                pyramidal_sec_list.append(sec)
-        
-            pyr_coord_in_layer_x = radius_for_pyramids * 2 * (np.random.rand() - 0.5) # !!!! density of the pyramidal cells  
-            pyr_coord_in_layer_y = radius_for_pyramids * 2 * (np.random.rand() - 0.5) # !!!! density of the pyramidal cells  
-        
-        
-            cell.position(pyr_coord_in_layer_x, 0, pyr_coord_in_layer_y) 
-        
-        hh_cells.append(cell)
         all_cells.append(cell)
 
 
@@ -204,18 +209,13 @@ def run_simulation(params):
                 continue
 
             
-            
-            
+
             if np.random.rand() > conn_data["prob"]:
                 continue
             
             print(conn_name)
             
-            if presynaptic_cell.is_art() == 1:
-                pre_comp = getattr( presynaptic_cell, conn_data["sourse_compartment"] )
-            else:
-                pre_comp = getattr( presynaptic_cell, conn_data["sourse_compartment"] )[-1]
-            
+           
             
             post_comp = np.random.choice( getattr( postsynaptic_cell, conn_data["target_compartment"] ) )
             
@@ -260,7 +260,7 @@ def run_simulation(params):
     
 
     soma1_v = None
-    if pc.id() == 0:
+    if pc.id() == 0 :
         print( len(hh_cells) )
         print( hh_cells[0].celltype )
         soma1_v = h.Vector()
@@ -272,11 +272,11 @@ def run_simulation(params):
     else:
         t_sim = None
         
-    h.tstop = 50 * ms
+    # h.tstop = 50 * ms
     
     pc.set_maxstep(10 * ms)
     h.finitialize(-64 * mV)
-    pc.barrier()
+    # pc.barrier()
     pc.psolve(50 * ms)
     pc.barrier()
     

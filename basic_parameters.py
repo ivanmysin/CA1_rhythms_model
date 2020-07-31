@@ -28,18 +28,18 @@ basic_params = {
     "celltypes" : [],
     
     "CellNumbers" : {
-        "Npyr" : 2,
+        "Npyr" : 0,
         "Npvbas" : 2,
-        "Nolm" : 2,
-        "Ncckbas" : 1,
-        "Nivy" : 2,
+        "Nolm" : 0,
+        "Ncckbas" : 0,
+        "Nivy" : 0,
         "Nngf" : 0,
         "Nbis" : 0,
         "Naac" : 0,
         "Nsca" : 0,
         
         
-        "Nca3" : 0,
+        "Nca3" : 2,
         "Nmec" : 0,
         "Nlec" : 0,
         "Nmsteevracells" : 0,
