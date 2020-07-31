@@ -136,8 +136,21 @@ def run_simulation(params):
        
        
         cell = cell_class(gid, 0)
-        
         pc.set_gid2node(gid, pc.id())
+        
+        # set counters for spike generation
+        if cell.is_art() == 1:
+            firing = h.NetCon(cell.soma[0](0.5)._ref_v, None, sec=cell.soma[0])
+            firing.threshold = -40 * mV
+        else:
+            firing = h.NetCon(cell.acell, None, sec=cell.acell)
+        
+        pc.cell(gid, firing)
+        fring_vector = h.Vector()
+        firing.record(fring_vector)
+        spike_count_obj.append(firing)
+        spike_times_vecs.append(fring_vector)
+        
         
         # check is need to save Vm of soma
         if np.sum(params["save_soma_v"]["vect_idxes"] == gid) == 1:
@@ -169,33 +182,21 @@ def run_simulation(params):
 
     
     
-    # set counters for spike generation
-    for cell in hh_cells:
-        firing = h.APCount(cell.soma[0](0.5))
-        fring_vector = h.Vector()
-        firing.record(fring_vector)
-        spike_count_obj.append(firing)
-        spike_times_vecs.append(fring_vector)
-
-    
-    # тут следует написать NetCon с пустым таргетом и записью спайков
-
-    """
     # set connection
     connections = h.List()
     synapses = h.List()
     
-    for pre_idx, presynaptic_cell in enumerate(all_cells):
-       
-        for post_idx, postsynaptic_cell in enumerate(all_cells):
+    for pre_idx in range(ncells):
+        
+        for post_idx, postsynaptic_cell in enumerate(hh_cells):
             
-            if pre_idx == post_idx:
+            if pre_idx == postsynaptic_cell.gid:
                 continue
                        
             try:
                 
-                conn_name = presynaptic_cell.celltype + "2" + postsynaptic_cell.celltype
-                conn_data = params[conn_name]
+                conn_name = params["celltypes"][pre_idx] + "2" + postsynaptic_cell.celltype
+                conn_data = params["connections"][conn_name]
                 
             except AttributeError:
                 continue
@@ -227,26 +228,17 @@ def run_simulation(params):
             syn.tau1 = conn_data["tau_rise"]
             syn.tau2 = conn_data["tau_decay"]
             
-            if presynaptic_cell.is_art() == 1:
-                conn = h.NetCon(pre_comp, syn, sec=post_comp)
-            else:
-                conn = h.NetCon(pre_comp(1.0)._ref_v, syn, sec=pre_comp) 
-            
+            conn = pc.gid_connect(pre_idx, syn)
             
             # choce synaptic delay and weight from lognormal distribution 
             conn.delay = 0  # np.random.lognormal(mean=np.log(conn_data["delay"]), sigma=conn_data["delay_std"])   
             conn.weight[0] = conn_data["gmax"] # np.random.lognormal(mean=np.log(conn_data["gmax"]), sigma=conn_data["gmax_std"]) 
 
+            
             connections.append(conn)
             synapses.append(syn)
             
-        if (presynaptic_cell.is_art() == 1):
-        
-            fring_vector = h.Vector()
-            conn.record(fring_vector)
-            spike_times_vecs.append(fring_vector)
-            list_of_celltypes.append(presynaptic_cell.celltype)
-    """    
+    
         
 
     
@@ -266,11 +258,7 @@ def run_simulation(params):
         else:
             electrodes.append(None)
     
-    
-   
 
-
-   
     soma1_v = None
     if pc.id() == 0:
         print( len(hh_cells) )
