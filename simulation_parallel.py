@@ -284,16 +284,16 @@ def run_simulation(params):
     else:
         t_sim = None
         
-    h.tstop = 20 * ms
+    h.tstop = params["duration"] * ms
     
     
     pc.set_maxstep(10 * ms)
     h.finitialize()
     
     pc.barrier()
-    print("Before simulation")
-    pc.psolve(20 * ms)
-    print("After simulation")
+    # sprint("Before simulation")
+    pc.psolve(params["duration"] * ms)
+    # print("After simulation")
     pc.barrier()
     
     
