@@ -272,7 +272,7 @@ def get_phase_disrtibution(train, lfp, fs):
     analitic_signal = sig.hilbert(lfp)
     lfp_phases = np.angle(analitic_signal, deg=False)
     lfp_ampls = np.abs(analitic_signal)
-
+    
     train = np.round(train * fs * 0.001).astype(np.int) # multiply on 0.001 because train in ms, fs in Hz 
 
     train_phases = lfp_phases[train]

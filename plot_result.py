@@ -13,7 +13,7 @@ def plot_v(filepath):
         intracell_keys = intracellular_group.keys()
         
         
-        fig, axes = plt.subplots(nrows=len(intracell_keys))
+        fig, axes = plt.subplots(nrows=len(intracell_keys) )
         
         for idx, key in enumerate(intracell_keys):
             v = intracellular_group[key][:]
@@ -37,9 +37,9 @@ def plot_spike_raster(filepath):
         
         for sp_idx, key in enumerate(uniq_celltypes):
             for cell_key, firing in raster_group[key].items():
-                celltype_idx = int(cell_key.split("_")[-1])
+                # celltype_idx = int(cell_key.split("_")[-1])
             
-                axes[celltype_idx].scatter(firing,  np.zeros(firing.size) + sp_idx + 1, color="b", s=1 )
+                axes[sp_idx].scatter(firing,  np.zeros(firing.size) + sp_idx + 1, color="b", s=1 )
         
         
         
@@ -62,7 +62,7 @@ def plot_lfp(filepath):
         fig, axes = plt.subplots(nrows=len(lfp_keys))
 
         for key_idx, key in enumerate(lfp_keys):
-            axes[key_idx].plot(t[1:-1], lfp_group[key][:], label=key )
+            axes[key_idx].plot(t[1:], lfp_group[key][:], label=key )
             axes[key_idx].legend()
         
         
@@ -91,13 +91,13 @@ def plot_phase_disrtibution(filepath):
 
 
 
+if __name__ == "__main__":
+    path = basic_params["file_results"]   #"/home/ivan/Data/CA1_simulation/test.hdf5"
 
-path = "/home/ivan/Data/CA1_simulation/test.hdf5"
-
-# plot_v(path)
-# plot_spike_raster(path)
-# plot_lfp(path)
-plot_phase_disrtibution(path)
+    plot_v(path)
+    plot_spike_raster(path)
+    plot_lfp(path)
+    plot_phase_disrtibution(path)
 
 
 

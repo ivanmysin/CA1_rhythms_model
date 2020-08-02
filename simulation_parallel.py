@@ -11,6 +11,7 @@ import os
 import sys
 
 def join_lfp(comm, electrodes):
+    print("Hello from join lfp!")
     rank = comm.Get_rank()
 
     lfp_data = []
@@ -18,7 +19,7 @@ def join_lfp(comm, electrodes):
         if el is None:
             sended = None
         else:
-            sended = el.value
+            sended = el.values
         reseved = comm.gather(sended, root=0)
         
         if rank == 0:
@@ -26,6 +27,7 @@ def join_lfp(comm, electrodes):
             for var_tmp in reseved:
                 if not var_tmp is None:
                     lfp_el.append(var_tmp) 
+            
             
             if len(lfp_el) > 0:
                 lfp_el = np.vstack(lfp_el)
@@ -62,11 +64,12 @@ def join_vect_lists(comm, vect_list, gid_vect):
 def run_simulation(params):
     pc = h.ParallelContext()
     
-   
+    # pc.timeout(0)
     h.load_file("stdgui.hoc")
     h.load_file("stdrun.hoc")
     h.load_file("import3d.hoc")
-
+    pc.timeout(20)
+    
     load_mechanisms("./mods/")
 
     h.cvode.use_fast_imem(1)
@@ -249,7 +252,7 @@ def run_simulation(params):
             
     
         
-
+    
     
     Nelecs = params["Nelecs"]
     el_x = np.zeros(Nelecs)
@@ -281,15 +284,19 @@ def run_simulation(params):
     else:
         t_sim = None
         
-    h.tstop = 50 * ms
+    h.tstop = 20 * ms
+    
     
     pc.set_maxstep(10 * ms)
     h.finitialize()
-    # pc.barrier()
-    pc.psolve(50 * ms)
+    
+    pc.barrier()
+    print("Before simulation")
+    pc.psolve(20 * ms)
+    print("After simulation")
     pc.barrier()
     
-
+    
     # if pc.id() == 0:
     #    soma1_v = np.asarray(soma1_v)
     #    # print(soma1_v)
