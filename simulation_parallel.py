@@ -240,7 +240,7 @@ def run_simulation(params):
             conn = pc.gid_connect(pre_idx, syn)
             
             # choce synaptic delay and weight from lognormal distribution 
-            conn.delay = 0  # np.random.lognormal(mean=np.log(conn_data["delay"]), sigma=conn_data["delay_std"])   
+            conn.delay = 1.0  # np.random.lognormal(mean=np.log(conn_data["delay"]), sigma=conn_data["delay_std"])   
             conn.weight[0] = conn_data["gmax"] # np.random.lognormal(mean=np.log(conn_data["gmax"]), sigma=conn_data["gmax_std"]) 
 
             
@@ -268,12 +268,12 @@ def run_simulation(params):
             electrodes.append(None)
     
 
-    soma1_v = None
-    if pc.id() == 0 :
-        print( len(hh_cells) )
-        print( hh_cells[0].celltype )
-        soma1_v = h.Vector()
-        soma1_v.record(hh_cells[0].soma[0](0.5)._ref_v)
+    # soma1_v = None
+    # if pc.id() == 0 :
+        # print( len(hh_cells) )
+        # print( hh_cells[0].celltype )
+        # soma1_v = h.Vector()
+        # soma1_v.record(hh_cells[0].soma[0](0.5)._ref_v)
 
     if pc.id() == 0:
         t_sim = h.Vector()

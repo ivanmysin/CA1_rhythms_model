@@ -28,22 +28,22 @@ basic_params = {
     "celltypes" : [],
     
     "CellNumbers" : {
-        "Npyr" : 1,
-        "Npvbas" : 2,
-        "Nolm" : 1,
-        "Ncckbas" : 1,
-        "Nivy" : 1,
-        "Nngf" : 1,
-        "Nbis" : 1,
-        "Naac" : 1,
-        "Nsca" : 1,
+        "Npyr" : 0,
+        "Npvbas" : 1,
+        "Nolm" : 0,
+        "Ncckbas" : 0,
+        "Nivy" : 0,
+        "Nngf" : 0,
+        "Nbis" : 0,
+        "Naac" : 0,
+        "Nsca" : 0,
         
         
-        "Nca3" : 0,
-        "Nmec" : 0,
-        "Nlec" : 0,
-        "Nmsteevracells" : 0,
-        "Nmskomalicells" : 0,
+        "Nca3" : 1,
+        "Nmec" : 1,
+        "Nlec" : 1,
+        "Nmsteevracells" : 1,
+        "Nmskomalicells" : 1,
     },
     
     "save_soma_v" : {

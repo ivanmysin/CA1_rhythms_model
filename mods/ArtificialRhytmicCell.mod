@@ -28,8 +28,7 @@ ASSIGNED {
     randflag
     freqs_mega_hz
     oscillator_normolizer
-    
-    
+ 
 }
 
 
@@ -37,15 +36,13 @@ INITIAL {
     
     freqs_mega_hz = freqs * 0.001 : freqs need recalculate to megaHz because t in ms
     oscillator_normolizer = 0.5 * (maxProb - minProb)
-    net_send(0, 2)
+    
+    net_send(1, 2)
     set_seed(myseed)
 }
 
 
 NET_RECEIVE (w) {
-
-
-
     :generate randomflag between 0 and 1
     randflag = scop_random() 
     
