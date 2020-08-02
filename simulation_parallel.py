@@ -37,20 +37,23 @@ def join_lfp(comm, electrodes):
     return lfp_data
 
 def join_vect_lists(comm, vect_list, gid_vect):
-    # Разобраться с этой функцией !!!!!
     rank = comm.Get_rank()
     jointed = []
-
     all_gid = comm.gather(gid_vect, root=0)
+    reseved = comm.gather(vect_list, root=0)
 
-    for sp in vect_list:
-        reseved = comm.gather(sp, root=0)
-        if rank == 0:
-            jointed.extend(reseved)
-    
     if rank == 0:
+        
+        for rev in reseved:
+            if len(rev) > 0:
+                jointed.extend(rev)
         all_gid = np.hstack(all_gid).ravel()
         jointed = [x for _, x in sorted(zip(all_gid, jointed), key=lambda pair: pair[0])]
+        
+        
+        for idx in range(len(jointed)):
+            jointed[idx] = np.asarray(jointed[idx])
+        
     return jointed
 
 
@@ -302,12 +305,12 @@ def run_simulation(params):
     print(pc.id(), "Join spike train")
     spike_trains = join_vect_lists(comm, spike_times_vecs, gid_vect)
     print(pc.id(), "Join Vm of soma")
-    print("len of soma_v_vecs",  len(soma_v_vecs) )
-    #soma_v_list = join_vect_lists(comm, soma_v_vecs, gid_vect)
+    #  print("len of soma_v_vecs",  len(soma_v_vecs) )
+    soma_v_list = join_vect_lists(comm, soma_v_vecs, gid_vect)
     
     print(pc.id(), "Start saving results to file")
     if (pc.id() == 0) and (params["file_results"] != None):
-        
+        print( soma_v_list[0] )
         with h5py.File(params["file_results"], 'w') as h5file:
             
             h5file.create_dataset("time", data = np.asarray(t_sim) )
@@ -341,7 +344,7 @@ def run_simulation(params):
             intracellular_group = h5file.create_group("intracellular")
             intracellular_group_origin = intracellular_group.create_group("origin_data")
             
-            for v_idx, soma_v in enumerate(soma_v_vecs):
+            for v_idx, soma_v in enumerate(soma_v_list):
                 soma_v_dataset = intracellular_group_origin.create_dataset("neuron_" + str(v_idx+1), data=soma_v)
                 soma_v_dataset.attrs["celltype"] = params["celltypes"][params["save_soma_v"]["vect_idxes"][v_idx]]
     
