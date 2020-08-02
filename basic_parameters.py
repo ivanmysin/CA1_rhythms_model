@@ -23,20 +23,20 @@ basic_params = {
     "Nelecs" : 3,      # number of electrodes
     "PyrDencity" : 0.2, # pyramidal cells / micrometer^2
     
-    "file_results":  "/home/ivan/Data/CA1_simulation/test.hdf5", # None, #
+    "file_results":  "../../Data/CA1_simulation/test.hdf5", # None, #
     
     "celltypes" : [],
     
     "CellNumbers" : {
-        "Npyr" : 0,
+        "Npyr" : 1,
         "Npvbas" : 2,
-        "Nolm" : 0,
-        "Ncckbas" : 0,
-        "Nivy" : 0,
-        "Nngf" : 0,
-        "Nbis" : 0,
-        "Naac" : 0,
-        "Nsca" : 0,
+        "Nolm" : 1,
+        "Ncckbas" : 1,
+        "Nivy" : 1,
+        "Nngf" : 1,
+        "Nbis" : 1,
+        "Naac" : 1,
+        "Nsca" : 1,
         
         
         "Nca3" : 0,

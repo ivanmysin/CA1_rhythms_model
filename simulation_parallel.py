@@ -69,7 +69,7 @@ def run_simulation(params):
 
     load_mechanisms("./mods/")
 
-    # h.cvode.use_fast_imem(1)
+    h.cvode.use_fast_imem(1)
 
     sys.path.append("../LFPsimpy/")
     from LFPsimpy import LfpElectrode
@@ -284,33 +284,33 @@ def run_simulation(params):
     h.tstop = 50 * ms
     
     pc.set_maxstep(10 * ms)
-    h.finitialize(-64 * mV)
+    h.finitialize()
     # pc.barrier()
     pc.psolve(50 * ms)
     pc.barrier()
     
 
-    if pc.id() == 0:
-        soma1_v = np.asarray(soma1_v)
-        # print(soma1_v)
-        plt.plot(t_sim, soma1_v)
-        plt.savefig("../../Data/test.png")
-        # plt.show()
+    # if pc.id() == 0:
+    #    soma1_v = np.asarray(soma1_v)
+    #    # print(soma1_v)
+    #    plt.plot(t_sim, soma1_v)
+    #    plt.savefig("../../Data/test.png")
+    #    # plt.show()
     
     # unite data from all threads to 0 thread
     comm = MPI.COMM_WORLD
     
-    print(pc.id(), "Join lfp data")
+    # print(pc.id(), "Join lfp data")
     lfp_data = join_lfp(comm, electrodes)
-    print(pc.id(), "Join spike train")
+    # print(pc.id(), "Join spike train")
     spike_trains = join_vect_lists(comm, spike_times_vecs, gid_vect)
-    print(pc.id(), "Join Vm of soma")
+    # print(pc.id(), "Join Vm of soma")
     #  print("len of soma_v_vecs",  len(soma_v_vecs) )
     soma_v_list = join_vect_lists(comm, soma_v_vecs, gid_vect)
     
-    print(pc.id(), "Start saving results to file")
+    # print(pc.id(), "Start saving results to file")
     if (pc.id() == 0) and (params["file_results"] != None):
-        print( soma_v_list[0] )
+
         with h5py.File(params["file_results"], 'w') as h5file:
             
             h5file.create_dataset("time", data = np.asarray(t_sim) )

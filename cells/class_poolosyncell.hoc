@@ -734,7 +734,7 @@ proc define_synapses() {
     i = 0
 
     access soma[0]
-    {distance()}
+    distance()
 
     for celltype = 0, numCellTypes-1 {
         templist = new List ()
