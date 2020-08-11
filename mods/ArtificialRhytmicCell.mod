@@ -3,7 +3,7 @@
 
 NEURON  { 
   ARTIFICIAL_CELL ArtificialRhytmicCell
-  RANGE freqs, latency, maxProb, minProb, phase0, myseed
+  RANGE freqs, latency, mu, kappa, I0, myseed, delta_t
 }
 
 UNITS {
@@ -14,50 +14,65 @@ UNITS {
 PARAMETER {
     freqs = 5 (Hz)    : frequency of oscillator in Hz
     latency = 10 (ms) : latency of spike generation
-    phase0 = 0        : initial phase of oscillator
-    minProb = 0.2  <0, 1>   : probability of spike generation in the minima of the oscillator 
-    maxProb = 0.8  <0, 1>   : probability of spike generation in the maxima of the oscillator
+    
+    kappa = 0.4       : kappa of von Mises distribution
+    I0 = 1.04         : zero order Bessel function 
+    mu = 0            : mean phase of von Mises distribution
+    
+    
+    delta_t = 1 (ms)
     myseed = 0
     
    
 }
 
 ASSIGNED {
-    oscillator
     randflag
-    freqs_mega_hz
-    oscillator_normolizer
     time_after_spike (ms)
     dt (ms)
+    phase
+    TWOPIIO
+    pdf
+    delta_phase
  
 }
 
 
 INITIAL {
+    set_seed(myseed)
+    phase = 0 
     
-    freqs_mega_hz = freqs * 0.001 : freqs need recalculate to megaHz because t in ms
-    oscillator_normolizer = 0.5 * (maxProb - minProb)
+    delta_phase = freqs * 2 * PI * 0.001 * delta_t      : rad
     
+
+    TWOPIIO = 2 * PI * I0
     time_after_spike = latency + 1
     net_send(1, 2)
-    set_seed(myseed)
+    
 }
 
 
 NET_RECEIVE (w) {
     :generate randomflag between 0 and 1
+    
+    pdf = exp(kappa * cos(phase - mu) ) / TWOPIIO * delta_phase
+    
+    phase = phase + delta_phase
     randflag = scop_random() 
-    oscillator = oscillator_normolizer * (cos(2 * PI * freqs_mega_hz * t + phase0) + 1) + minProb
-
-    if (randflag < oscillator && time_after_spike > latency) { : generate spike
-        net_send(1, 1)
+    
+    if (randflag < pdf  && time_after_spike > latency) {
+        : generate spike
+        net_send(delta_t, 1)
         net_event(t)
         time_after_spike = 0
+    
     } else {
-        time_after_spike = time_after_spike + dt
-        net_send(1, 1)
+        time_after_spike = time_after_spike + delta_t
+        net_send(delta_t, 1)
+    
     }
     
     
+  
 
 }
