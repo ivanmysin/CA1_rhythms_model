@@ -3,7 +3,7 @@
 
 NEURON  { 
   ARTIFICIAL_CELL ArtificialRhytmicCell
-  RANGE freqs, latency, mu, kappa, I0, myseed, delta_t
+  RANGE freqs, latency, mu, kappa, I0, myseed, delta_t, spike_rate
 }
 
 UNITS {
@@ -14,6 +14,7 @@ UNITS {
 PARAMETER {
     freqs = 5 (Hz)    : frequency of oscillator in Hz
     latency = 10 (ms) : latency of spike generation
+    spike_rate = 5    : spike rate in spikes per second
     
     kappa = 0.4       : kappa of von Mises distribution
     I0 = 1.04         : zero order Bessel function 
@@ -31,10 +32,10 @@ ASSIGNED {
     time_after_spike (ms)
     dt (ms)
     phase
-    TWOPIIO
+    TWOPIIODFIRATIO
     pdf
     delta_phase
- 
+    freqs_ratio
 }
 
 
@@ -42,10 +43,10 @@ INITIAL {
     set_seed(myseed)
     phase = 0 
     
-    delta_phase = freqs * 2 * PI * 0.001 * delta_t      : rad
-    
+    delta_phase = freqs * 2 * PI * 0.001 * delta_t    : rad
+    freqs_ratio = spike_rate / freqs                  : spikes per cycle of oscillation
 
-    TWOPIIO = 2 * PI * I0
+    TWOPIIODFIRATIO = delta_phase * freqs_ratio / (2 * PI * I0)
     time_after_spike = latency + 1
     net_send(1, 2)
     
@@ -53,12 +54,12 @@ INITIAL {
 
 
 NET_RECEIVE (w) {
-    :generate randomflag between 0 and 1
     
-    pdf = exp(kappa * cos(phase - mu) ) / TWOPIIO * delta_phase
     
+    pdf = exp(kappa * cos(phase - mu) ) * TWOPIIODFIRATIO 
     phase = phase + delta_phase
-    randflag = scop_random() 
+
+    randflag = scop_random() :generate randomflag between 0 and 1
     
     if (randflag < pdf  && time_after_spike > latency) {
         : generate spike
