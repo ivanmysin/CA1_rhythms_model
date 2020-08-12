@@ -29,7 +29,7 @@ basic_params = {
     "celltypes" : [],
     
     "CellNumbers" : {
-        "Npyr" : 1,
+        "Npyr" : 1,    # 
         "Npvbas" : 1,
         "Nolm" : 0,
         "Ncckbas" : 0,

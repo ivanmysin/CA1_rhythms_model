@@ -36,11 +36,16 @@ elif Rsetted >= 0.53 and Rsetted < 0.85:
 elif Rsetted >= 0.85:
     kappa = 1 / (3*Rsetted - 4*Rsetted**2 + Rsetted**3)
 
-print(kappa)
+
 
 I0 = bessel(kappa)
-print(I0)
 
+mu = 0
+fi = np.linspace(-np.pi, np.pi, 1000, endpoint=True)
+dfi = fi[1] - fi[0]
+pdf = np.exp(kappa * np.cos(fi - mu) ) / (2 * np.pi * I0) 
+
+print( np.sum(pdf) * dfi)
 
 """
 mu = -2.5
