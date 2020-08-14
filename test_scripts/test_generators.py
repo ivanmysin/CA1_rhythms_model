@@ -6,20 +6,11 @@ import sys
 
 sys.path.append("../")
 import presimulation_lib as prelib
+from basic_parameters import basic_params
 
 
 ###### parameters block ############
-
 dur = 1500
-delay_mean = np.log(1)
-delay_sigma = 0.5
-
-gmax_mean = np.log(0.001)
-gmax_sigma = 0.5
-
-Rgens = 0.6  # Ray length of generators
-kappa, I0 = prelib.r2kappa(Rgens)
-
 
 #####################################
 
@@ -33,8 +24,6 @@ for cellfile in os.listdir("../cells/"):
     _, ext = os.path.splitext(cellfile)
     if ext != ".hoc": continue
     h.load_file("../cells/" + cellfile)
-       
-
 
 cell = h.poolosyncell(0, 0)
 
@@ -44,44 +33,112 @@ for sec in cell.all:
     sec.mean_IextNoise = 0.0
 
 
-post_comp = cell.soma[0]
+
 generators = []
 synapses = []
 connections = []
 
-len_radlist = sum([1 for _ in cell.rad_list])
 
-for idx in range(100):
-    
-    post_idx = np.random.randint(0, len_radlist-1)
-    
-    for idx, post_comp in enumerate(cell.rad_list):
-        if idx == post_idx: break
-    
-    
-    gen = h.ArtifitialCell(0, 0)
-    gen.acell.mu = np.pi
-    gen.acell.latency = 1
-    gen.acell.freqs = 5
-    gen.acell.spike_rate = 5
-    gen.acell.kappa = kappa
-    gen.acell.I0 = I0
 
-    syn = h.Exp2Syn( post_comp(0.5) ) 
-    syn.e = 0       #  conn_data["Erev"]
-    syn.tau1 = 0.5  # conn_data["tau_rise"]
-    syn.tau2 = 2.5  # conn_data["tau_decay"]
-    
-    conn = h.NetCon(gen.acell, syn, sec=post_comp)
-            
-    conn.delay = RNG.lognormal(delay_mean, delay_sigma)    # np.random.lognormal(mean=np.log(conn_data["delay"]), sigma=conn_data["delay_std"])   
-    conn.weight[0] = RNG.lognormal(gmax_mean, gmax_sigma)  # conn_data["gmax"] 
-    
-    
-    generators.append(gen)
-    synapses.append(syn)
-    connections.append(conn)
+# connections from ca3 to pyramids
+conndata = basic_params["connections"]["ca32pyr"]
+pre_name = "ca3"
+post_name = "rad_list"
+phase = 1.5
+gen_syns_conn = prelib.set_test_connections(h, conndata, pre_name, phase, cell, basic_params)
 
+generators.extend(gen_syns_conn[0])
+synapses.extend(gen_syns_conn[1])
+connections.extend(gen_syns_conn[2]) 
+
+
+
+# connections from mec to pyramids
+conndata = basic_params["connections"]["mec2pyr"]
+pre_name = "mec"
+phase = 0.0
+gen_syns_conn = prelib.set_test_connections(h, conndata, pre_name, phase, cell, basic_params)
+
+generators.extend(gen_syns_conn[0])
+synapses.extend(gen_syns_conn[1])
+connections.extend(gen_syns_conn[2]) 
+
+
+# connections from pvbas to pyramids
+conndata = basic_params["connections"]["pvbas2pyr"]
+pre_name = "pvbas"
+phase = 1.5
+gen_syns_conn = prelib.set_test_connections(h, conndata, pre_name, phase, cell, basic_params)
+
+generators.extend(gen_syns_conn[0])
+synapses.extend(gen_syns_conn[1])
+connections.extend(gen_syns_conn[2]) 
+
+
+# connections from cckbas to pyramids
+conndata = basic_params["connections"]["cckbas2pyr"]
+pre_name = "cckbas"
+phase = -1.5
+gen_syns_conn = prelib.set_test_connections(h, conndata, pre_name, phase, cell, basic_params)
+
+generators.extend(gen_syns_conn[0])
+synapses.extend(gen_syns_conn[1])
+connections.extend(gen_syns_conn[2]) 
+
+
+# connections from olm to pyramids
+conndata = basic_params["connections"]["olm2pyr"]
+pre_name = "olm"
+phase = 3.14
+gen_syns_conn = prelib.set_test_connections(h, conndata, pre_name, phase, cell, basic_params)
+
+generators.extend(gen_syns_conn[0])
+synapses.extend(gen_syns_conn[1])
+connections.extend(gen_syns_conn[2]) 
+
+
+# connections from axo to pyramids
+conndata = basic_params["connections"]["axo2pyr"]
+pre_name = "axo"
+phase = 0.0   # !!!!!!!
+gen_syns_conn = prelib.set_test_connections(h, conndata, pre_name, phase, cell, basic_params)
+
+generators.extend(gen_syns_conn[0])
+synapses.extend(gen_syns_conn[1])
+connections.extend(gen_syns_conn[2]) 
+
+
+# connections from ivy to pyramids
+conndata = basic_params["connections"]["ivy2pyr"]
+pre_name = "ivy"
+phase = -2.63   # !!!!!!!
+gen_syns_conn = prelib.set_test_connections(h, conndata, pre_name, phase, cell, basic_params)
+
+generators.extend(gen_syns_conn[0])
+synapses.extend(gen_syns_conn[1])
+connections.extend(gen_syns_conn[2]) 
+
+
+# connections from ngf to pyramids
+conndata = basic_params["connections"]["ngf2pyr"]
+pre_name = "ngf"
+phase = 0.0   # !!!!!!!
+gen_syns_conn = prelib.set_test_connections(h, conndata, pre_name, phase, cell, basic_params)
+
+generators.extend(gen_syns_conn[0])
+synapses.extend(gen_syns_conn[1])
+connections.extend(gen_syns_conn[2]) 
+
+
+# connections from bis to pyramids
+conndata = basic_params["connections"]["bis2pyr"]
+pre_name = "bis"
+phase = 3.14   # !!!!!!!
+gen_syns_conn = prelib.set_test_connections(h, conndata, pre_name, phase, cell, basic_params)
+
+generators.extend(gen_syns_conn[0])
+synapses.extend(gen_syns_conn[1])
+connections.extend(gen_syns_conn[2]) 
 
 
 

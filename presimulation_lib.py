@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.special import i0 as bessel
 
-
+RNG = np.random.default_rng()
 
 def r2kappa(R):
     if R < 0.53:
@@ -18,3 +18,72 @@ def r2kappa(R):
     I0 = bessel(kappa)
 
     return kappa, I0
+
+
+
+def set_test_connections(h, conndata, pre_name, phase, cell, basic_params):
+    
+    generators = []
+    synapses = []
+    connections = []
+    
+    
+    Rgens = 0.4  # Ray length of generators
+    kappa, I0 = r2kappa(Rgens)
+    
+    Nsourses = int( basic_params["CellNumbers"]["N"+pre_name] * conndata["prob"] )
+
+    delay_mean = np.log(conndata["delay"])
+    delay_sigma = conndata["delay_std"]
+
+    gmax_mean = np.log(conndata["gmax"])
+    gmax_sigma = conndata["gmax_std"]
+    
+    post_name = conndata["target_compartment"]
+    
+    post_list = getattr(cell, post_name)
+    len_postlist = sum([1 for _ in post_list])
+    
+    
+    for idx in range(Nsourses):
+    
+        post_idx = np.random.randint(0, len_postlist-1)
+        for idx, post_comp_tmp in enumerate(post_list):
+            if idx == post_idx: post_comp = post_comp_tmp
+        
+        
+        gen = h.ArtifitialCell(0, 0)
+        gen.acell.mu = np.pi
+        gen.acell.latency = 1
+        gen.acell.freqs = 5
+        gen.acell.spike_rate = 5
+        gen.acell.kappa = kappa
+        gen.acell.I0 = I0
+
+        syn = h.Exp2Syn( post_comp(0.5) ) 
+        syn.e = conndata["Erev"]
+        syn.tau1 = conndata["tau_rise"]
+        syn.tau2 = conndata["tau_decay"]
+            
+        conn = h.NetCon(gen.acell, syn, sec=post_comp)
+                    
+        conn.delay = RNG.lognormal(delay_mean, delay_sigma)  
+        conn.weight[0] = RNG.lognormal(gmax_mean, gmax_sigma)  
+            
+            
+        generators.append(gen)
+        synapses.append(syn)
+        connections.append(conn)
+    
+    
+    
+    return generators, synapses, connections
+    
+    
+    
+    
+    
+    
+    
+    
+    

@@ -7,7 +7,7 @@ cckbas - cholecystokinin positive basket cells
 ivy - Ivy cells
 ngf - neurogliaform cells
 bis - bistratifered cells
-aac - axo-axonal cells
+axo - axo-axonal cells
 csa - Schaffer collateral-associated cells
 
 
@@ -36,7 +36,7 @@ basic_params = {
         "Nivy" :    260,
         "Nngf" :    130,
         "Nbis" :    70,
-        "Naac" :    60,
+        "Naxo" :    60,
         "Nsca" :    40,
         
         
@@ -55,7 +55,7 @@ basic_params = {
         "ivy" : [0, ],
         "ngf" : [0, ],
         "bis" : [0, ],
-        "aac" : [0, ],
+        "axo" : [0, ],
         "sca" : [0, ],
     
         "vect_idxes" : [],
@@ -64,7 +64,41 @@ basic_params = {
 
 
     "connections" : {
-    
+        "ca32pyr": {
+            "gmax": 0.016,
+            "gmax_std" : 0.002,
+            
+            "Erev": 0,
+            "tau_rise": 0.5,
+            "tau_decay": 3,
+
+            "prob": 0.06,
+            
+            "delay": 1.5,
+            "delay_std" : 0.5,
+            
+
+            "sourse_compartment" : "acell",
+            "target_compartment" : "rad_list",
+        },
+        
+       "mec2pyr": {
+            "gmax": 0.06,
+            "gmax_std" : 0.007,
+            
+            "Erev": 0,
+            "tau_rise": 0.5,
+            "tau_decay": 3,
+
+            "prob": 0.4,
+            
+            "delay": 10,
+            "delay_std" : 2,
+            
+
+            "sourse_compartment" : "acell",
+            "target_compartment" : "lm_list",
+        },
         "pyr2pyr": {
             "gmax": 0.01,
             "gmax_std" : 0.007,
@@ -319,41 +353,7 @@ basic_params = {
             "target_compartment" : "rad_list",
         },
         
-       "ca32pyr": {
-            "gmax": 0.016,
-            "gmax_std" : 0.002,
-            
-            "Erev": 0,
-            "tau_rise": 0.5,
-            "tau_decay": 3,
 
-            "prob": 0.06,
-            
-            "delay": 1.5,
-            "delay_std" : 0.5,
-            
-
-            "sourse_compartment" : "acell",
-            "target_compartment" : "rad_list",
-        },
-        
-       "mec2pyr": {
-            "gmax": 0.06,
-            "gmax_std" : 0.007,
-            
-            "Erev": 0,
-            "tau_rise": 0.5,
-            "tau_decay": 3,
-
-            "prob": 0.4,
-            
-            "delay": 10,
-            "delay_std" : 2,
-            
-
-            "sourse_compartment" : "acell",
-            "target_compartment" : "lm_list",
-        },
         
        "ca32axo": {
             "gmax": 0.7,
@@ -419,7 +419,7 @@ basic_params = {
 
             "prob": 0.38,
             
-            "delay": 4.5
+            "delay": 4.5,
             "delay_std" : 2.0,
             
 
@@ -501,7 +501,7 @@ basic_params = {
              
        "olm2sca": {
             "gmax": 1.3,
-            "gmax_std" 0.6: ,
+            "gmax_std" : 0.6,
             
             "Erev": -75,
             "tau_rise": 0.07,
@@ -626,8 +626,7 @@ basic_params["celltypes"] = cell_types_in_model
 
 save_soma_v_idx = np.empty(shape=0, dtype=np.int)
 for celltype, list_idx in basic_params["save_soma_v"].items(): 
-    
-    
+
     indices = [i for i, x in enumerate(basic_params["celltypes"]) if x == celltype]
     if len(indices) == 0:
         continue
@@ -640,7 +639,16 @@ for celltype, list_idx in basic_params["save_soma_v"].items():
     
 basic_params["save_soma_v"]["vect_idxes"] = save_soma_v_idx
 
-# print(save_soma_v_idx)
+
+for conn_data in basic_params["connections"].values():
+    
+    conn_data["gmax"] *= 0.001       # recalulate nS to micromhos 
+    conn_data["gmax_std"] *= 0.001
+
+    conn_data["delay"] += 1.5        # add delay on spike generation
+
+
+# print(basic_params["connections"]["ca32pyr"])
 
 
 
