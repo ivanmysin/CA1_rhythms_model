@@ -27,12 +27,21 @@ def set_test_connections(h, conndata, pre_name, phase, cell, basic_params):
     synapses = []
     connections = []
     
+    # Ray length of generators
+    try:
+        Rgens = basic_params[pre_name]["R"]
+        freqs = basic_params[pre_name]["freqs"]
+        spike_rate = basic_params[pre_name]["spike_rate"]
+    except KeyError: 
+        Rgens = 0.4
+        freqs = 5
+        spike_rate = 5
     
-    Rgens = 0.4  # Ray length of generators
     kappa, I0 = r2kappa(Rgens)
     
     Nsourses = int( basic_params["CellNumbers"]["N"+pre_name] * conndata["prob"] )
 
+    
     delay_mean = np.log(conndata["delay"])
     delay_sigma = conndata["delay_std"]
 
@@ -53,7 +62,7 @@ def set_test_connections(h, conndata, pre_name, phase, cell, basic_params):
         
         
         gen = h.ArtifitialCell(0, 0)
-        gen.acell.mu = np.pi
+        gen.acell.mu = phase
         gen.acell.latency = 1
         gen.acell.freqs = 5
         gen.acell.spike_rate = 5

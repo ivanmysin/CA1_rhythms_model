@@ -7,7 +7,7 @@ cckbas - cholecystokinin positive basket cells
 ivy - Ivy cells
 ngf - neurogliaform cells
 bis - bistratifered cells
-axo - axo-axonal cells
+aac - axo-axonal cells
 csa - Schaffer collateral-associated cells
 
 
@@ -36,7 +36,7 @@ basic_params = {
         "Nivy" :    260,
         "Nngf" :    130,
         "Nbis" :    70,
-        "Naxo" :    60,
+        "Naac" :    60,
         "Nsca" :    40,
         
         
@@ -47,6 +47,111 @@ basic_params = {
         "Nmskomalicells" : 200,
     },
     
+    "CellParameters" : {
+        "ca3" : {
+            "cellclass" : "ArtifitialCell",
+            "R" : 0.4,
+            "phase" : 1.5,
+            "greqs" : 5.0,
+            "spike_ train_freq" : 5.0,      
+        },
+        
+        "mec" : {
+            "cellclass" : "ArtifitialCell",
+            "R" : 0.4,
+            "phase" : 0.0,
+            "greqs" : 5.0,
+            "spike_ train_freq" : 5.0,      
+        },
+        
+        "lec" : {
+            "cellclass" : "ArtifitialCell",
+            "R" : 0.1,
+            "phase" : 0.0,
+            "greqs" : 5.0,
+            "spike_ train_freq" : 5.0,      
+        },
+        
+        "msteevracells" : {
+            "cellclass" : "ArtifitialCell",
+            "R" : 0.8,
+            "phase" : np.pi,
+            "greqs" : 5.0,
+            "spike_ train_freq" : 15.0,      
+        },
+        
+        "mskomalicells" : {
+            "cellclass" : "ArtifitialCell",
+            "R" : 0.8,
+            "phase" : 0.0,  # !!!!
+            "greqs" : 5.0,
+            "spike_ train_freq" : 15.0,      
+        },
+        
+        "msach" : {
+            "cellclass" : "ArtifitialCell",
+            "R" : 0.4,
+            "phase" : np.pi,  # !!!!
+            "greqs" : 5.0,
+            "spike_ train_freq" : 10.0,      
+        },
+        
+        "pyr" : {
+            "cellclass" : "poolosyncell",
+            "iext" : 0.007,
+            "iext_std" : 0.005,
+        },
+        
+        "pvbas" : {
+            "cellclass" : "pvbasketcell",
+            "iext" : 0.0,
+            "iext_std" : 0.005,
+        },
+        
+        "cckbas" : {
+            "cellclass" : "cckcell",
+            "iext" : 0.0,
+            "iext_std" : 0.005,
+        },
+
+        "olm" : {
+            "cellclass" : "olmcell",
+            "iext" : 0.0,
+            "iext_std" : 0.005,
+        },
+        
+        "aac" : {
+            "cellclass" : "axoaxoniccell",
+            "iext" : 0.0,
+            "iext_std" : 0.005,
+        },
+        
+        "ngf" : {
+            "cellclass" : "ngfcell",
+            "iext" : 0.0,
+            "iext_std" : 0.005,
+        },
+        
+        "ivy" : {
+            "cellclass" : "ivycell",
+            "iext" : 0.0,
+            "iext_std" : 0.005,
+        },
+    
+        "bis" : {
+            "cellclass" : "bistratifiedcell",
+            "iext" : 0.0,
+            "iext_std" : 0.005,
+        },
+        
+        "sca" : {
+            "cellclass" : "scacell",
+            "iext" : 0.0,
+            "iext_std" : 0.005,
+        },
+    
+    },
+    
     "save_soma_v" : {
         "pyr" : [0, ],
         "pvbas" : [0, ],
@@ -55,7 +160,7 @@ basic_params = {
         "ivy" : [0, ],
         "ngf" : [0, ],
         "bis" : [0, ],
-        "axo" : [0, ],
+        "aac" : [0, ],
         "sca" : [0, ],
     
         "vect_idxes" : [],
@@ -64,6 +169,8 @@ basic_params = {
 
 
     "connections" : {
+    
+        # connection to pyramidal neurons
         "ca32pyr": {
             "gmax": 0.016,
             "gmax_std" : 0.002,
@@ -99,6 +206,26 @@ basic_params = {
             "sourse_compartment" : "acell",
             "target_compartment" : "lm_list",
         },
+        
+        "lec2pyr": {  # need to optimize
+            "gmax": 0.06,
+            "gmax_std" : 0.007,
+            
+            "Erev": 0,
+            "tau_rise": 0.5,
+            "tau_decay": 3,
+
+            "prob": 0.4,
+            
+            "delay": 10,
+            "delay_std" : 2,
+            
+
+            "sourse_compartment" : "acell",
+            "target_compartment" : "lm_list",
+        },
+        
+
         "pyr2pyr": {
             "gmax": 0.01,
             "gmax_std" : 0.007,
@@ -117,26 +244,8 @@ basic_params = {
             "target_compartment" : "basal_list",
         },
         
-        "pyr2pvbas": {
-            "gmax": 0.05,
-            "gmax_std" : 0.04,
-            
-            "Erev": 0,
-            "tau_rise": 0.07,
-            "tau_decay": 0.2,
-
-            "prob": 0.13,
-            
-            "delay": 1.2,
-            "delay_std" : 0.2,
-            
-
-            "sourse_compartment" : "axon",
-            "target_compartment" : "dend",
-        },
-        
         "cckbas2pyr": {
-            "gmax": 2.5,
+            "gmax": 2.5, 
             "gmax_std" : 1.2,
             
             "Erev": -75,
@@ -152,80 +261,7 @@ basic_params = {
             "sourse_compartment" : "soma",
             "target_compartment" : "soma_list",
         },
-        
-       "pyr2olm": {
-            "gmax": 0.031,
-            "gmax_std" : 0.0015,
-            
-            "Erev": 0,
-            "tau_rise": 0.3,
-            "tau_decay": 0.6,
 
-            "prob": 0.081,
-            
-            "delay": 1.2,
-            "delay_std" : 0.2,
-            
-
-            "sourse_compartment" : "axon",
-            "target_compartment" : "dend",
-        },
-        
-       "pyr2bis": {
-            "gmax": 0.014,
-            "gmax_std" : 0.007,
-            
-            "Erev": 0,
-            "tau_rise": 0.11,
-            "tau_decay": 0.25,
-
-            "prob": 0.14,
-            
-            "delay": 1.2,
-            "delay_std" : 0.2,
-            
-
-            "sourse_compartment" : "axon",
-            "target_compartment" : "dend",
-        },
-        
-        
-       "pyr2axo": {
-            "gmax": 0.04,
-            "gmax_std" : 0.02,
-            
-            "Erev": 0,
-            "tau_rise": 0.3,
-            "tau_decay": 0.6,
-
-            "prob": 0.07,
-            
-            "delay": 1.2,
-            "delay_std" : 0.2,
-            
-
-            "sourse_compartment" : "axon",
-            "target_compartment" : "dend",
-        },
-        
-       "pyr2ivy": {
-            "gmax": 0.041,
-            "gmax_std" : 0.021,
-            
-            "Erev": 0,
-            "tau_rise": 0.3,
-            "tau_decay": 0.6,
-
-            "prob": 0.13,
-            
-            "delay": 1.2,
-            "delay_std" : 0.2,
-            
-
-            "sourse_compartment" : "axon",
-            "target_compartment" : "dend",
-        },
-        
        "ivy2pyr": {
             "gmax": 0.053,
             "gmax_std" : 0.02,
@@ -245,7 +281,7 @@ basic_params = {
         },
         
         
-       "axo2pyr": {
+       "aac2pyr": {
             "gmax": 20.5,
             "gmax_std" : 10,
             
@@ -352,15 +388,15 @@ basic_params = {
             "sourse_compartment" : "soma",
             "target_compartment" : "rad_list",
         },
+        # end connection to pyramids
         
-
-        
-       "ca32axo": {
+        # connection to pvbas
+        "ca32pvbas": {
             "gmax": 0.7,
             "gmax_std" : 0.2,
             
             "Erev": 0,
-            "tau_rise": 2,
+            "tau_rise": 2.0,
             "tau_decay": 6.3,
 
             "prob": 0.06,
@@ -373,7 +409,25 @@ basic_params = {
             "target_compartment" : "dend",
         },
         
-       "pvbas2pvbas": {
+        "pyr2pvbas": {
+            "gmax": 0.05,
+            "gmax_std" : 0.04,
+            
+            "Erev": 0,
+            "tau_rise": 0.07,
+            "tau_decay": 0.2,
+
+            "prob": 0.13,
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "axon",
+            "target_compartment" : "dend",
+        },
+        
+        "pvbas2pvbas": {
             "gmax": 0.023,
             "gmax_std" : 0.01,
             
@@ -391,25 +445,7 @@ basic_params = {
             "target_compartment" : "dend",
         },
         
-       "ca32pvbas": {
-            "gmax": 0.7,
-            "gmax_std" : 0.2,
-            
-            "Erev": 0,
-            "tau_rise": 2.0,
-            "tau_decay": 6.3,
-
-            "prob": 0.9,
-            
-            "delay": 1.5,
-            "delay_std" : 0.5,
-            
-
-            "sourse_compartment" : "acell",
-            "target_compartment" : "dend",
-        },
-        
-       "cckbas2pvbas": {
+        "cckbas2pvbas": {
             "gmax": 1.0,
             "gmax_std" : 0.2,
             
@@ -426,6 +462,238 @@ basic_params = {
             "sourse_compartment" : "soma",
             "target_compartment" : "dend",
         },
+        
+        "olm2pvbas": {
+            "gmax": 0.73,
+            "gmax_std" : 0.35,
+            
+            "Erev": -75,
+            "tau_rise": 0.25,
+            "tau_decay": 7.5,
+
+            "prob": 0.5, # optimized
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "dend",
+        },
+        
+        # hypotetical connections
+        "bis2pvbas": {
+            "gmax": 0.1,
+            "gmax_std" : 0.05,
+            
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.5, 
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "dend",
+        },
+        
+        "ngf2pvbas": {
+            "gmax": 0.1,
+            "gmax_std" : 0.05,
+            
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.5, 
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "dend",
+        },
+        
+        "ivy2pvbas": {
+            "gmax": 0.1,
+            "gmax_std" : 0.05,
+            
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.5, 
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "dend",
+        },
+        
+        "sca2pvbas": {
+            "gmax": 0.1,
+            "gmax_std" : 0.05,
+            
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.5, 
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "dend",
+        },
+        
+        # end connection to pvbas
+        
+        
+        "msach2olm" : {
+            "gmax" : 0.0006, 
+            "gmax_std" : 0.0003,
+            "Erev": 0,
+            "tau_rise": 0.5,
+            "tau_decay": 3,
+            
+            "prob": 0.9,
+            
+            "delay": 10.5,
+            "delay_std" : 0.5,
+            
+
+            "sourse_compartment" : "acell",
+            "target_compartment" : "dend",
+        },
+    
+        "msteevracells2" : {
+            "gmax" : 0.0, # !!!! 
+            "gmax_std" : 0.02, # !!!!
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 3,
+            
+            "prob": 0.9,
+            
+            "delay": 10.5,
+            "delay_std" : 0.5,
+            
+
+            "sourse_compartment" : "acell",
+            "target_compartment" : "dend",
+        },
+    
+    
+    
+        
+        
+
+        
+
+        
+       "pyr2olm": {
+            "gmax": 0.031,
+            "gmax_std" : 0.0015,
+            
+            "Erev": 0,
+            "tau_rise": 0.3,
+            "tau_decay": 0.6,
+
+            "prob": 0.081,
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "axon",
+            "target_compartment" : "dend",
+        },
+        
+       "pyr2bis": {
+            "gmax": 0.014,
+            "gmax_std" : 0.007,
+            
+            "Erev": 0,
+            "tau_rise": 0.11,
+            "tau_decay": 0.25,
+
+            "prob": 0.14,
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "axon",
+            "target_compartment" : "dend",
+        },
+        
+        
+       "pyr2aac": {
+            "gmax": 0.04,
+            "gmax_std" : 0.02,
+            
+            "Erev": 0,
+            "tau_rise": 0.3,
+            "tau_decay": 0.6,
+
+            "prob": 0.07,
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "axon",
+            "target_compartment" : "dend",
+        },
+        
+       "pyr2ivy": {
+            "gmax": 0.041,
+            "gmax_std" : 0.021,
+            
+            "Erev": 0,
+            "tau_rise": 0.3,
+            "tau_decay": 0.6,
+
+            "prob": 0.13,
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "axon",
+            "target_compartment" : "dend",
+        },
+        
+
+
+        
+       "ca32aac": {
+            "gmax": 0.7,
+            "gmax_std" : 0.2,
+            
+            "Erev": 0,
+            "tau_rise": 2,
+            "tau_decay": 6.3,
+
+            "prob": 0.06,
+            
+            "delay": 1.5,
+            "delay_std" : 0.5,
+            
+
+            "sourse_compartment" : "acell",
+            "target_compartment" : "dend",
+        },
+        
+       
         
        "pvbas2bis": {
             "gmax": 0.035,
@@ -445,23 +713,7 @@ basic_params = {
             "target_compartment" : "dend",
         },
         
-       "olm2pvbas": {
-            "gmax": 0.73,
-            "gmax_std" : 0.35,
-            
-            "Erev": -75,
-            "tau_rise": 0.25,
-            "tau_decay": 7.5,
-
-            "prob": 0.1,
-            
-            "delay": 1.2,
-            "delay_std" : 0.2,
-            
-
-            "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
-        },
+ 
         
        "pvbas2cckbas": {
             "gmax": 1.0,
@@ -652,176 +904,4 @@ for conn_data in basic_params["connections"].values():
 
 
 
-"""
 
-    ######################################
-        "ca32pyr": {
-            "prob": 1.0,
-            "tau_rise": 0.5,
-            "tau_decay": 5.0,
-            "delay": 1.0,
-            "delay_std" : 0.2,
-            "Erev": 0.0,
-            "gmax": 0.05,
-            "gmax_std" : 0.0001,
-
-            "sourse_compartment" : "acell",
-            "target_compartment" : "soma",
-        },
-        
-        "ca32pvbas": {
-            "prob": 1.0,
-            "tau_rise": 0.5,
-            "tau_decay": 5.0,
-            "delay": 1.0,
-            "delay_std" : 0.2,
-            "Erev": 0.0,
-            "gmax": 0.05,
-            "gmax_std" : 0.0001,
-
-            "sourse_compartment" : "acell",
-            "target_compartment" : "soma",
-        },
-
-
-"pyr2pvbas" : {
-            "prob" : 1.0,
-            "tau_rise" : 0.5,
-            "tau_decay" : 5.0,
-            
-            "delay" : 1.0,
-            "delay_std" : 0.2,
-            
-            "Erev" : 0.0,
-            "gmax" : 0.05,
-            "gmax_std" : 0.0001,
-            
-            "sourse_compartment" : "axon",
-            "target_compartment" : "dend",
-            
-            
-        },
-        
-        "cckbas2pvbas": {
-            "prob": 1.0,
-            "tau_rise": 0.5,
-            "tau_decay": 5.0,
-            "delay": 1.0,
-            "delay_std" : 0.2,
-            "Erev": 0.0,
-            "gmax": 0.005,
-            "gmax_std" : 0.0001,
-            
-            "sourse_compartment" : "acell",
-            "target_compartment" : "dend",
-        },
-        
-    "pyr2olm": {
-        "prob": 0.5,
-        "tau_rise": 0.5,
-        "tau_decay": 5.0,
-        "delay": 1.0,
-        "Erev": 0.0,
-        "gmax": 0.01,
-        
-        "sourse_compartment" : "soma",
-        "target_comartment" : "dend",
-    },
-
-
-    "pyr2cckbas": {
-        "prob": 0.5,
-        "tau_rise": 0.5,
-        "tau_decay": 5.0,
-        "delay": 1.0,
-        "Erev": 0.0,
-        "gmax": 0.01,
-    },
-
-
-
-    
-    
-    "pvbas2pvbas" : {
-    
-        "prob" : 0.5,
-        "tau_rise" : 0.5,
-        "tau_decay" : 5.0,
-        "delay" : 1.0,
-        "Erev" : -70.0,
-        "gmax" : 0.1,
-    
-    },
-    
-           " 2 ": {
-            "gmax": ,
-            "gmax_std" : ,
-            
-            "Erev": ,
-            "tau_rise": ,
-            "tau_decay": ,
-
-            "prob": ,
-            
-            "delay": ,
-            "delay_std" : ,
-            
-
-            "sourse_compartment" : "",
-            "target_compartment" : "",
-        },
-
-       " 2 ": {
-            "gmax": ,
-            "gmax_std" : ,
-            
-            "Erev": ,
-            "tau_rise": ,
-            "tau_decay": ,
-
-            "prob": ,
-            
-            "delay": ,
-            "delay_std" : ,
-            
-
-            "sourse_compartment" : "",
-            "target_compartment" : "",
-        },
-        
-       " 2 ": {
-            "gmax": ,
-            "gmax_std" : ,
-            
-            "Erev": ,
-            "tau_rise": ,
-            "tau_decay": ,
-
-            "prob": ,
-            
-            "delay": ,
-            "delay_std" : ,
-            
-
-            "sourse_compartment" : "",
-            "target_compartment" : "",
-        },   
-             
-       " 2 ": {
-            "gmax": ,
-            "gmax_std" : ,
-            
-            "Erev": ,
-            "tau_rise": ,
-            "tau_decay": ,
-
-            "prob": ,
-            
-            "delay": ,
-            "delay_std" : ,
-            
-
-            "sourse_compartment" : "",
-            "target_compartment" : "",
-        },
-"""
