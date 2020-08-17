@@ -55,8 +55,11 @@ def set_test_connections(h, conndata, pre_name, phase, cell, basic_params):
     
     
     for idx in range(Nsourses):
-    
-        post_idx = np.random.randint(0, len_postlist-1)
+        
+        if len_postlist == 1:
+            post_idx = 0
+        else:
+            post_idx = np.random.randint(0, len_postlist-1)
         for idx, post_comp_tmp in enumerate(post_list):
             if idx == post_idx: post_comp = post_comp_tmp
         
@@ -68,6 +71,7 @@ def set_test_connections(h, conndata, pre_name, phase, cell, basic_params):
         gen.acell.spike_rate = 5
         gen.acell.kappa = kappa
         gen.acell.I0 = I0
+        gen.acell.myseed = np.random.randint(0, 1000000, 1)
 
         syn = h.Exp2Syn( post_comp(0.5) ) 
         syn.e = conndata["Erev"]

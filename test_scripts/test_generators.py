@@ -11,7 +11,7 @@ from basic_parameters import basic_params
 
 
 ###### parameters block ############
-dur = 500
+dur = 1000
 
 #####################################
 
@@ -27,7 +27,7 @@ for cellfile in os.listdir("../cells/"):
     h.load_file("../cells/" + cellfile)
 
 
-postsynaptic_cell = "pyr"
+postsynaptic_cell = "aac"
 
 cellclass = getattr(h, basic_params["CellParameters"][postsynaptic_cell]["cellclass"])
 cell = cellclass(0, 0)
@@ -71,8 +71,6 @@ for pre_name, phase in cell_phases.items():
     
     connname = pre_name + "2" + postsynaptic_cell   
     
-    if pre_name == "pyr":
-        params["connections"][connname]["prob"] *= 0.1
 
     
     try:
@@ -80,6 +78,8 @@ for pre_name, phase in cell_phases.items():
     except KeyError:
         continue
     
+    if pre_name == "pyr":
+        conndata["prob"] *= 0.1
 
     print("Setting connection " + connname)
     gen_syns_conn = prelib.set_test_connections(h, conndata, pre_name, phase, cell, params)

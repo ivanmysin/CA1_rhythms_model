@@ -110,7 +110,7 @@ basic_params = {
         
         "cckbas" : {
             "cellclass" : "cckcell",
-            "iext" : 0.0,
+            "iext" : 0.003,
             "iext_std" : 0.005,
         },
 
@@ -556,6 +556,320 @@ basic_params = {
         
         # end connection to pvbas
         
+        # connections to cckbas
+        
+        "msteevracells2cckbas" : {
+            "gmax" : 1.5, # !!!! 
+            "gmax_std" : 0.7, # !!!!
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 3,
+            
+            "prob": 0.5,
+            
+            "delay": 10.5,
+            "delay_std" : 0.5,
+            
+
+            "sourse_compartment" : "acell",
+            "target_compartment" : "soma",
+        },
+        
+        "pvbas2cckbas": {
+            "gmax": 1.0,
+            "gmax_std" : 0.2,
+            
+            "Erev": -75,
+            "tau_rise": 0.29,
+            "tau_decay": 2.67,
+
+            "prob": 0.15,
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "dend",
+        },
+        
+       "cckbas2cckbas": {
+            "gmax": 1.0,
+            "gmax_std" : 0.2,
+            
+            "Erev": -75,
+            "tau_rise": 0.2,
+            "tau_decay": 4.2,
+
+            "prob": 0.63,
+            
+            "delay": 2.7,
+            "delay_std" : 0.5,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "soma",
+        },
+        
+        # hypotetical connections
+        "olm2cckbas": {
+            "gmax": 1.5,
+            "gmax_std" : 0.7,
+            
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.5, 
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "dend",
+        },
+        
+        "bis2cckbas": {
+            "gmax": 1.5,
+            "gmax_std" : 0.7,
+            
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.5, 
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "dend",
+        },
+        
+        "ngf2cckbas": {
+            "gmax": 1.5,
+            "gmax_std" : 0.7,
+            
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.5, 
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "soma",
+        },
+        
+        # end connections to cckbas
+        
+        
+        # connections to aac
+        "msteevracells2aac" : {
+            "gmax" : 1.5, # !!!! 
+            "gmax_std" : 0.7, # !!!!
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 3,
+            
+            "prob": 0.5,
+            
+            "delay": 10.5,
+            "delay_std" : 0.5,
+            
+
+            "sourse_compartment" : "acell",
+            "target_compartment" : "soma",
+        },
+        
+        "pyr2aac": {
+            "gmax": 0.04,
+            "gmax_std" : 0.02,
+            
+            "Erev": 0,
+            "tau_rise": 0.3,
+            "tau_decay": 0.6,
+
+            "prob": 0.07,
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "axon",
+            "target_compartment" : "dend",
+        },
+        
+        "ca32aac": {
+            "gmax": 0.7,
+            "gmax_std" : 0.2,
+            
+            "Erev": 0,
+            "tau_rise": 2,
+            "tau_decay": 6.3,
+
+            "prob": 0.01,
+            
+            "delay": 2.5,
+            "delay_std" : 0.5,
+            
+
+            "sourse_compartment" : "acell",
+            "target_compartment" : "dend",
+        },
+        
+        
+        # hypotetical connections
+        "mec2aac": {
+            "gmax": 0.1,
+            "gmax_std" : 0.05,
+            
+            "Erev": 0,
+            "tau_rise": 2,
+            "tau_decay": 6.3,
+
+            "prob": 0.05,
+            
+            "delay": 2.5,
+            "delay_std" : 0.5,
+            
+
+            "sourse_compartment" : "acell",
+            "target_compartment" : "dend",
+        },
+        "lec2aac": {
+            "gmax": 0.1,
+            "gmax_std" : 0.05,
+            
+            "Erev": 0,
+            "tau_rise": 2,
+            "tau_decay": 6.3,
+
+            "prob": 0.05,
+            
+            "delay": 2.5,
+            "delay_std" : 0.5,
+            
+
+            "sourse_compartment" : "acell",
+            "target_compartment" : "dend",
+        },
+        
+        "olm2aac": {
+            "gmax": 1.5,
+            "gmax_std" : 0.7,
+            
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.5, 
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "dend",
+        },
+        
+        "bis2aac": {
+            "gmax": 1.5,
+            "gmax_std" : 0.7,
+            
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.5, 
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "dend",
+        },
+        "pvbas2aac": {
+            "gmax": 1.5,
+            "gmax_std" : 0.7,
+            
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.8, 
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "dend",
+        },
+        "cckbas2aac": {
+            "gmax": 1.5,
+            "gmax_std" : 0.7,
+            
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.5, 
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "dend",
+        },
+        
+        "ivy2aac": {
+            "gmax": 1.5,
+            "gmax_std" : 0.7,
+            
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.5, 
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "dend",
+        },
+        
+        "sca2aac": {
+            "gmax": 1.5,
+            "gmax_std" : 0.7,
+            
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.5, 
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "dend",
+        },
+        
+        
+        
+        
+        # end connections to aac
         
         "msach2olm" : {
             "gmax" : 0.0006, 
@@ -573,30 +887,6 @@ basic_params = {
             "sourse_compartment" : "acell",
             "target_compartment" : "dend",
         },
-    
-        "msteevracells2" : {
-            "gmax" : 0.0, # !!!! 
-            "gmax_std" : 0.02, # !!!!
-            "Erev": -75,
-            "tau_rise": 0.5,
-            "tau_decay": 3,
-            
-            "prob": 0.9,
-            
-            "delay": 10.5,
-            "delay_std" : 0.5,
-            
-
-            "sourse_compartment" : "acell",
-            "target_compartment" : "dend",
-        },
-    
-    
-    
-        
-        
-
-        
 
         
        "pyr2olm": {
@@ -636,23 +926,7 @@ basic_params = {
         },
         
         
-       "pyr2aac": {
-            "gmax": 0.04,
-            "gmax_std" : 0.02,
-            
-            "Erev": 0,
-            "tau_rise": 0.3,
-            "tau_decay": 0.6,
 
-            "prob": 0.07,
-            
-            "delay": 1.2,
-            "delay_std" : 0.2,
-            
-
-            "sourse_compartment" : "axon",
-            "target_compartment" : "dend",
-        },
         
        "pyr2ivy": {
             "gmax": 0.041,
@@ -675,23 +949,7 @@ basic_params = {
 
 
         
-       "ca32aac": {
-            "gmax": 0.7,
-            "gmax_std" : 0.2,
-            
-            "Erev": 0,
-            "tau_rise": 2,
-            "tau_decay": 6.3,
 
-            "prob": 0.06,
-            
-            "delay": 1.5,
-            "delay_std" : 0.5,
-            
-
-            "sourse_compartment" : "acell",
-            "target_compartment" : "dend",
-        },
         
        
         
@@ -715,41 +973,7 @@ basic_params = {
         
  
         
-       "pvbas2cckbas": {
-            "gmax": 1.0,
-            "gmax_std" : 0.2,
-            
-            "Erev": -75,
-            "tau_rise": 0.29,
-            "tau_decay": 2.67,
-
-            "prob": 0.15,
-            
-            "delay": 1.2,
-            "delay_std" : 0.2,
-            
-
-            "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
-        },
-        
-       "cckbas2cckbas": {
-            "gmax": 1.0,
-            "gmax_std" : 0.2,
-            
-            "Erev": -75,
-            "tau_rise": 0.2,
-            "tau_decay": 4.2,
-
-            "prob": 0.63,
-            
-            "delay": 2.7,
-            "delay_std" : 0.5,
-            
-
-            "sourse_compartment" : "soma",
-            "target_compartment" : "soma",
-        },   
+       
              
        "olm2sca": {
             "gmax": 1.3,
