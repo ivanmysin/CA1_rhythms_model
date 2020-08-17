@@ -27,7 +27,7 @@ for cellfile in os.listdir("../cells/"):
     h.load_file("../cells/" + cellfile)
 
 
-postsynaptic_cell = "sca"
+postsynaptic_cell = "pyr"
 
 cellclass = getattr(h, basic_params["CellParameters"][postsynaptic_cell]["cellclass"])
 cell = cellclass(0, 0)
@@ -98,7 +98,7 @@ t.record(h._ref_t)
 
 
 soma_v = h.Vector()
-soma_v.record(cell.soma[0](0.5)._ref_v)
+soma_v.record(cell.soma(0.5)._ref_v)
 
 h.tstop = dur
 h.run()

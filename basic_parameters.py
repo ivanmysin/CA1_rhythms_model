@@ -98,7 +98,7 @@ basic_params = {
         },
         
         "pyr" : {
-            "cellclass" : "poolosyncell",
+            "cellclass" : "CA1PyramidalCell", # "poolosyncell",
             "iext" : 0.007,
             "iext_std" : 0.005,
         },
@@ -297,7 +297,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "axon",
+            "target_compartment" : "axon_list",
         },
         
        "olm2pyr": {

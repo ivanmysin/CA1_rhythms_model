@@ -63,7 +63,6 @@ def set_test_connections(h, conndata, pre_name, phase, cell, basic_params):
         for idx, post_comp_tmp in enumerate(post_list):
             if idx == post_idx: post_comp = post_comp_tmp
         
-        
         gen = h.ArtifitialCell(0, 0)
         gen.acell.mu = phase
         gen.acell.latency = 1
