@@ -45,6 +45,7 @@ basic_params = {
         "Nlec" : 10000,
         "Nmsteevracells" : 200,
         "Nmskomalicells" : 200,
+        "Nmsach"         : 50,
     },
     
     "CellParameters" : {
@@ -128,19 +129,19 @@ basic_params = {
         
         "ngf" : {
             "cellclass" : "ngfcell",
-            "iext" : 0.0,
+            "iext" : 0.001,
             "iext_std" : 0.005,
         },
         
         "ivy" : {
             "cellclass" : "ivycell",
-            "iext" : 0.0,
+            "iext" : 0.003,
             "iext_std" : 0.005,
         },
     
         "bis" : {
             "cellclass" : "bistratifiedcell",
-            "iext" : 0.0,
+            "iext" : 0.002,
             "iext_std" : 0.005,
         },
         
@@ -557,7 +558,6 @@ basic_params = {
         # end connection to pvbas
         
         # connections to cckbas
-        
         "msteevracells2cckbas" : {
             "gmax" : 1.5, # !!!! 
             "gmax_std" : 0.7, # !!!!
@@ -865,15 +865,12 @@ basic_params = {
             "sourse_compartment" : "soma",
             "target_compartment" : "dend",
         },
-        
-        
-        
-        
         # end connections to aac
         
+        # connections to olm
         "msach2olm" : {
-            "gmax" : 0.0006, 
-            "gmax_std" : 0.0003,
+            "gmax" : 0.5, 
+            "gmax_std" : 0.1,
             "Erev": 0,
             "tau_rise": 0.5,
             "tau_decay": 3,
@@ -885,10 +882,9 @@ basic_params = {
             
 
             "sourse_compartment" : "acell",
-            "target_compartment" : "dend",
+            "target_compartment" : "soma",
         },
 
-        
        "pyr2olm": {
             "gmax": 0.031,
             "gmax_std" : 0.0015,
@@ -897,23 +893,25 @@ basic_params = {
             "tau_rise": 0.3,
             "tau_decay": 0.6,
 
-            "prob": 0.081,
+            "prob": 0.1, # 0.081,
             
             "delay": 1.2,
             "delay_std" : 0.2,
             
 
             "sourse_compartment" : "axon",
-            "target_compartment" : "dend",
+            "target_compartment" : "soma",
         },
+        # end connections to olm
         
+        # connections to bis
        "pyr2bis": {
-            "gmax": 0.014,
-            "gmax_std" : 0.007,
+            "gmax": 0.14,
+            "gmax_std" : 0.07,
             
             "Erev": 0,
-            "tau_rise": 0.11,
-            "tau_decay": 0.25,
+            "tau_rise": 1.3,
+            "tau_decay": 8.0,
 
             "prob": 0.14,
             
@@ -924,34 +922,6 @@ basic_params = {
             "sourse_compartment" : "axon",
             "target_compartment" : "dend",
         },
-        
-        
-
-        
-       "pyr2ivy": {
-            "gmax": 0.041,
-            "gmax_std" : 0.021,
-            
-            "Erev": 0,
-            "tau_rise": 0.3,
-            "tau_decay": 0.6,
-
-            "prob": 0.13,
-            
-            "delay": 1.2,
-            "delay_std" : 0.2,
-            
-
-            "sourse_compartment" : "axon",
-            "target_compartment" : "dend",
-        },
-        
-
-
-        
-
-        
-       
         
        "pvbas2bis": {
             "gmax": 0.035,
@@ -971,19 +941,15 @@ basic_params = {
             "target_compartment" : "dend",
         },
         
- 
-        
-       
-             
-       "olm2sca": {
-            "gmax": 1.3,
-            "gmax_std" : 0.6,
+        "cckbas2bis": {
+            "gmax": 0.5,
+            "gmax_std" : 0.2,
             
             "Erev": -75,
-            "tau_rise": 0.07,
-            "tau_decay": 29,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
 
-            "prob": 0.1,
+            "prob": 0.5,
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -993,7 +959,158 @@ basic_params = {
             "target_compartment" : "dend",
         },
         
-       "olm2ngf": {
+        "sca2bis": {
+            "gmax": 0.5,
+            "gmax_std" : 0.2,
+            
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.5,
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "dend",
+        },
+        # end connections to bis
+        
+        
+        # connections to ivy    
+       "pyr2ivy": {
+            "gmax": 0.041,
+            "gmax_std" : 0.021,
+            
+            "Erev": 0,
+            "tau_rise": 0.3,
+            "tau_decay": 0.6,
+
+            "prob": 0.13,
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "axon",
+            "target_compartment" : "dend",
+        },
+        
+        # hypotetical connections
+        "pvbas2ivy": {
+            "gmax": 1.5,
+            "gmax_std" : 0.7,
+            
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.5, 
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "dend",
+        },
+
+        "cckbas2ivy": {
+            "gmax": 0.5,
+            "gmax_std" : 0.07,
+            
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.1, 
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "dend",
+        },
+        "sca2ivy": {
+            "gmax": 1.5,
+            "gmax_std" : 0.7,
+            
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.5, 
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "dend",
+        },
+        
+         # end connections to ivy
+        
+       
+        # connections to ngf
+        "ca32nfg": {
+            "gmax": 1.42,
+            "gmax_std" : 0.6 ,
+            
+            "Erev": 0,
+            "tau_rise": 0.5,
+            "tau_decay": 3,
+
+            "prob": 0.1,
+            
+            "delay": 1.5,
+            "delay_std" : 0.5,
+            
+
+            "sourse_compartment" : "acell",
+            "target_compartment" : "dend",
+        },
+        
+        "mec2ngf": {
+            "gmax": 0.7,
+            "gmax_std" : 0.3,
+            
+            "Erev": 0,
+            "tau_rise": 0.5,
+            "tau_decay": 3,
+
+            "prob": 0.06, # ! need to optimize
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "acell",
+            "target_compartment" : "dend",
+        },
+        
+        "lec2ngf": {
+            "gmax": 0.7,
+            "gmax_std" : 0.3,
+            
+            "Erev": 0,
+            "tau_rise": 0.5,
+            "tau_decay": 3,
+
+            "prob": 0.06, # ! need to optimize
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "acell",
+            "target_compartment" : "dend",
+        },
+        
+        "olm2ngf": {
             "gmax": 1.27,
             "gmax_std" : 0.6,
             
@@ -1027,44 +1144,32 @@ basic_params = {
 
             "sourse_compartment" : "soma",
             "target_compartment" : "dend",
-        },   
-             
-       "mec2ngf": {
-            "gmax": 0.7,
-            "gmax_std" : 0.3,
+        },
+ 
+        # no hypotetical connections
+        # end of connections to ngf
+        
+        
+        # connections to sca
+       "olm2sca": {
+            "gmax": 1.3,
+            "gmax_std" : 0.6,
             
-            "Erev": 0,
-            "tau_rise": 0.5,
-            "tau_decay": 3,
+            "Erev": -75,
+            "tau_rise": 0.07,
+            "tau_decay": 29,
 
-            "prob": 0.1, # ! need to optimize
+            "prob": 0.1,
             
             "delay": 1.2,
             "delay_std" : 0.2,
             
 
-            "sourse_compartment" : "acell",
+            "sourse_compartment" : "soma",
             "target_compartment" : "dend",
         },
         
-       "ca32nfg": {
-            "gmax": 1.42,
-            "gmax_std" : 0.6 ,
-            
-            "Erev": 0,
-            "tau_rise": 0.5,
-            "tau_decay": 3,
 
-            "prob": 0.1,
-            
-            "delay": 1.5,
-            "delay_std" : 0.5,
-            
-
-            "sourse_compartment" : "acell",
-            "target_compartment" : "dend",
-        },
-        
        "sca2sca": {
             "gmax": 0.03,
             "gmax_std" : 0.015,
@@ -1081,7 +1186,79 @@ basic_params = {
 
             "sourse_compartment" : "soma",
             "target_compartment" : "dend",
-        },   
+        },
+        
+        # hypotetical connections
+        "ca32sca": {
+            "gmax": 0.05,
+            "gmax_std" : 0.02,
+            
+            "Erev": 0,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.09, 
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "acell",
+            "target_compartment" : "dend",
+        },
+        
+        "ivy2sca": {
+            "gmax": 0.5,
+            "gmax_std" : 0.2,
+            
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.5, 
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "dend",
+        },
+        
+        "ngf2sca": {
+            "gmax": 0.5,
+            "gmax_std" : 0.2,
+            
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.5, 
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "dend",
+        },
+        "bis2sca": {
+            "gmax": 0.5,
+            "gmax_std" : 0.2,
+            
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.5, 
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "dend",
+        },
              
 
     }, # end of connetion settings

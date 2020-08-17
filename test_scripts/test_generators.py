@@ -27,7 +27,7 @@ for cellfile in os.listdir("../cells/"):
     h.load_file("../cells/" + cellfile)
 
 
-postsynaptic_cell = "aac"
+postsynaptic_cell = "sca"
 
 cellclass = getattr(h, basic_params["CellParameters"][postsynaptic_cell]["cellclass"])
 cell = cellclass(0, 0)
@@ -63,6 +63,7 @@ cell_phases = {
     "pyr"    : 3.14,
     "msteevracells" : 3.14,
     "mskomalicells" : 0.0,
+    "msach" : 3.14,
 }
 
 for pre_name, phase in cell_phases.items():
