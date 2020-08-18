@@ -33,9 +33,12 @@ ASSIGNED {
     dt (ms)
     phase
     TWOPIIODFIRATIO
+    TWOPI
     pdf
     delta_phase
     freqs_ratio
+    
+    
 }
 
 
@@ -47,17 +50,22 @@ INITIAL {
     freqs_ratio = spike_rate / freqs                  : spikes per cycle of oscillation
 
     TWOPIIODFIRATIO = delta_phase * freqs_ratio / (2 * PI * I0)
+    TWOPI = 2 * PI
     time_after_spike = latency + 1
+    
+    get_pdf_by_phase()
     net_send(1, 2)
     
 }
 
-
 NET_RECEIVE (w) {
-    
-    
-    pdf = exp(kappa * cos(phase - mu) ) * TWOPIIODFIRATIO 
+
+    get_pdf_by_phase()
+     
     phase = phase + delta_phase
+    if (phase > PI) {
+        phase = phase - TWOPI
+    }
 
     randflag = scop_random() :generate randomflag between 0 and 1
     
@@ -72,8 +80,13 @@ NET_RECEIVE (w) {
         net_send(delta_t, 1)
     
     }
-    
-    
-  
 
 }
+
+
+PROCEDURE get_pdf_by_phase() {
+    : TABLE pdf DEPEND phase FROM -4 TO 4 WITH 100
+    
+    pdf = exp(kappa * cos(phase - mu) ) * TWOPIIODFIRATIO
+}
+

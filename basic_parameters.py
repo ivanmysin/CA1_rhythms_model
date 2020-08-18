@@ -40,9 +40,9 @@ basic_params = {
         "Nsca" :    40,
         
         
-        "Nca3" : 10000,
-        "Nmec" : 10000,
-        "Nlec" : 10000,
+        "Nca3" : 1000,  # 10000
+        "Nmec" : 1000,  # 10000
+        "Nlec" : 1000,  # 10000
         "Nmsteevracells" : 200,
         "Nmskomalicells" : 200,
         "Nmsach"         : 50,
@@ -98,7 +98,7 @@ basic_params = {
         },
         
         "pyr" : {
-            "cellclass" : "CA1PyramidalCell", # "poolosyncell",
+            "cellclass" : "CA1PyramidalCell", # "poolosyncell", # 
             "iext" : 0.007,
             "iext_std" : 0.005,
         },
@@ -140,7 +140,7 @@ basic_params = {
         },
     
         "bis" : {
-            "cellclass" : "bistratifiedcell",
+            "cellclass" : "CA1BistratifiedCell", # "bistratifiedcell",
             "iext" : 0.002,
             "iext_std" : 0.005,
         },
@@ -407,7 +407,7 @@ basic_params = {
             
 
             "sourse_compartment" : "acell",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         "pyr2pvbas": {
@@ -425,7 +425,7 @@ basic_params = {
             
 
             "sourse_compartment" : "axon",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         "pvbas2pvbas": {
@@ -443,7 +443,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         "cckbas2pvbas": {
@@ -461,7 +461,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         "olm2pvbas": {
@@ -479,7 +479,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         # hypotetical connections
@@ -498,7 +498,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         "ngf2pvbas": {
@@ -516,7 +516,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         "ivy2pvbas": {
@@ -534,7 +534,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         "sca2pvbas": {
@@ -552,7 +552,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         # end connection to pvbas
@@ -590,7 +590,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
        "cckbas2cckbas": {
@@ -627,7 +627,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         "bis2cckbas": {
@@ -645,7 +645,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         "ngf2cckbas": {
@@ -702,7 +702,7 @@ basic_params = {
             
 
             "sourse_compartment" : "axon",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         "ca32aac": {
@@ -720,7 +720,7 @@ basic_params = {
             
 
             "sourse_compartment" : "acell",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         
@@ -740,7 +740,7 @@ basic_params = {
             
 
             "sourse_compartment" : "acell",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         "lec2aac": {
             "gmax": 0.1,
@@ -757,7 +757,7 @@ basic_params = {
             
 
             "sourse_compartment" : "acell",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         "olm2aac": {
@@ -775,7 +775,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         "bis2aac": {
@@ -793,7 +793,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         "pvbas2aac": {
             "gmax": 1.5,
@@ -810,7 +810,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         "cckbas2aac": {
             "gmax": 1.5,
@@ -827,7 +827,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         "ivy2aac": {
@@ -845,7 +845,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         "sca2aac": {
@@ -863,7 +863,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         # end connections to aac
         
@@ -920,7 +920,7 @@ basic_params = {
             
 
             "sourse_compartment" : "axon",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
        "pvbas2bis": {
@@ -938,7 +938,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         "cckbas2bis": {
@@ -956,7 +956,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         "sca2bis": {
@@ -974,7 +974,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         # end connections to bis
         
@@ -995,7 +995,7 @@ basic_params = {
             
 
             "sourse_compartment" : "axon",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         # hypotetical connections
@@ -1014,7 +1014,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
 
         "cckbas2ivy": {
@@ -1032,7 +1032,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         "sca2ivy": {
             "gmax": 1.5,
@@ -1049,7 +1049,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
          # end connections to ivy
@@ -1071,7 +1071,7 @@ basic_params = {
             
 
             "sourse_compartment" : "acell",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         "mec2ngf": {
@@ -1089,7 +1089,7 @@ basic_params = {
             
 
             "sourse_compartment" : "acell",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         "lec2ngf": {
@@ -1107,7 +1107,7 @@ basic_params = {
             
 
             "sourse_compartment" : "acell",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         "olm2ngf": {
@@ -1125,7 +1125,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
        "ngf2ngf": {
@@ -1143,7 +1143,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
  
         # no hypotetical connections
@@ -1166,7 +1166,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
 
@@ -1185,7 +1185,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         # hypotetical connections
@@ -1204,7 +1204,7 @@ basic_params = {
             
 
             "sourse_compartment" : "acell",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         "ivy2sca": {
@@ -1222,7 +1222,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         
         "ngf2sca": {
@@ -1240,7 +1240,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
         "bis2sca": {
             "gmax": 0.5,
@@ -1257,7 +1257,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dend",
+            "target_compartment" : "dendrite_list",
         },
              
 

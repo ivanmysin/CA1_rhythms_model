@@ -8,7 +8,7 @@ from copy import deepcopy
 sys.path.append("../")
 import presimulation_lib as prelib
 from basic_parameters import basic_params
-
+from time import time
 
 ###### parameters block ############
 dur = 1000
@@ -27,7 +27,7 @@ for cellfile in os.listdir("../cells/"):
     h.load_file("../cells/" + cellfile)
 
 
-postsynaptic_cell = "pyr"
+postsynaptic_cell = "pvbas"
 
 cellclass = getattr(h, basic_params["CellParameters"][postsynaptic_cell]["cellclass"])
 cell = cellclass(0, 0)
@@ -98,10 +98,12 @@ t.record(h._ref_t)
 
 
 soma_v = h.Vector()
-soma_v.record(cell.soma(0.5)._ref_v)
+soma_v.record(cell.soma[0](0.5)._ref_v)
 
 h.tstop = dur
+timer = time()
 h.run()
+print("Simulation time ", time() - timer)
 
 t = np.asarray(t)
 

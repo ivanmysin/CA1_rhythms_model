@@ -1,49 +1,39 @@
-
 import matplotlib.pyplot as plt
 import numpy as np
-import neuron
-from neuron import h #  , gui
+from neuron import h, load_mechanisms
+import os
+
+
 h.load_file("stdgui.hoc")
 h.load_file("stdrun.hoc")
 h.load_file("import3d.hoc")
 # h.nrn_load_dll("../mods/x86_64/.libs/libnrnmech.so")
-neuron.load_mechanisms("../mods/")
-
-# from neuron import gui
+load_mechanisms("../mods/")
 
 
+for cellfile in os.listdir("../cells/"):
+    _, ext = os.path.splitext(cellfile)
+    if ext != ".hoc": continue
+    h.load_file("../cells/" + cellfile)
 
-h.load_file("class_cckcell.hoc")
-# h.load_file("class_ivycell.hoc")
-# h.load_file("class_axoaxoniccell.hoc")
-# h.load_file("class_bistratifiedcell.hoc")
-# h.load_file("class_cutsuridiscell.hoc")
-# h.load_file("class_ngfcell.hoc")
-# h.load_file("class_olmcell.hoc")
-h.load_file("class_poolosyncell.hoc")
-h.load_file("class_pvbasketcell.hoc")
-# h.load_file("class_scacell.hoc")
 
-# cell = h.bistratifiedcell(0, 0) # h.axoaxoniccell(0, 0) # h.ivycell(0, 0)
-# cell = h.cckcell(0, 0)
-# cell = h.cutsuridiscell(0, 0) 
-# cell = h.ngfcell(0, 0) 
-# cell = h.olmcell(0, 0) 
-cell = h.poolosyncell(0, 0) 
-# cell = h.pvbasketcell() 
+ 
+# cell = h.poolosyncell(0, 0) 
+# cell = h.pvbasketcell(0, 0) 
 # cell = h.scacell(0, 0) 
+cell = h.CA1BistratifiedCell(0, 0)
+
+sec_list = getattr( cell, "dend" )
+
+len_sec_list = sum(1 for _ in sec_list)
+
+rand_idx = np.random.randint(0, len_sec_list)
 
 
-rad = getattr( cell, "rad_list" )
-
-len_rad = sum(1 for _ in cell.rad_list)
-
-rand_idx = np.random.randint(0, len_rad)
-
-for idx, sec in enumerate(rad):
+for idx, sec in enumerate(sec_list):
     
-    if idx == rand_idx:
-        break
+    if idx == rand_idx: dend = sec
+        
 sec.insert("IextNoise")
 # rad.object(0).insert("IextNoise")
 
@@ -62,7 +52,7 @@ stim.delay = 150
 stim_current = h.Vector()
 stim_current.record(stim._ref_i)
 
-syn = h.epsp(cell.apical[10](0.9))
+syn = h.epsp(dend(0.9))
 syn.tau0  = 0.5
 syn.tau1 = 5
 syn.onset    = stim.delay + 5
@@ -77,7 +67,7 @@ soma_v = h.Vector()
 soma_v.record(cell.soma[0](0.5)._ref_v)
 
 nexus_v = h.Vector()
-nexus_v.record(cell.apical[10](0.9)._ref_v)
+nexus_v.record(dend(0.9)._ref_v)
 
 
 ##======================== general settings ===================================
