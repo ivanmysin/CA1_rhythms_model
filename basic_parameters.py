@@ -24,7 +24,7 @@ basic_params = {
     "PyrDencity" : 0.2, # pyramidal cells / micrometer^2
     
     "file_results":  "../../Data/CA1_simulation/test.hdf5", # None, #
-    "duration" : 250, # simulation time
+    "duration" : 10, # simulation time
     
     "celltypes" : [],
     

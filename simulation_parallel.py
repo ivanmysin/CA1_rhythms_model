@@ -103,32 +103,33 @@ def run_simulation(params):
     
     
     for gid in gid_vect:
+        
         celltypename = params["celltypes"][gid]
-        cellclass = getattr(h, basic_params["CellParameters"][celltypename]["cellclass"])
-       
+        cellclass = getattr(h, params["CellParameters"][celltypename]["cellclass"])
+        
         cell = cellclass(gid, 0)
         
-        if params["celltypes"][gid] == "pyr":
-            cell = cellclass(gid, 0)
-            
+        
+        if celltypename == "pyr":
+           
             is_pyrs_thread = True
             for sec in cell.all:
                 pyramidal_sec_list.append(sec)
         
-            pyr_coord_in_layer_x = radius_for_pyramids * 2 * (np.random.rand() - 0.5) # !!!! density of the pyramidal cells  
-            pyr_coord_in_layer_y = radius_for_pyramids * 2 * (np.random.rand() - 0.5) # !!!! density of the pyramidal cells  
+            pyr_coord_in_layer_x = radius_for_pyramids * 2 * (np.random.rand() - 0.5) # density of the pyramidal cells  
+            pyr_coord_in_layer_y = radius_for_pyramids * 2 * (np.random.rand() - 0.5) # density of the pyramidal cells  
 
             cell.position(pyr_coord_in_layer_x, 0, pyr_coord_in_layer_y)
   
-
+        
         pc.set_gid2node(gid, pc.id())
         
         # set counters for spike generation
         if cell.is_art() == 0:
             for sec in cell.all:
                 sec.insert("IextNoise")
-                sec.sigma_IextNoise = basic_params["CellParameters"][celltypename]["iext"]
-                sec.mean_IextNoise = basic_params["CellParameters"][celltypename]["iext_std"]
+                sec.sigma_IextNoise = params["CellParameters"][celltypename]["iext"]
+                sec.mean_IextNoise = params["CellParameters"][celltypename]["iext_std"]
             
             firing = h.NetCon(cell.soma[0](0.5)._ref_v, None, sec=cell.soma[0])
             firing.threshold = -40 * mV
@@ -144,12 +145,14 @@ def run_simulation(params):
         spike_times_vecs.append(fring_vector)
         
         
+        
         # check is need to save Vm of soma
         if np.sum(params["save_soma_v"]["vect_idxes"] == gid) == 1:
             soma_v = h.Vector()
             soma_v.record(cell.soma[0](0.5)._ref_v)
             soma_v_vecs.append(soma_v)
         
+        print("End", pc.id())
         
         
 
@@ -159,7 +162,7 @@ def run_simulation(params):
         all_cells.append(cell)
 
 
-    
+
     
     # set connection
     connections = h.List()
