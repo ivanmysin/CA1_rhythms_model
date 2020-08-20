@@ -1,4 +1,6 @@
 import numpy as np
+import presimulation_lib as prelib
+
 """
 pyr - CA1 piramidal cells
 olm - Oriens-Lacunosum/Moleculare (OLM) Cells
@@ -20,11 +22,11 @@ lec - FAN cells of the lateral entorhinal cortex
 
 
 basic_params = {
-    "Nelecs" : 3,      # number of electrodes
+    "Nelecs" : 10,      # number of electrodes
     "PyrDencity" : 0.2, # pyramidal cells / micrometer^2
     
     "file_results":  "../../Data/CA1_simulation/test.hdf5", # None, #
-    "duration" : 10, # simulation time
+    "duration" : 1000, # simulation time
     
     "celltypes" : [],
     
@@ -74,7 +76,8 @@ basic_params = {
             "R" : 0.4,
             "phase" : 1.5,
             "greqs" : 5.0,
-            "spike_ train_freq" : 5.0,      
+            "latency" : 10.0,
+            "spike_train_freq" : 5.0,      
         },
         
         "mec" : {
@@ -82,7 +85,8 @@ basic_params = {
             "R" : 0.4,
             "phase" : 0.0,
             "greqs" : 5.0,
-            "spike_ train_freq" : 5.0,      
+            "latency" : 10.0,
+            "spike_train_freq" : 5.0,    
         },
         
         "lec" : {
@@ -90,7 +94,8 @@ basic_params = {
             "R" : 0.1,
             "phase" : 0.0,
             "greqs" : 5.0,
-            "spike_ train_freq" : 5.0,      
+            "latency" : 10.0,
+            "spike_train_freq" : 5.0,      
         },
         
         "msteevracells" : {
@@ -98,7 +103,8 @@ basic_params = {
             "R" : 0.8,
             "phase" : np.pi,
             "greqs" : 5.0,
-            "spike_ train_freq" : 15.0,      
+            "latency" : 4.0,
+            "spike_train_freq" : 15.0,      
         },
         
         "mskomalicells" : {
@@ -106,7 +112,8 @@ basic_params = {
             "R" : 0.8,
             "phase" : 0.0,  # !!!!
             "greqs" : 5.0,
-            "spike_ train_freq" : 15.0,      
+            "latency" : 4.0,
+            "spike_train_freq" : 15.0,      
         },
         
         "msach" : {
@@ -114,7 +121,8 @@ basic_params = {
             "R" : 0.4,
             "phase" : np.pi,  # !!!!
             "greqs" : 5.0,
-            "spike_ train_freq" : 10.0,      
+            "latency" : 10.0,
+            "spike_train_freq" : 10.0,      
         },
         
         "pyr" : {
@@ -1327,5 +1335,13 @@ for connname, conn_data in basic_params["connections"].items():
 # print(basic_params["connections"]["ca32pyr"])
 
 
-
+for celltypename, cellparam in basic_params["CellParameters"].items():
+    try:
+        Rgen = cellparam["R"]
+        kappa, I0 = prelib.r2kappa(Rgen)
+        cellparam["kappa"] = kappa
+        cellparam["I0"] = I0
+    
+    except KeyError:
+        continue
 

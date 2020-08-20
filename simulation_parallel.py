@@ -103,11 +103,13 @@ def run_simulation(params):
     
     
     for gid in gid_vect:
-        
+       
         celltypename = params["celltypes"][gid]
         cellclass = getattr(h, params["CellParameters"][celltypename]["cellclass"])
         
+
         cell = cellclass(gid, 0)
+
         
         
         if celltypename == "pyr":
@@ -136,6 +138,13 @@ def run_simulation(params):
 
         else:
             cell.celltype = celltypename
+            cell.acell.mu = params["CellParameters"][celltypename]["phase"]
+            # cell.acell.latency = params["CellParameters"][celltypename]["latency"]
+            cell.acell.freqs = params["CellParameters"][celltypename]["freqs"]
+            cell.acell.spike_rate = params["CellParameters"][celltypename]["spike_train_freq"]
+            cell.acell.kappa = params["CellParameters"][celltypename]["kappa"]
+            cell.acell.I0 = params["CellParameters"][celltypename]["I0"]
+            cell.acell.myseed = np.random.randint(0, 1000000, 1)
             firing = h.NetCon(cell.acell, None)
         
         pc.cell(gid, firing)
@@ -152,8 +161,7 @@ def run_simulation(params):
             soma_v.record(cell.soma[0](0.5)._ref_v)
             soma_v_vecs.append(soma_v)
         
-        print("End", pc.id())
-        
+      
         
 
         if cell.is_art() == 0:
@@ -193,9 +201,20 @@ def run_simulation(params):
                 continue
             
             print(conn_name)
+            
+            post_name = conn_data["target_compartment"]
+            post_list = getattr(cell, post_name)
+            len_postlist = sum([1 for _ in post_list])
+            
+            
             for i in range(int(number_connections)):
-                post_comp = np.random.choice( getattr( postsynaptic_cell, conn_data["target_compartment"] ) )
-                
+                if len_postlist == 1:
+                    post_idx = 0
+                else:
+                    post_idx = np.random.randint(0, len_postlist-1)
+
+                for idx_tmp, post_comp_tmp in enumerate(post_list):
+                    if idx_tmp == post_idx: post_comp = post_comp_tmp
                 # print(post_comp)
 
                 syn = h.Exp2Syn( post_comp(0.5) ) 

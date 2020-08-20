@@ -6,8 +6,8 @@
 //  - geometry modified to preserve VCUs different dendrites
 
 begintemplate CA1BistratifiedCell
-public is_art
 public init, topol, basic_shape, subsets, geom, biophys
+public is_art, gid, randi
 public pre_list, connect2target
 
 public soma, radT2, radM2, radt2, radT1
@@ -22,10 +22,13 @@ create radM1, radt1, oriT1, oriM1, orit1
 create oriT2, oriM2, orit2
 
 proc init() {
+
         gid = $1
         randi = $2
+        
         topol()
         subsets()
+        
         geom()
         biophys()
         geom_nseg()
