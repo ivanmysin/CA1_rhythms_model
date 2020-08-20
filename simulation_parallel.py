@@ -103,9 +103,13 @@ def run_simulation(params):
     
     
     for gid in gid_vect:
+        celltypename = params["celltypes"][gid]
+        cellclass = getattr(h, basic_params["CellParameters"][celltypename]["cellclass"])
        
+        cell = cellclass(gid, 0)
+        
         if params["celltypes"][gid] == "pyr":
-            cell = h.poolosyncell(gid, 0)
+            cell = cellclass(gid, 0)
             
             is_pyrs_thread = True
             for sec in cell.all:
@@ -115,64 +119,22 @@ def run_simulation(params):
             pyr_coord_in_layer_y = radius_for_pyramids * 2 * (np.random.rand() - 0.5) # !!!! density of the pyramidal cells  
 
             cell.position(pyr_coord_in_layer_x, 0, pyr_coord_in_layer_y)
-        
-        elif params["celltypes"][gid] == "pvbas":
-            cell = h.pvbasketcell(gid, 0)
-        
-        elif params["celltypes"][gid] == "olm":
-            cell = h.olmcell(gid, 0)
-        
-        elif params["celltypes"][gid] == "cckbas":
-            cell = h.cckcell(gid, 0)
-        
-        elif params["celltypes"][gid] == "ivy":
-            cell = h.ivycell(gid, 0)
-        
-        elif params["celltypes"][gid] == "ngf":
-            cell = h.ngfcell(gid, 0)
-        
-        elif params["celltypes"][gid] == "aac":
-            cell = h.axoaxoniccell(gid, 0)
-        
-        elif params["celltypes"][gid] == "bis":
-            cell= h.bistratifiedcell(gid, 0)
-        
-        elif params["celltypes"][gid] == "sca":
-            cell = h.scacell(gid, 0)
-        
-        elif params["celltypes"][gid] == "ca3":
-            cell = h.ArtifitialCell(gid, 0)
-            cell.celltype = "ca3"
-        
-        elif params["celltypes"][gid] == "mec":
-            cell = h.ArtifitialCell(gid, 0)
-            cell.celltype = "mec"
-        
-        elif params["celltypes"][gid] == "lec":
-            cell = h.ArtifitialCell(gid, 0)
-            cell.celltype = "lec"
-        
-        elif params["celltypes"][gid] == "msteevracells":
-            cell = h.ArtifitialCell(gid, 0)
-            cell.celltype = "msteevracells"
-        
-        elif params["celltypes"][gid] == "mskomalicells":
-            cell = h.ArtifitialCell(gid, 0)
-            cell.celltype = "mskomalicells"
-       
+  
+
         pc.set_gid2node(gid, pc.id())
         
         # set counters for spike generation
         if cell.is_art() == 0:
             for sec in cell.all:
                 sec.insert("IextNoise")
-                sec.sigma_IextNoise = 0.0005
-                sec.mean_IextNoise = 0.0005
+                sec.sigma_IextNoise = basic_params["CellParameters"][celltypename]["iext"]
+                sec.mean_IextNoise = basic_params["CellParameters"][celltypename]["iext_std"]
             
             firing = h.NetCon(cell.soma[0](0.5)._ref_v, None, sec=cell.soma[0])
             firing.threshold = -40 * mV
 
         else:
+            cell.celltype = celltypename
             firing = h.NetCon(cell.acell, None)
         
         pc.cell(gid, firing)
@@ -221,35 +183,33 @@ def run_simulation(params):
                 continue
 
             
+            number_connections = np.floor(conn_data["prob"])
 
-            if np.random.rand() > conn_data["prob"]:
+            if (np.random.rand() > (conn_data["prob"] - number_connections) ):
+                number_connections += 1
                 continue
             
             print(conn_name)
-            
-           
-            
-            post_comp = np.random.choice( getattr( postsynaptic_cell, conn_data["target_compartment"] ) )
-            
-            # print(post_comp)
-             
-            
-            
-            syn = h.Exp2Syn( post_comp(0.5) ) 
-            syn.e = conn_data["Erev"]
-            syn.tau1 = conn_data["tau_rise"]
-            syn.tau2 = conn_data["tau_decay"]
-            
-            conn = pc.gid_connect(pre_idx, syn)
-            
-            # choce synaptic delay and weight from lognormal distribution 
-            conn.delay = 1.0  # np.random.lognormal(mean=np.log(conn_data["delay"]), sigma=conn_data["delay_std"])   
-            conn.weight[0] = conn_data["gmax"] # np.random.lognormal(mean=np.log(conn_data["gmax"]), sigma=conn_data["gmax_std"]) 
+            for i in range(int(number_connections)):
+                post_comp = np.random.choice( getattr( postsynaptic_cell, conn_data["target_compartment"] ) )
+                
+                # print(post_comp)
 
-            
-            connections.append(conn)
-            synapses.append(syn)
-            
+                syn = h.Exp2Syn( post_comp(0.5) ) 
+                syn.e = conn_data["Erev"]
+                syn.tau1 = conn_data["tau_rise"]
+                syn.tau2 = conn_data["tau_decay"]
+                
+                conn = pc.gid_connect(pre_idx, syn)
+                
+                # choce synaptic delay and weight from lognormal distribution 
+                conn.delay = np.random.lognormal(mean=np.log(conn_data["delay"]), sigma=conn_data["delay_std"])   
+                conn.weight[0] = np.random.lognormal(mean=np.log(conn_data["gmax"]), sigma=conn_data["gmax_std"]) 
+
+                
+                connections.append(conn)
+                synapses.append(syn)
+                
     
         
     

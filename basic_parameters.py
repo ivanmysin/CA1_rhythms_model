@@ -28,8 +28,8 @@ basic_params = {
     
     "celltypes" : [],
     
-    "CellNumbers" : {
-        "Npyr" :    9000,    # 
+    "CellNumbersInFullModel" : {
+       "Npyr" :    9000,
         "Npvbas" :  200,
         "Nolm" :    80,
         "Ncckbas" : 160,
@@ -40,12 +40,32 @@ basic_params = {
         "Nsca" :    40,
         
         
-        "Nca3" : 1000,  # 10000
-        "Nmec" : 1000,  # 10000
-        "Nlec" : 1000,  # 10000
+        "Nca3" : 10000,
+        "Nmec" : 10000, 
+        "Nlec" : 10000,  
         "Nmsteevracells" : 200,
         "Nmskomalicells" : 200,
         "Nmsach"         : 50,
+    },
+    
+    "CellNumbers" : {
+        "Npyr" :    500,
+        "Npvbas" :  100,
+        "Nolm" :    40,
+        "Ncckbas" : 80,
+        "Nivy" :    130,
+        "Nngf" :    65,
+        "Nbis" :    35,
+        "Naac" :    30,
+        "Nsca" :    20,
+        
+        
+        "Nca3" : 500,
+        "Nmec" : 500, 
+        "Nlec" : 500,  
+        "Nmsteevracells" : 20,
+        "Nmskomalicells" : 20,
+        "Nmsach"         : 5,
     },
     
     "CellParameters" : {
@@ -400,7 +420,7 @@ basic_params = {
             "tau_rise": 2.0,
             "tau_decay": 6.3,
 
-            "prob": 0.06,
+            "prob": 0.02,
             
             "delay": 1.5,
             "delay_std" : 0.5,
@@ -1293,12 +1313,15 @@ for celltype, list_idx in basic_params["save_soma_v"].items():
 basic_params["save_soma_v"]["vect_idxes"] = save_soma_v_idx
 
 
-for conn_data in basic_params["connections"].values():
+for connname, conn_data in basic_params["connections"].items():
     
     conn_data["gmax"] *= 0.001       # recalulate nS to micromhos 
     conn_data["gmax_std"] *= 0.001
-
     conn_data["delay"] += 1.5        # add delay on spike generation
+    
+    precell, postcell = connname.split("2")
+    
+    conn_data["prob"] *= basic_params["CellNumbersInFullModel"]["N"+precell] / basic_params["CellNumbers"]["N"+precell]
 
 
 # print(basic_params["connections"]["ca32pyr"])

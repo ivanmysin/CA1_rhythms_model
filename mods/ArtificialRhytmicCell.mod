@@ -59,34 +59,37 @@ INITIAL {
 }
 
 NET_RECEIVE (w) {
-
+   
     get_pdf_by_phase()
-     
+         
     phase = phase + delta_phase
     if (phase > PI) {
         phase = phase - TWOPI
     }
 
-    randflag = scop_random() :generate randomflag between 0 and 1
-    
+    randflag = scop_random() : generate randomflag between 0 and 1
+        
     if (randflag < pdf  && time_after_spike > latency) {
         : generate spike
+        time_after_spike = 0
         net_send(delta_t, 1)
         net_event(t)
-        time_after_spike = 0
-    
+       
     } else {
         time_after_spike = time_after_spike + delta_t
         net_send(delta_t, 1)
-    
     }
+    
 
 }
 
 
 PROCEDURE get_pdf_by_phase() {
+    
     : TABLE pdf DEPEND phase FROM -4 TO 4 WITH 100
     
     pdf = exp(kappa * cos(phase - mu) ) * TWOPIIODFIRATIO
+    
+
 }
 
