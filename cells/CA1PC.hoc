@@ -23,6 +23,8 @@ public x, y, z, gid, randi, position, unite_secs2lists
 objref pre_list
 objref all, basal_list, apical_list, soma_list, axon_list, rad_list, lm_list, dendrite_list
 
+strdef celltype
+
 create soma[1], oriprox1, oridist1, oriprox2, oridist2, axon, radTprox
 create radTmed, radTdist, lm_thick2, lm_medium2, lm_thin2, lm_thick1, lm_medium1
 create lm_thin1, radTprox_obl2, radTprox_obl1, radTdist_obl2, radTdist_obl1
@@ -30,6 +32,8 @@ create lm_thin1, radTprox_obl2, radTprox_obl1, radTdist_obl2, radTdist_obl1
 proc init() {
   gid = $1
   randi = $2
+  
+  celltype = "pyr"
   topol()
   subsets()
   geom()

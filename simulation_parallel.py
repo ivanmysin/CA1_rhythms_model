@@ -11,7 +11,7 @@ import os
 import sys
 
 def join_lfp(comm, electrodes):
-    print("Hello from join lfp!")
+    # print("Hello from join lfp!")
     rank = comm.Get_rank()
 
     lfp_data = []
@@ -64,11 +64,12 @@ def join_vect_lists(comm, vect_list, gid_vect):
 def run_simulation(params):
     pc = h.ParallelContext()
     
-    # pc.timeout(0)
+    pc.timeout(20)
     h.load_file("stdgui.hoc")
     h.load_file("stdrun.hoc")
     h.load_file("import3d.hoc")
-    pc.timeout(20)
+    # pc.timeout(20)
+   
     
     load_mechanisms("./mods/")
 
@@ -110,7 +111,7 @@ def run_simulation(params):
 
         cell = cellclass(gid, 0)
 
-        
+        pc.set_gid2node(gid, pc.id())
         
         if celltypename == "pyr":
            
@@ -124,14 +125,14 @@ def run_simulation(params):
             cell.position(pyr_coord_in_layer_x, 0, pyr_coord_in_layer_y)
   
         
-        pc.set_gid2node(gid, pc.id())
+        
         
         # set counters for spike generation
         if cell.is_art() == 0:
             for sec in cell.all:
                 sec.insert("IextNoise")
-                sec.sigma_IextNoise = params["CellParameters"][celltypename]["iext"]
-                sec.mean_IextNoise = params["CellParameters"][celltypename]["iext_std"]
+                sec.sigma_IextNoise = params["CellParameters"][celltypename]["iext_std"] 
+                sec.mean_IextNoise = params["CellParameters"][celltypename]["iext"] + np.random.randn() * 0.5 * params["CellParameters"][celltypename]["iext_std"]
             
             firing = h.NetCon(cell.soma[0](0.5)._ref_v, None, sec=cell.soma[0])
             firing.threshold = -40 * mV
@@ -139,12 +140,13 @@ def run_simulation(params):
         else:
             cell.celltype = celltypename
             cell.acell.mu = params["CellParameters"][celltypename]["phase"]
-            # cell.acell.latency = params["CellParameters"][celltypename]["latency"]
+            cell.acell.latency = params["CellParameters"][celltypename]["latency"]
             cell.acell.freqs = params["CellParameters"][celltypename]["freqs"]
             cell.acell.spike_rate = params["CellParameters"][celltypename]["spike_train_freq"]
             cell.acell.kappa = params["CellParameters"][celltypename]["kappa"]
             cell.acell.I0 = params["CellParameters"][celltypename]["I0"]
             cell.acell.myseed = np.random.randint(0, 1000000, 1)
+            cell.acell.delta_t = 1.0
             firing = h.NetCon(cell.acell, None)
         
         pc.cell(gid, firing)
@@ -169,24 +171,25 @@ def run_simulation(params):
         
         all_cells.append(cell)
 
-
+    print("End of neurons settings")
 
     
     # set connection
     connections = h.List()
     synapses = h.List()
     
-    for pre_idx in range(ncells):
+    for presynaptic_cell_idx in range(ncells):
         
-        for post_idx, postsynaptic_cell in enumerate(hh_cells):
-            
-            if pre_idx == postsynaptic_cell.gid:
-                continue
-                       
+        for postsynaptic_cell_idx, postsynaptic_cell in enumerate(hh_cells):
+            # print(postsynaptic_cell.celltype)
+            if presynaptic_cell_idx == postsynaptic_cell.gid:
+                continue # Do not use self connections
+                   
             try:
+                conn_name = params["celltypes"][presynaptic_cell_idx] + "2" + postsynaptic_cell.celltype
                 
-                conn_name = params["celltypes"][pre_idx] + "2" + postsynaptic_cell.celltype
                 conn_data = params["connections"][conn_name]
+                
                 
             except AttributeError:
                 continue
@@ -195,19 +198,19 @@ def run_simulation(params):
 
             
             number_connections = np.floor(conn_data["prob"])
-
-            if (np.random.rand() > (conn_data["prob"] - number_connections) ):
+            
+            # print(conn_data["prob"] - number_connections)
+            if (np.random.rand() < (conn_data["prob"] - number_connections) ):
                 number_connections += 1
-                continue
-            
-            print(conn_name)
-            
+
             post_name = conn_data["target_compartment"]
-            post_list = getattr(cell, post_name)
+            post_list = getattr(postsynaptic_cell, post_name)
             len_postlist = sum([1 for _ in post_list])
             
-            
+            # print(conn_name, " ", number_connections)
             for i in range(int(number_connections)):
+                
+                    
                 if len_postlist == 1:
                     post_idx = 0
                 else:
@@ -222,11 +225,16 @@ def run_simulation(params):
                 syn.tau1 = conn_data["tau_rise"]
                 syn.tau2 = conn_data["tau_decay"]
                 
-                conn = pc.gid_connect(pre_idx, syn)
+                conn = pc.gid_connect(presynaptic_cell_idx, syn)
                 
-                # choce synaptic delay and weight from lognormal distribution 
-                conn.delay = np.random.lognormal(mean=np.log(conn_data["delay"]), sigma=conn_data["delay_std"])   
-                conn.weight[0] = np.random.lognormal(mean=np.log(conn_data["gmax"]), sigma=conn_data["gmax_std"]) 
+                # choce synaptic delay and weight from lognormal distribution
+                conn_delay = np.random.lognormal(mean=np.log(conn_data["delay"]), sigma=conn_data["delay_std"]) 
+                if conn_delay <= 5*h.dt: conn_delay = 5*h.dt
+                conn.delay = conn_delay
+                conn_gmax =  np.random.lognormal(mean=np.log(conn_data["gmax"]), sigma=conn_data["gmax_std"])
+                
+                if conn_gmax < 0: conn_gmax = 0.000001
+                conn.weight[0] = conn_gmax
 
                 
                 connections.append(conn)
@@ -340,10 +348,10 @@ def run_simulation(params):
  
     
         
-    
+    print("End of the simultion!")
     pc.done()
     h.quit()
     
     
-    print("End of the simultion!")
+    
     return

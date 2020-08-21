@@ -26,14 +26,14 @@ basic_params = {
     "PyrDencity" : 0.2, # pyramidal cells / micrometer^2
     
     "file_results":  "../../Data/CA1_simulation/test.hdf5", # None, #
-    "duration" : 1000, # simulation time
+    "duration" : 200, # simulation time
     
     "celltypes" : [],
     
     "CellNumbersInFullModel" : {
-       "Npyr" :    9000,
-        "Npvbas" :  200,
-        "Nolm" :    80,
+        "Npyr" :    9000,
+        "Npvbas" : 200,
+        "Nolm" :   80,
         "Ncckbas" : 160,
         "Nivy" :    260,
         "Nngf" :    130,
@@ -65,9 +65,9 @@ basic_params = {
         "Nca3" : 500,
         "Nmec" : 500, 
         "Nlec" : 500,  
-        "Nmsteevracells" : 20,
-        "Nmskomalicells" : 20,
-        "Nmsach"         : 5,
+        "Nmsteevracells" : 200,
+        "Nmskomalicells" : 200,
+        "Nmsach"         : 20,
     },
     
     "CellParameters" : {
@@ -127,7 +127,7 @@ basic_params = {
         
         "pyr" : {
             "cellclass" : "CA1PyramidalCell", # "poolosyncell", # 
-            "iext" : 0.007,
+            "iext" : 0.002,
             "iext_std" : 0.005,
         },
         
@@ -139,7 +139,7 @@ basic_params = {
         
         "cckbas" : {
             "cellclass" : "cckcell",
-            "iext" : 0.003,
+            "iext" : 0.002,
             "iext_std" : 0.005,
         },
 
@@ -587,13 +587,13 @@ basic_params = {
         
         # connections to cckbas
         "msteevracells2cckbas" : {
-            "gmax" : 1.5, # !!!! 
+            "gmax" : 2.5, # !!!! 
             "gmax_std" : 0.7, # !!!!
             "Erev": -75,
             "tau_rise": 0.5,
-            "tau_decay": 3,
+            "tau_decay": 5.0,
             
-            "prob": 0.5,
+            "prob": 0.9,
             
             "delay": 10.5,
             "delay_std" : 0.5,
@@ -621,6 +621,7 @@ basic_params = {
             "target_compartment" : "dendrite_list",
         },
         
+       
        "cckbas2cckbas": {
             "gmax": 1.0,
             "gmax_std" : 0.2,
@@ -638,6 +639,7 @@ basic_params = {
             "sourse_compartment" : "soma",
             "target_compartment" : "soma",
         },
+        
         
         # hypotetical connections
         "olm2cckbas": {
@@ -1303,7 +1305,7 @@ for celltype, numbers in sorted(basic_params["CellNumbers"].items()):
 
 basic_params["celltypes"] = cell_types_in_model
 
-
+# print(basic_params["celltypes"])
 
 save_soma_v_idx = np.empty(shape=0, dtype=np.int)
 for celltype, list_idx in basic_params["save_soma_v"].items(): 
@@ -1329,8 +1331,10 @@ for connname, conn_data in basic_params["connections"].items():
     
     precell, postcell = connname.split("2")
     
-    conn_data["prob"] *= basic_params["CellNumbersInFullModel"]["N"+precell] / basic_params["CellNumbers"]["N"+precell]
-
+    try:
+        conn_data["prob"] = conn_data["prob"]* basic_params["CellNumbersInFullModel"]["N"+precell] / basic_params["CellNumbers"]["N"+precell]
+    except ZeroDivisionError:
+        conn_data["prob"] = 0
 
 # print(basic_params["connections"]["ca32pyr"])
 
