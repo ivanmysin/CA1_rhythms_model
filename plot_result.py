@@ -30,21 +30,19 @@ def plot_spike_raster(filepath):
         raster_group = h5file["extracellular/electrode_1/firing/origin_data"]
                 
         uniq_celltypes = raster_group.keys()
-        
-        fig, axes = plt.subplots(nrows=len(uniq_celltypes))
-        
-        
-        
-        for sp_idx, key in enumerate(uniq_celltypes):
-            for cell_key, firing in raster_group[key].items():
+
+        for celltype in uniq_celltypes:
+            fig, axes = plt.subplots()
+            fig.suptitle(celltype)
+            sp_idx = 0
+            for cell_key,firing in raster_group[celltype].items():
                 # celltype_idx = int(cell_key.split("_")[-1])
             
-                axes[sp_idx].scatter(firing,  np.zeros(firing.size) + sp_idx + 1, color="b", s=1 )
+                axes.scatter(firing,  np.zeros(firing.size) + sp_idx + 1, color="b", s=1 )
         
+                sp_idx += 1
         
-        
-        for celltype_idx, celltype in enumerate(uniq_celltypes):
-            axes[celltype_idx].set_title(celltype)
+       
         
         
         plt.show()
