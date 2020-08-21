@@ -55,13 +55,11 @@ def plot_lfp(filepath):
         lfp_group = h5file["extracellular/electrode_1/lfp/origin_data"]
 
         lfp_keys = sorted(lfp_group.keys())
-    
-        
-        fig, axes = plt.subplots(nrows=len(lfp_keys))
 
         for key_idx, key in enumerate(lfp_keys):
-            axes[key_idx].plot(t[1:], lfp_group[key][:], label=key )
-            axes[key_idx].legend()
+            fig, axes = plt.subplots()
+            axes.plot(t[:lfp_group[key].size], lfp_group[key][:], label=key )
+            
         
         
         plt.show()

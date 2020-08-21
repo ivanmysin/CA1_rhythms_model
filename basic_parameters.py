@@ -26,7 +26,7 @@ basic_params = {
     "PyrDencity" : 0.2, # pyramidal cells / micrometer^2
     
     "file_results":  "../../Data/CA1_simulation/test.hdf5", # None, #
-    "duration" : 200, # simulation time
+    "duration" : 1500, # simulation time
     
     "celltypes" : [],
     
@@ -139,7 +139,7 @@ basic_params = {
         
         "cckbas" : {
             "cellclass" : "cckcell",
-            "iext" : 0.002,
+            "iext" : 0.005,
             "iext_std" : 0.005,
         },
 
@@ -593,7 +593,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 5.0,
             
-            "prob": 0.9,
+            "prob": 0.5
             
             "delay": 10.5,
             "delay_std" : 0.5,

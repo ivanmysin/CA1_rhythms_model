@@ -105,7 +105,7 @@ def processing_and_save(filepath):
                 celltype_firings = np.append(celltype_firings, cell_firing_dset[:])
 
              # тут нужно взять канал из пирамидного слоя
-            theta_lfp = h5file["extracellular/electrode_1/lfp/processing/channel_2_bands/theta"][:]
+            theta_lfp = h5file["extracellular/electrode_1/lfp/processing/channel_3_bands/theta"][:]
             bins, phase_distr = plib.get_phase_disrtibution(celltype_firings, theta_lfp, fd)
 
 
