@@ -267,19 +267,22 @@ def get_phase_disrtibution(train, lfp, fs):
     if train.size == 0:
         return np.empty(0, dtype=np.float), np.empty(0, dtype=np.float)
     
-    
-    
+  
     
     analitic_signal = sig.hilbert(lfp)
     lfp_phases = np.angle(analitic_signal, deg=False)
     lfp_ampls = np.abs(analitic_signal)
     
     # print(train[-1]*0.001, " " , (lfp.size-1)/fs)
-    train = np.floor(train * fs * 0.001).astype(np.int) - 1 # multiply on 0.001 because train in ms, fs in Hz 
+    train = np.floor(train * fs * 0.001).astype(np.int) # multiply on 0.001 because train in ms, fs in Hz
+    
+    train = train[train < lfp.size-1]
     
     train_phases = lfp_phases[train]
     train_ampls = lfp_ampls[train]
+    
+    
 
-    count, bins = np.histogram(train_phases, bins=10, density=True, range=[-np.pi, np.pi], weights=train_ampls)
+    count, bins = np.histogram(train_phases, bins=20, density=True, range=[-np.pi, np.pi] , weights=train_ampls )
     bins = np.convolve(bins, [0.5, 0.5], mode="valid")
     return bins, count

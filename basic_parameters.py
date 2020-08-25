@@ -26,7 +26,9 @@ basic_params = {
     "PyrDencity" : 0.2, # pyramidal cells / micrometer^2
     
     "file_results":  "../../Data/CA1_simulation/test.hdf5", # None, #
-    "duration" : 1500, # simulation time
+    "duration" : 1400, # simulation time
+    
+    "del_start_time" : 400, # time after start for remove  
     
     "celltypes" : [],
     
@@ -66,8 +68,8 @@ basic_params = {
         "Nmec" : 500, 
         "Nlec" : 500,  
         "Nmsteevracells" : 200,
-        "Nmskomalicells" : 200,
-        "Nmsach"         : 20,
+        "Nmskomalicells" : 0, # 200,
+        "Nmsach"         : 150,
     },
     
     "CellParameters" : {
@@ -118,7 +120,7 @@ basic_params = {
         
         "msach" : {
             "cellclass" : "ArtifitialCell",
-            "R" : 0.4,
+            "R" : 0.6,
             "phase" : np.pi,  # !!!!
             "freqs" : 5.0,
             "latency" : 10.0,
@@ -127,7 +129,7 @@ basic_params = {
         
         "pyr" : {
             "cellclass" : "CA1PyramidalCell", # "poolosyncell", # 
-            "iext" : 0.002,
+            "iext" : 0.005,
             "iext_std" : 0.005,
         },
         
@@ -139,7 +141,7 @@ basic_params = {
         
         "cckbas" : {
             "cellclass" : "cckcell",
-            "iext" : 0.005,
+            "iext" : 0.003,
             "iext_std" : 0.005,
         },
 
@@ -157,13 +159,13 @@ basic_params = {
         
         "ngf" : {
             "cellclass" : "ngfcell",
-            "iext" : 0.001,
+            "iext" : 0.002,
             "iext_std" : 0.005,
         },
         
         "ivy" : {
             "cellclass" : "ivycell",
-            "iext" : 0.003,
+            "iext" : 0.001,
             "iext_std" : 0.005,
         },
     
@@ -175,7 +177,7 @@ basic_params = {
         
         "sca" : {
             "cellclass" : "scacell",
-            "iext" : 0.0,
+            "iext" : 0.001,
             "iext_std" : 0.005,
         },
     
@@ -489,7 +491,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dendrite_list",
+            "target_compartment" : "soma",
         },
         
         "olm2pvbas": {
@@ -500,7 +502,7 @@ basic_params = {
             "tau_rise": 0.25,
             "tau_decay": 7.5,
 
-            "prob": 0.5, # optimized
+            "prob": 0.8, # optimized
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -548,8 +550,8 @@ basic_params = {
         },
         
         "ivy2pvbas": {
-            "gmax": 0.1,
-            "gmax_std" : 0.05,
+            "gmax": 1.1,
+            "gmax_std" : 0.5,
             
             "Erev": -75,
             "tau_rise": 0.5,
@@ -562,7 +564,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dendrite_list",
+            "target_compartment" : "soma",
         },
         
         "sca2pvbas": {
@@ -593,7 +595,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 5.0,
             
-            "prob": 0.5
+            "prob": 0.5,
             
             "delay": 10.5,
             "delay_std" : 0.5,
@@ -630,7 +632,7 @@ basic_params = {
             "tau_rise": 0.2,
             "tau_decay": 4.2,
 
-            "prob": 0.63,
+            "prob": 0, # !!!! 0.63,
             
             "delay": 2.7,
             "delay_std" : 0.5,
@@ -756,8 +758,8 @@ basic_params = {
         
         # hypotetical connections
         "mec2aac": {
-            "gmax": 0.1,
-            "gmax_std" : 0.05,
+            "gmax": 0.25,
+            "gmax_std" : 0.12,
             
             "Erev": 0,
             "tau_rise": 2,
@@ -765,16 +767,17 @@ basic_params = {
 
             "prob": 0.05,
             
-            "delay": 2.5,
+            "delay": 8.0,
             "delay_std" : 0.5,
             
 
             "sourse_compartment" : "acell",
             "target_compartment" : "dendrite_list",
         },
+        
         "lec2aac": {
-            "gmax": 0.1,
-            "gmax_std" : 0.05,
+            "gmax": 0.2,
+            "gmax_std" : 0.1,
             
             "Erev": 0,
             "tau_rise": 2,
@@ -782,7 +785,7 @@ basic_params = {
 
             "prob": 0.05,
             
-            "delay": 2.5,
+            "delay": 8.0,
             "delay_std" : 0.5,
             
 
@@ -923,7 +926,7 @@ basic_params = {
             "tau_rise": 0.3,
             "tau_decay": 0.6,
 
-            "prob": 0.1, # 0.081,
+            "prob": 0.081,
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -979,7 +982,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.5,
+            "prob": 0.1,
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -997,7 +1000,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.5,
+            "prob": 0.1,
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -1323,13 +1326,14 @@ for celltype, list_idx in basic_params["save_soma_v"].items():
 basic_params["save_soma_v"]["vect_idxes"] = save_soma_v_idx
 
 
-for connname, conn_data in basic_params["connections"].items():
+for conname, conn_data in basic_params["connections"].items():
     
     conn_data["gmax"] *= 0.001       # recalulate nS to micromhos 
     conn_data["gmax_std"] *= 0.001
     conn_data["delay"] += 1.5        # add delay on spike generation
     
-    precell, postcell = connname.split("2")
+    # print(conname)
+    precell, postcell = conname.split("2")
     
     try:
         conn_data["prob"] = conn_data["prob"]* basic_params["CellNumbersInFullModel"]["N"+precell] / basic_params["CellNumbers"]["N"+precell]

@@ -8,11 +8,12 @@ import processingLib as plib
 
 processing_param = {
 
-    "morlet_w0" : 6.0,     # центральная частота для вейвлета Морле
-    "freqs_step" : 10,     # количество частот, для которых вычисляется вейвлет за один цикл 
-    "max_freq_lfp" : 500,  # Гц, анализируем только до этой частоты 
 
-    "butter_order" : 4,    # Порядок для фильтра Баттерворда
+    "morlet_w0" : 6.0,      # центральная частота для вейвлета Морле
+    "freqs_step" : 10,      # количество частот, для которых вычисляется вейвлет за один цикл 
+    "max_freq_lfp" : 500,   # Гц, анализируем только до этой частоты 
+
+    "butter_order" : 3,    # Порядок для фильтра Баттерворда
     "filt_bands" : {
         "delta" : [1, 4], 
         "theta" : [4, 12], 
@@ -72,7 +73,7 @@ def processing_and_save(filepath):
             for band_name, freq_lims in processing_param["filt_bands"].items():
 
                 filtered_signal = sigp.butter(lfp, highpass_freq=freq_lims[1], \
-                    lowpass_freq=freq_lims[0], order= processing_param["butter_order"], fs=fd )
+                    lowpass_freq=freq_lims[0], order=processing_param["butter_order"], fs=fd )
 
                 bands_group.create_dataset(band_name, data = filtered_signal)
 
@@ -104,11 +105,11 @@ def processing_and_save(filepath):
 
                 celltype_firings = np.append(celltype_firings, cell_firing_dset[:])
 
-             # тут нужно взять канал из пирамидного слоя
+            # тут нужно взять канал из пирамидного слоя
             theta_lfp = h5file["extracellular/electrode_1/lfp/processing/channel_3_bands/theta"][:]
             bins, phase_distr = plib.get_phase_disrtibution(celltype_firings, theta_lfp, fd)
 
-
+            
             firing_theta.create_dataset(celltype, data = phase_distr)
         
         

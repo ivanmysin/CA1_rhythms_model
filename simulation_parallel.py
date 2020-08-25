@@ -68,7 +68,7 @@ def run_simulation(params):
     h.load_file("stdgui.hoc")
     h.load_file("stdrun.hoc")
     h.load_file("import3d.hoc")
-    # pc.timeout(20)
+
    
     
     load_mechanisms("./mods/")
@@ -131,6 +131,7 @@ def run_simulation(params):
         if cell.is_art() == 0:
             for sec in cell.all:
                 sec.insert("IextNoise")
+                sec.myseed_IextNoise = np.random.randint(0, 1000000000000000, 1)
                 sec.sigma_IextNoise = params["CellParameters"][celltypename]["iext_std"] 
                 sec.mean_IextNoise = params["CellParameters"][celltypename]["iext"] + np.random.randn() * 0.5 * params["CellParameters"][celltypename]["iext_std"]
             
@@ -145,8 +146,8 @@ def run_simulation(params):
             cell.acell.spike_rate = params["CellParameters"][celltypename]["spike_train_freq"]
             cell.acell.kappa = params["CellParameters"][celltypename]["kappa"]
             cell.acell.I0 = params["CellParameters"][celltypename]["I0"]
-            cell.acell.myseed = np.random.randint(0, 1000000, 1)
-            cell.acell.delta_t = 1.0
+            cell.acell.myseed = np.random.randint(0, 1000000000, 1)
+            cell.acell.delta_t = 0.2
             firing = h.NetCon(cell.acell, None)
         
         pc.cell(gid, firing)
@@ -307,10 +308,17 @@ def run_simulation(params):
     
     # print(pc.id(), "Start saving results to file")
     if (pc.id() == 0) and (params["file_results"] != None):
-
+        
+        t_sim = np.asarray(t_sim)
+        rem_time = params["del_start_time"]
+        if rem_time > t_sim[-1]:
+            rem_time = 0
+        rem_idx = int(rem_time / h.dt)
+        
         with h5py.File(params["file_results"], 'w') as h5file:
             
-            h5file.create_dataset("time", data = np.asarray(t_sim) )
+            t_sim = t_sim[rem_idx:]-rem_time 
+            h5file.create_dataset("time", data = t_sim)
             
             extracellular_group = h5file.create_group("extracellular")
             ele_group = extracellular_group.create_group('electrode_1')
@@ -321,7 +329,7 @@ def run_simulation(params):
             
             
             for idx_el, lfp in enumerate(lfp_data):
-                lfp_group_origin.create_dataset("channel_" + str(idx_el+1), data = lfp)
+                lfp_group_origin.create_dataset("channel_" + str(idx_el+1), data = lfp[rem_idx:] )
             
             firing_group = h5file.create_group("extracellular/electrode_1/firing/origin_data")
             
@@ -334,6 +342,7 @@ def run_simulation(params):
                     if params["celltypes"][cell_idx] != celltype:
                         continue
                     
+                    sp_times = sp_times[sp_times >= rem_time] - rem_time
                     cell_spikes_dataset = cell_friring_group.create_dataset("neuron_" + str(cell_idx+1), data=sp_times)
             
     
@@ -342,7 +351,7 @@ def run_simulation(params):
             intracellular_group_origin = intracellular_group.create_group("origin_data")
             
             for v_idx, soma_v in enumerate(soma_v_list):
-                soma_v_dataset = intracellular_group_origin.create_dataset("neuron_" + str(v_idx+1), data=soma_v)
+                soma_v_dataset = intracellular_group_origin.create_dataset("neuron_" + str(v_idx+1), data=soma_v[rem_idx:] )
                 soma_v_dataset.attrs["celltype"] = params["celltypes"][params["save_soma_v"]["vect_idxes"][v_idx]]
     
  
