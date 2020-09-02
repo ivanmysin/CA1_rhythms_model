@@ -53,15 +53,15 @@ basic_params = {
     },
     
     "CellNumbers" : {
-        "Npyr" :    500,
-        "Npvbas" :  100,
-        "Nolm" :    40,
-        "Ncckbas" : 80,
-        "Nivy" :    130,
-        "Nngf" :    65,
-        "Nbis" :    35,
-        "Naac" :    30,
-        "Nsca" :    20,
+        "Npyr" :    100, # 500,
+        "Npvbas" :  100, # 100
+        "Nolm" :    40, # 40,
+        "Ncckbas" : 80, # 80
+        "Nivy" :    130, # 130,
+        "Nngf" :    65, # 65
+        "Nbis" :    35, # 35,
+        "Naac" :    30, # 30,
+        "Nsca" :    20, # 20,
         
         
         "Nca3" : 500,
@@ -203,8 +203,8 @@ basic_params = {
     
         # connection to pyramidal neurons
         "ca32pyr": {
-            "gmax": 0.016,
-            "gmax_std" : 0.002,
+            "gmax": 0.032,      # 0.016,
+            "gmax_std" : 0.015, # 0.002,
             
             "Erev": 0,
             "tau_rise": 0.5,
@@ -293,6 +293,7 @@ basic_params = {
             "target_compartment" : "soma_list",
         },
 
+      
        "ivy2pyr": {
             "gmax": 0.053,
             "gmax_std" : 0.02,
@@ -484,7 +485,7 @@ basic_params = {
             "tau_rise": 0.43,
             "tau_decay": 4.49,
 
-            "prob": 0.38,
+            "prob": 0.1, # 0.38,
             
             "delay": 4.5,
             "delay_std" : 2.0,
@@ -502,7 +503,7 @@ basic_params = {
             "tau_rise": 0.25,
             "tau_decay": 7.5,
 
-            "prob": 0.8, # optimized
+            "prob": 0.1, # optimized
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -521,7 +522,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.5, 
+            "prob": 0.1, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -539,7 +540,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.5, 
+            "prob": 0.1, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -557,7 +558,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.5, 
+            "prob": 0.1, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -575,7 +576,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.5, 
+            "prob": 0.1, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -589,7 +590,7 @@ basic_params = {
         
         # connections to cckbas
         "msteevracells2cckbas" : {
-            "gmax" : 2.5, # !!!! 
+            "gmax" : 1.5, # !!!! 
             "gmax_std" : 0.7, # !!!!
             "Erev": -75,
             "tau_rise": 0.5,
@@ -632,7 +633,7 @@ basic_params = {
             "tau_rise": 0.2,
             "tau_decay": 4.2,
 
-            "prob": 0, # !!!! 0.63,
+            "prob": 0.2, # !!!! 0.63,
             
             "delay": 2.7,
             "delay_std" : 0.5,
@@ -652,7 +653,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.5, 
+            "prob": 0.1, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -670,7 +671,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.5, 
+            "prob": 0.1, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -688,7 +689,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.5, 
+            "prob": 0.1, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -801,7 +802,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.5, 
+            "prob": 0.1, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -819,7 +820,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.5, 
+            "prob": 0.1, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -836,7 +837,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.8, 
+            "prob": 0.1, # 0.8, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -853,7 +854,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.5, 
+            "prob": 0.1, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -871,7 +872,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.5, 
+            "prob": 0.1, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -889,7 +890,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.5, 
+            "prob": 0.1, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -1075,7 +1076,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.5, 
+            "prob": 0.1, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -1248,7 +1249,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.5, 
+            "prob": 0.1, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -1266,7 +1267,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.5, 
+            "prob": 0.1, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -1283,7 +1284,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.5, 
+            "prob": 0.1, 
             
             "delay": 1.2,
             "delay_std" : 0.2,

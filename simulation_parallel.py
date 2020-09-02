@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import h5py
 import os
 import sys
+from time import time
 
 def join_lfp(comm, electrodes):
     # print("Hello from join lfp!")
@@ -282,9 +283,10 @@ def run_simulation(params):
     h.finitialize()
     
     pc.barrier()
-    # sprint("Before simulation")
+    print("Start simulation")
+    timer = time()
     pc.psolve(params["duration"] * ms)
-    # print("After simulation")
+    print("Time of simulation in sec ", time()-timer)
     pc.barrier()
     
     

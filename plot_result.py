@@ -55,11 +55,16 @@ def plot_lfp(filepath):
         lfp_group = h5file["extracellular/electrode_1/lfp/origin_data"]
 
         lfp_keys = sorted(lfp_group.keys(), key = lambda x: int(x.split("_")[1]), reverse=True )
+        
+        
 
         for key_idx, key in enumerate(lfp_keys):
             fig, axes = plt.subplots()
             axes.set_title(key)
-            axes.plot(t[:lfp_group[key].size], lfp_group[key][:], label=key )
+            axes.plot(t[:lfp_group[key].size], lfp_group[key][:], label=key, color="blue" )
+            
+            lfp_theta_filtered = h5file["extracellular/electrode_1/lfp/processing/"+key+"_bands/theta"]
+            axes.plot(t[7000:lfp_group[key].size], lfp_theta_filtered[7000:], label=key, color="red" )
             
         
         

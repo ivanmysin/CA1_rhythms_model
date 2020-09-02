@@ -3,7 +3,7 @@ from elephant import signal_processing as sigp
 import matplotlib.pyplot as plt
 import h5py
 import processingLib as plib
-
+from scipy.stats import zscore
 
 
 processing_param = {
@@ -71,9 +71,9 @@ def processing_and_save(filepath):
 
             bands_group = process_group.create_group(key + "_bands")
             for band_name, freq_lims in processing_param["filt_bands"].items():
-
-                filtered_signal = sigp.butter(lfp, highpass_freq=freq_lims[1], \
-                    lowpass_freq=freq_lims[0], order=processing_param["butter_order"], fs=fd )
+                lfp = zscore(lfp)
+                filtered_signal = sigp.butter(lfp, highpass_freq=freq_lims[0], \
+                    lowpass_freq=freq_lims[1], order=processing_param["butter_order"], fs=fd )
 
                 bands_group.create_dataset(band_name, data = filtered_signal)
 
