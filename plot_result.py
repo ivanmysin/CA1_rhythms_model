@@ -8,20 +8,33 @@ def plot_v(filepath):
     with h5py.File(filepath, 'r') as h5file:
         t = h5file["time"][:]
         
+        raster_group = h5file["extracellular/electrode_1/firing/origin_data"]
         intracellular_group = h5file["intracellular/origin_data"]
         
         intracell_keys = intracellular_group.keys()
         
         
-        fig, axes = plt.subplots(nrows=len(intracell_keys) )
+        
         
         for idx, key in enumerate(intracell_keys):
-            v = intracellular_group[key][:]
-        
-            axes[idx].plot(t, v, label = intracellular_group[key].attrs["celltype"] )
-            axes[idx].legend()
+            fig, axes = plt.subplots()
             
-        plt.show()
+            v = intracellular_group[key][:]
+            celltype = intracellular_group[key].attrs["celltype"]
+            
+            print(celltype)
+        
+            axes.plot(t, v, label = celltype )
+            
+            firings = raster_group[celltype][key][:]
+            
+            firings_y = np.zeros_like(firings) - 5
+            axes.scatter(firings, firings_y, s=20, color="red")
+            
+            
+            axes.legend()
+            
+            plt.show()
 
 
 def plot_spike_raster(filepath):
@@ -63,8 +76,8 @@ def plot_lfp(filepath):
             axes.set_title(key)
             axes.plot(t[:lfp_group[key].size], lfp_group[key][:], label=key, color="blue" )
             
-            lfp_theta_filtered = h5file["extracellular/electrode_1/lfp/processing/"+key+"_bands/theta"]
-            axes.plot(t[7000:lfp_group[key].size], lfp_theta_filtered[7000:], label=key, color="red" )
+            #lfp = h5file["extracellular/electrode_1/lfp/processing/"+key+"_bands/theta"]
+            # axes.plot(t, lfp, label=key, color="red" )
             
         
         
@@ -98,9 +111,9 @@ if __name__ == "__main__":
     path = basic_params["file_results"]   #"/home/ivan/Data/CA1_simulation/test.hdf5"
 
     plot_v(path)
-    plot_spike_raster(path)
-    plot_lfp(path)
-    plot_phase_disrtibution(path)
+    # plot_spike_raster(path)
+    # plot_lfp(path)
+    # plot_phase_disrtibution(path)
 
 
 

@@ -53,23 +53,23 @@ basic_params = {
     },
     
     "CellNumbers" : {
-        "Npyr" :    100, # 500,
-        "Npvbas" :  100, # 100
-        "Nolm" :    40, # 40,
-        "Ncckbas" : 80, # 80
-        "Nivy" :    130, # 130,
-        "Nngf" :    65, # 65
-        "Nbis" :    35, # 35,
-        "Naac" :    30, # 30,
-        "Nsca" :    20, # 20,
+        "Npyr" :    10, # 100, # 500,
+        "Npvbas" :  10, # 100, # 100
+        "Nolm" :    14, # 40, # 40,
+        "Ncckbas" : 8,  # 80, # 80
+        "Nivy" :   7,   # 130, # 130,
+        "Nngf" :    4,  # 65, # 65
+        "Nbis" :   8,   # 35, # 35,
+        "Naac" :    10, # 30, # 30,
+        "Nsca" :    7,  # 20, # 20,
         
         
-        "Nca3" : 500,
-        "Nmec" : 500, 
-        "Nlec" : 500,  
-        "Nmsteevracells" : 200,
+        "Nca3" : 10, #500,
+        "Nmec" : 10, #500, 
+        "Nlec" : 10, #500,  
+        "Nmsteevracells" : 10, #200,
         "Nmskomalicells" : 0, # 200,
-        "Nmsach"         : 150,
+        "Nmsach"         : 10, #150,
     },
     
     "CellParameters" : {
@@ -129,25 +129,25 @@ basic_params = {
         
         "pyr" : {
             "cellclass" : "CA1PyramidalCell", # "poolosyncell", # 
-            "iext" : 0.005,
+            "iext" : 0.009, #!!!!! 0.005,
             "iext_std" : 0.005,
         },
         
         "pvbas" : {
             "cellclass" : "pvbasketcell",
-            "iext" : 0.0,
+            "iext" : 0.005, #!!!!!! 0.0,
             "iext_std" : 0.005,
         },
         
         "cckbas" : {
             "cellclass" : "cckcell",
-            "iext" : 0.003,
+            "iext" : 0.005,
             "iext_std" : 0.005,
         },
 
         "olm" : {
             "cellclass" : "olmcell",
-            "iext" : 0.0,
+            "iext" : 0.001,
             "iext_std" : 0.005,
         },
         
@@ -200,7 +200,7 @@ basic_params = {
 
 
     "connections" : {
-    
+        
         # connection to pyramidal neurons
         "ca32pyr": {
             "gmax": 0.032,      # 0.016,
@@ -485,7 +485,7 @@ basic_params = {
             "tau_rise": 0.43,
             "tau_decay": 4.49,
 
-            "prob": 0.1, # 0.38,
+            "prob": 0.38,
             
             "delay": 4.5,
             "delay_std" : 2.0,
@@ -503,7 +503,7 @@ basic_params = {
             "tau_rise": 0.25,
             "tau_decay": 7.5,
 
-            "prob": 0.1, # optimized
+            "prob": 0.2, # optimized
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -522,7 +522,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.1, 
+            "prob": 0.2, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -540,7 +540,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.1, 
+            "prob": 0.2, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -558,7 +558,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.1, 
+            "prob": 0.2, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -576,7 +576,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.1, 
+            "prob": 0, # !!! 0.1, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -633,7 +633,7 @@ basic_params = {
             "tau_rise": 0.2,
             "tau_decay": 4.2,
 
-            "prob": 0.2, # !!!! 0.63,
+            "prob": 0.63,
             
             "delay": 2.7,
             "delay_std" : 0.5,
@@ -653,7 +653,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.1, 
+            "prob": 0.2, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -671,7 +671,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.1, 
+            "prob": 0.2, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -689,7 +689,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.1, 
+            "prob": 0.2, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -766,7 +766,7 @@ basic_params = {
             "tau_rise": 2,
             "tau_decay": 6.3,
 
-            "prob": 0.05,
+            "prob": 0.07,
             
             "delay": 8.0,
             "delay_std" : 0.5,
@@ -802,7 +802,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.1, 
+            "prob": 0.2, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -820,7 +820,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.1, 
+            "prob": 0.2, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -829,6 +829,7 @@ basic_params = {
             "sourse_compartment" : "soma",
             "target_compartment" : "dendrite_list",
         },
+        
         "pvbas2aac": {
             "gmax": 1.5,
             "gmax_std" : 0.7,
@@ -837,7 +838,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.1, # 0.8, 
+            "prob": 0.2, # 0.8, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -846,6 +847,7 @@ basic_params = {
             "sourse_compartment" : "soma",
             "target_compartment" : "dendrite_list",
         },
+        
         "cckbas2aac": {
             "gmax": 1.5,
             "gmax_std" : 0.7,
@@ -854,7 +856,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.1, 
+            "prob": 0.2, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -872,7 +874,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.1, 
+            "prob": 0.2, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -1010,8 +1012,28 @@ basic_params = {
             "sourse_compartment" : "soma",
             "target_compartment" : "dendrite_list",
         },
-        # end connections to bis
         
+        # hypotetical connetions to bis
+        
+        
+        # end connections to bis
+        "bis2bis": {
+            "gmax": 0.5,
+            "gmax_std" : 0.2,
+            
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.5, 
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "dendrite_list",
+        },
         
         # connections to ivy    
        "pyr2ivy": {
@@ -1033,6 +1055,24 @@ basic_params = {
         },
         
         # hypotetical connections
+        "ivy2ivy": {
+            "gmax": 0.5,
+            "gmax_std" : 0.2,
+            
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.5, 
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "dendrite_list",
+        },
+
         "pvbas2ivy": {
             "gmax": 1.5,
             "gmax_std" : 0.7,
@@ -1059,7 +1099,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.1, 
+            "prob": 0, # !!!! 0.1, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -1068,6 +1108,7 @@ basic_params = {
             "sourse_compartment" : "soma",
             "target_compartment" : "dendrite_list",
         },
+        
         "sca2ivy": {
             "gmax": 1.5,
             "gmax_std" : 0.7,
@@ -1116,7 +1157,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 3,
 
-            "prob": 0.06, # ! need to optimize
+            "prob": 0.08, # ! need to optimize
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -1152,7 +1193,7 @@ basic_params = {
             "tau_rise": 1.3,
             "tau_decay": 10.2,
 
-            "prob": 0.1,
+            "prob": 0.2,
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -1276,6 +1317,7 @@ basic_params = {
             "sourse_compartment" : "soma",
             "target_compartment" : "dendrite_list",
         },
+        
         "bis2sca": {
             "gmax": 0.5,
             "gmax_std" : 0.2,
@@ -1293,7 +1335,7 @@ basic_params = {
             "sourse_compartment" : "soma",
             "target_compartment" : "dendrite_list",
         },
-             
+  
 
     }, # end of connetion settings
 
@@ -1312,8 +1354,14 @@ basic_params["celltypes"] = cell_types_in_model
 # print(basic_params["celltypes"])
 
 save_soma_v_idx = np.empty(shape=0, dtype=np.int)
-for celltype, list_idx in basic_params["save_soma_v"].items(): 
 
+for celltype, list_idx in basic_params["save_soma_v"].items():
+
+    
+    if celltype == "vect_idxes": continue
+
+    # list_idx = np.arange(basic_params["CellNumbers"]["N"+celltype] )
+    
     indices = [i for i, x in enumerate(basic_params["celltypes"]) if x == celltype]
     if len(indices) == 0:
         continue
@@ -1322,8 +1370,13 @@ for celltype, list_idx in basic_params["save_soma_v"].items():
     list_idx = np.asarray(list_idx)
     
     save_soma_v_idx = np.append(save_soma_v_idx, indices[list_idx])
-    
-    
+
+
+
+#for idx in save_soma_v_idx:
+#    print(basic_params["celltypes"][idx])
+
+
 basic_params["save_soma_v"]["vect_idxes"] = save_soma_v_idx
 
 
@@ -1337,7 +1390,7 @@ for conname, conn_data in basic_params["connections"].items():
     precell, postcell = conname.split("2")
     
     try:
-        conn_data["prob"] = conn_data["prob"]* basic_params["CellNumbersInFullModel"]["N"+precell] / basic_params["CellNumbers"]["N"+precell]
+        conn_data["prob"] = conn_data["prob"] * basic_params["CellNumbersInFullModel"]["N"+precell] / basic_params["CellNumbers"]["N"+precell]
     except ZeroDivisionError:
         conn_data["prob"] = 0
 

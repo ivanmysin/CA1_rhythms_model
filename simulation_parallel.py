@@ -137,7 +137,7 @@ def run_simulation(params):
                 sec.mean_IextNoise = params["CellParameters"][celltypename]["iext"] + np.random.randn() * 0.5 * params["CellParameters"][celltypename]["iext_std"]
             
             firing = h.NetCon(cell.soma[0](0.5)._ref_v, None, sec=cell.soma[0])
-            firing.threshold = -40 * mV
+            firing.threshold = -5 * mV
 
         else:
             cell.celltype = celltypename
@@ -164,6 +164,8 @@ def run_simulation(params):
             soma_v = h.Vector()
             soma_v.record(cell.soma[0](0.5)._ref_v)
             soma_v_vecs.append(soma_v)
+        else:
+            soma_v_vecs.append(np.empty(shape=0) )
         
       
         
@@ -345,16 +347,23 @@ def run_simulation(params):
                         continue
                     
                     sp_times = sp_times[sp_times >= rem_time] - rem_time
-                    cell_spikes_dataset = cell_friring_group.create_dataset("neuron_" + str(cell_idx+1), data=sp_times)
+          
+                    cell_friring_group.create_dataset("neuron_" + str(cell_idx+1), data=sp_times) # cell_spikes_dataset 
             
     
     
             intracellular_group = h5file.create_group("intracellular")
             intracellular_group_origin = intracellular_group.create_group("origin_data")
             
-            for v_idx, soma_v in enumerate(soma_v_list):
-                soma_v_dataset = intracellular_group_origin.create_dataset("neuron_" + str(v_idx+1), data=soma_v[rem_idx:] )
-                soma_v_dataset.attrs["celltype"] = params["celltypes"][params["save_soma_v"]["vect_idxes"][v_idx]]
+            for soma_v_idx in params["save_soma_v"]["vect_idxes"]: 
+                soma_v = soma_v_list[soma_v_idx]
+                
+                if soma_v.size == 0: continue
+                
+                soma_v_dataset = intracellular_group_origin.create_dataset("neuron_" + str(soma_v_idx+1), data=soma_v[rem_idx:] )
+                
+                cell_type = params["celltypes"][soma_v_idx]
+                soma_v_dataset.attrs["celltype"] = cell_type
     
  
     
