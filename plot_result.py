@@ -21,9 +21,7 @@ def plot_v(filepath):
             
             v = intracellular_group[key][:]
             celltype = intracellular_group[key].attrs["celltype"]
-            
-            print(celltype)
-        
+         
             axes.plot(t, v, label = celltype )
             
             firings = raster_group[celltype][key][:]
@@ -110,9 +108,9 @@ def plot_phase_disrtibution(filepath):
 if __name__ == "__main__":
     path = basic_params["file_results"]   #"/home/ivan/Data/CA1_simulation/test.hdf5"
 
-    plot_v(path)
+    # plot_v(path)
     # plot_spike_raster(path)
-    # plot_lfp(path)
+    plot_lfp(path)
     # plot_phase_disrtibution(path)
 
 

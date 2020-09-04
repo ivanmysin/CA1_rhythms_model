@@ -53,23 +53,23 @@ basic_params = {
     },
     
     "CellNumbers" : {
-        "Npyr" :    10, # 100, # 500,
-        "Npvbas" :  10, # 100, # 100
-        "Nolm" :    14, # 40, # 40,
-        "Ncckbas" : 8,  # 80, # 80
-        "Nivy" :   7,   # 130, # 130,
-        "Nngf" :    4,  # 65, # 65
-        "Nbis" :   8,   # 35, # 35,
-        "Naac" :    10, # 30, # 30,
-        "Nsca" :    7,  # 20, # 20,
+        "Npyr" :    100, # 500,
+        "Npvbas" :  100, # 100
+        "Nolm" :    40, # 40,
+        "Ncckbas" : 80, # 80
+        "Nivy" :    130, # 130,
+        "Nngf" :    65, # 65
+        "Nbis" :    35, # 35,
+        "Naac" :    30, # 30,
+        "Nsca" :    20, # 20,
         
         
-        "Nca3" : 10, #500,
-        "Nmec" : 10, #500, 
-        "Nlec" : 10, #500,  
-        "Nmsteevracells" : 10, #200,
+        "Nca3" : 500,
+        "Nmec" : 500, 
+        "Nlec" : 500,  
+        "Nmsteevracells" : 200,
         "Nmskomalicells" : 0, # 200,
-        "Nmsach"         : 10, #150,
+        "Nmsach"         : 150,
     },
     
     "CellParameters" : {
@@ -129,13 +129,13 @@ basic_params = {
         
         "pyr" : {
             "cellclass" : "CA1PyramidalCell", # "poolosyncell", # 
-            "iext" : 0.009, #!!!!! 0.005,
+            "iext" : 0.005,
             "iext_std" : 0.005,
         },
         
         "pvbas" : {
             "cellclass" : "pvbasketcell",
-            "iext" : 0.005, #!!!!!! 0.0,
+            "iext" : 0.0,
             "iext_std" : 0.005,
         },
         
@@ -184,7 +184,7 @@ basic_params = {
     },
     
     "save_soma_v" : {
-        "pyr" : [0, ],
+        "pyr" : [range(100)],    # [0, ],
         "pvbas" : [0, ],
         "olm" : [0, ],
         "cckbas" : [0, ],
