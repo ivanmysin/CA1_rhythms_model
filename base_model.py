@@ -1,8 +1,18 @@
-from time import time
+from mpi4py import MPI
 
-from simulation_parallel import run_simulation   # 
-from basic_parameters import basic_params
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
 
-timer = time()
+
+
+from simulation_parallel import run_simulation
+
+if rank == 0:
+    from basic_parameters import basic_params
+else:
+    basic_params = None
+
+basic_params = comm.bcast(basic_params, root=0)
+
 run_simulation(basic_params)
-print("Simulation time in sec ", time() - timer)
+

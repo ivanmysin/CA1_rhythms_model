@@ -91,7 +91,7 @@ def run_simulation(params):
     
     all_cells = h.List()
     hh_cells = h.List()
-    artificial_cells = h.List()
+    # artificial_cells = h.List()
     
     
     pyramidal_sec_list = h.SectionList()
@@ -182,6 +182,45 @@ def run_simulation(params):
     connections = h.List()
     synapses = h.List()
     
+    
+    for syn_params in params["synapses_params"]:
+        
+        post_idx = np.argwhere( gid_vect == syn_params["post_gid"] ).ravel()
+        
+        if post_idx.size == 0: continue
+        post_idx = post_idx[0]
+        
+        postsynaptic_cell = all_cells[ post_idx ]
+        
+        post_list = getattr(postsynaptic_cell, syn_params["target_compartment"])
+        len_postlist = sum([1 for _ in post_list])
+        
+        if len_postlist == 1:
+            post_idx = 0
+        else:
+            post_idx = np.random.randint(0, len_postlist-1)
+
+        for idx_tmp, post_comp_tmp in enumerate(post_list):
+            if idx_tmp == post_idx: post_comp = post_comp_tmp
+    
+        syn = h.Exp2Syn( post_comp(0.5) ) 
+        syn.e = syn_params["Erev"]
+        syn.tau1 = syn_params["tau_rise"]
+        syn.tau2 = syn_params["tau_decay"]
+        
+        
+        conn = pc.gid_connect(syn_params["pre_gid"], syn)
+        conn.delay = syn_params["delay"]
+        conn.weight[0] = syn_params["gmax"]
+
+                
+        connections.append(conn)
+        
+        synapses.append(syn)
+        
+        
+        
+    """
     for presynaptic_cell_idx in range(ncells):
         
         for postsynaptic_cell_idx, postsynaptic_cell in enumerate(hh_cells):
@@ -243,7 +282,7 @@ def run_simulation(params):
                 
                 connections.append(conn)
                 synapses.append(syn)
-                
+    """            
     
         
     
@@ -259,7 +298,9 @@ def run_simulation(params):
     
     for idx_el in range(Nelecs):
         if is_pyrs_thread:
-            le = LfpElectrode(x=el_x[idx_el], y=el_y[idx_el], z=el_z[idx_el], sampling_period=h.dt, sec_list=pyramidal_sec_list)
+            # le = LfpElectrode(x=el_x[idx_el], y=el_y[idx_el], z=el_z[idx_el], sampling_period=h.dt, sec_list=pyramidal_sec_list)
+            le = LfpElectrode(x=el_x[idx_el], y=el_y[idx_el], z=el_z[idx_el], sampling_period=h.dt, \
+                              method='RC', sec_list=pyramidal_sec_list)
             electrodes.append(le)
         else:
             electrodes.append(None)
@@ -304,6 +345,14 @@ def run_simulation(params):
     
     # print(pc.id(), "Join lfp data")
     lfp_data = join_lfp(comm, electrodes)
+    
+    
+    # lfp_data = []
+    # if (pc.id() == 0):
+    #     for el in electrodes:
+    #         lfp_data.append(el.values)
+    
+    
     # print(pc.id(), "Join spike train")
     spike_trains = join_vect_lists(comm, spike_times_vecs, gid_vect)
     # print(pc.id(), "Join Vm of soma")

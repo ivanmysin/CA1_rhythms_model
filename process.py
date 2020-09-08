@@ -13,14 +13,14 @@ processing_param = {
     "freqs_step" : 10,      # количество частот, для которых вычисляется вейвлет за один цикл 
     "max_freq_lfp" : 500,   # Гц, анализируем только до этой частоты 
 
-    "butter_order" : 3,    # Порядок для фильтра Баттерворда
+    "butter_order" : 2,    # Порядок для фильтра Баттерворда
     "filt_bands" : {
         "delta" : [1, 4], 
         "theta" : [4, 12], 
         "slow gamma" : [25, 50], 
         "fast gamma" : [50, 120], 
         "slow ripples" : [80, 250], 
-        "fast ripples" : [200, 500], 
+        # "fast ripples" : [200, 500], 
    
     },
 
@@ -41,6 +41,9 @@ def processing_and_save(filepath):
             del h5file["extracellular/electrode_1/lfp/processing"]
             process_group = lfp_group.create_group("processing")
 
+        wavelet_group = process_group.create_group("wavelet")
+        bands_group = process_group.create_group("bands")
+        
 
         fd = lfp_group_origin.attrs["SamplingRate"]
 
@@ -55,10 +58,10 @@ def processing_and_save(filepath):
             freqs = freqs[freqs <= processing_param["max_freq_lfp"] ]  # remove frequencies below 500 Hz
 
 
-            wavelet_group = process_group.create_group(key + "_wavelet")
+            channel_wavelet_group = wavelet_group.create_group(key)
 
-            wavelet_group.create_dataset("frequecies", data=freqs)
-            wdset = wavelet_group.create_dataset(key + "wavelet_coeff", (len(freqs), len(lfp)), dtype="c16")
+            channel_wavelet_group.create_dataset("frequecies", data=freqs)
+            wdset = channel_wavelet_group.create_dataset("wavelet_coeff", (len(freqs), len(lfp)), dtype="c16")
 
             for start_idx in range(0, freqs.size, processing_param["freqs_step"]):
                 end_idx = start_idx + processing_param["freqs_step"]
@@ -69,13 +72,13 @@ def processing_and_save(filepath):
                 W = sigp.wavelet_transform(lfp, freqs[start_idx:end_idx], nco=processing_param["morlet_w0"], fs=fd)
                 wdset[start_idx:end_idx, : ] = W
 
-            bands_group = process_group.create_group(key + "_bands")
+            channel_bands_group = bands_group.create_group(key)
             for band_name, freq_lims in processing_param["filt_bands"].items():
                 lfp = zscore(lfp)
                 filtered_signal = sigp.butter(lfp, highpass_freq=freq_lims[0], \
                     lowpass_freq=freq_lims[1], order=processing_param["butter_order"], fs=fd )
 
-                bands_group.create_dataset(band_name, data = filtered_signal)
+                channel_bands_group.create_dataset(band_name, data = filtered_signal)
 
 
 
@@ -106,7 +109,7 @@ def processing_and_save(filepath):
                 celltype_firings = np.append(celltype_firings, cell_firing_dset[:])
 
             # тут нужно взять канал из пирамидного слоя
-            theta_lfp = h5file["extracellular/electrode_1/lfp/processing/channel_3_bands/theta"][:]
+            theta_lfp = h5file["extracellular/electrode_1/lfp/processing/bands/channel_3/theta"][:]
             bins, phase_distr = plib.get_phase_disrtibution(celltype_firings, theta_lfp, fd)
 
             
@@ -116,9 +119,12 @@ def processing_and_save(filepath):
     return
         
         
-        
+if __name__ == "__main__":
+    from basic_parameters import basic_params
     
+    filepath = basic_params["file_results"] # "/home/ivan/Data/CA1_simulation/test_.hdf5" # 
     
+    processing_and_save(filepath)
 
 
 

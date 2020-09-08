@@ -17,13 +17,9 @@ rank = comm.Get_rank()
 
 if rank == 0:
     from basic_parameters import basic_params
-    
-    
-    
-    
-    
-else:
+ else:
     basic_params = None
+
 basic_params = comm.bcast(basic_params, root=0)
 
 

@@ -26,7 +26,7 @@ basic_params = {
     "PyrDencity" : 0.2, # pyramidal cells / micrometer^2
     
     "file_results":  "../../Data/CA1_simulation/test.hdf5", # None, #
-    "duration" : 1400, # simulation time
+    "duration" : 1900, #  1400, # simulation time
     
     "del_start_time" : 400, # time after start for remove  
     
@@ -68,7 +68,7 @@ basic_params = {
         "Nmec" : 500, 
         "Nlec" : 500,  
         "Nmsteevracells" : 200,
-        "Nmskomalicells" : 0, # 200,
+        "Nmskomalicells" : 200,
         "Nmsach"         : 150,
     },
     
@@ -147,7 +147,7 @@ basic_params = {
 
         "olm" : {
             "cellclass" : "olmcell",
-            "iext" : 0.001,
+            "iext" : 0.0,
             "iext_std" : 0.005,
         },
         
@@ -171,7 +171,7 @@ basic_params = {
     
         "bis" : {
             "cellclass" : "CA1BistratifiedCell", # "bistratifiedcell",
-            "iext" : 0.002,
+            "iext" : 0.003,
             "iext_std" : 0.005,
         },
         
@@ -766,7 +766,7 @@ basic_params = {
             "tau_rise": 2,
             "tau_decay": 6.3,
 
-            "prob": 0.07,
+            "prob": 0.01,
             
             "delay": 8.0,
             "delay_std" : 0.5,
@@ -784,7 +784,7 @@ basic_params = {
             "tau_rise": 2,
             "tau_decay": 6.3,
 
-            "prob": 0.05,
+            "prob": 0.01,
             
             "delay": 8.0,
             "delay_std" : 0.5,
@@ -911,7 +911,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 3,
             
-            "prob": 0.9,
+            "prob": 0.4,
             
             "delay": 10.5,
             "delay_std" : 0.5,
@@ -1379,6 +1379,15 @@ for celltype, list_idx in basic_params["save_soma_v"].items():
 
 basic_params["save_soma_v"]["vect_idxes"] = save_soma_v_idx
 
+for celltypename, cellparam in basic_params["CellParameters"].items():
+    try:
+        Rgen = cellparam["R"]
+        kappa, I0 = prelib.r2kappa(Rgen)
+        cellparam["kappa"] = kappa
+        cellparam["I0"] = I0
+    
+    except KeyError:
+        continue
 
 for conname, conn_data in basic_params["connections"].items():
     
@@ -1396,14 +1405,87 @@ for conname, conn_data in basic_params["connections"].items():
 
 # print(basic_params["connections"]["ca32pyr"])
 
+synapses = []
 
-for celltypename, cellparam in basic_params["CellParameters"].items():
-    try:
-        Rgen = cellparam["R"]
-        kappa, I0 = prelib.r2kappa(Rgen)
-        cellparam["kappa"] = kappa
-        cellparam["I0"] = I0
-    
-    except KeyError:
-        continue
+
+for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
+    for postsynaptic_cell_idx, post_celltype in enumerate(basic_params["celltypes"]):
+        if presynaptic_cell_idx == postsynaptic_cell_idx: continue
+
+        try:
+            conn_name = pre_celltype + "2" + post_celltype
+            conn_data = basic_params["connections"][conn_name]
+                
+        except AttributeError:
+            continue
+        except KeyError:
+            continue
+        
+        number_connections = int( np.floor(conn_data["prob"]) )
+            
+        if (np.random.rand() < (conn_data["prob"] - number_connections) ):
+            number_connections += 1
+
+        for _ in range(number_connections):
+            
+            delay = np.random.lognormal(mean=np.log(conn_data["delay"]), sigma=conn_data["delay_std"]) 
+            if delay <= 0.5:
+                delay = 0.5
+            
+            
+            gmax =  np.random.lognormal(mean=np.log(conn_data["gmax"]), sigma=conn_data["gmax_std"])
+                
+            if gmax < 0:
+                gmax = 0.000001
+               
+            
+            connection = {
+                "pre_gid" : presynaptic_cell_idx,
+                "post_gid" : postsynaptic_cell_idx,
+                
+                "gmax" : gmax,
+                "Erev" : conn_data["Erev"],
+                "tau_rise" : conn_data["tau_rise"],
+                "tau_decay" : conn_data["tau_decay"],
+                "delay" : delay,
+                
+                "sourse_compartment" : conn_data["sourse_compartment"],
+                "target_compartment" : conn_data["target_compartment"],
+
+            }
+            
+            synapses.append(connection)
+
+
+basic_params["synapses_params"] = synapses
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

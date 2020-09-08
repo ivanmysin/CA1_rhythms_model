@@ -110,8 +110,8 @@ if __name__ == "__main__":
 
     # plot_v(path)
     # plot_spike_raster(path)
-    plot_lfp(path)
-    # plot_phase_disrtibution(path)
+    # plot_lfp(path)
+    plot_phase_disrtibution(path)
 
 
 
