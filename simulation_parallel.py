@@ -220,76 +220,14 @@ def run_simulation(params):
         
         
         
-    """
-    for presynaptic_cell_idx in range(ncells):
-        
-        for postsynaptic_cell_idx, postsynaptic_cell in enumerate(hh_cells):
-            # print(postsynaptic_cell.celltype)
-            if presynaptic_cell_idx == postsynaptic_cell.gid:
-                continue # Do not use self connections
-                   
-            try:
-                conn_name = params["celltypes"][presynaptic_cell_idx] + "2" + postsynaptic_cell.celltype
-                
-                conn_data = params["connections"][conn_name]
-                
-                
-            except AttributeError:
-                continue
-            except KeyError:
-                continue
-
-            
-            number_connections = np.floor(conn_data["prob"])
-            
-            # print(conn_data["prob"] - number_connections)
-            if (np.random.rand() < (conn_data["prob"] - number_connections) ):
-                number_connections += 1
-
-            post_name = conn_data["target_compartment"]
-            post_list = getattr(postsynaptic_cell, post_name)
-            len_postlist = sum([1 for _ in post_list])
-            
-            # print(conn_name, " ", number_connections)
-            for i in range(int(number_connections)):
-                
-                    
-                if len_postlist == 1:
-                    post_idx = 0
-                else:
-                    post_idx = np.random.randint(0, len_postlist-1)
-
-                for idx_tmp, post_comp_tmp in enumerate(post_list):
-                    if idx_tmp == post_idx: post_comp = post_comp_tmp
-                # print(post_comp)
-
-                syn = h.Exp2Syn( post_comp(0.5) ) 
-                syn.e = conn_data["Erev"]
-                syn.tau1 = conn_data["tau_rise"]
-                syn.tau2 = conn_data["tau_decay"]
-                
-                conn = pc.gid_connect(presynaptic_cell_idx, syn)
-                
-                # choce synaptic delay and weight from lognormal distribution
-                conn_delay = np.random.lognormal(mean=np.log(conn_data["delay"]), sigma=conn_data["delay_std"]) 
-                if conn_delay <= 5*h.dt: conn_delay = 5*h.dt
-                conn.delay = conn_delay
-                conn_gmax =  np.random.lognormal(mean=np.log(conn_data["gmax"]), sigma=conn_data["gmax_std"])
-                
-                if conn_gmax < 0: conn_gmax = 0.000001
-                conn.weight[0] = conn_gmax
-
-                
-                connections.append(conn)
-                synapses.append(syn)
-    """            
+  
     
         
     
     
     Nelecs = params["Nelecs"]
     el_x = np.zeros(Nelecs)
-    el_y = np.linspace(-200, 1000, Nelecs)
+    el_y = np.linspace(-200, 600, Nelecs)
     el_z = np.zeros(Nelecs)
     
     electrodes = []
@@ -298,9 +236,8 @@ def run_simulation(params):
     
     for idx_el in range(Nelecs):
         if is_pyrs_thread:
-            # le = LfpElectrode(x=el_x[idx_el], y=el_y[idx_el], z=el_z[idx_el], sampling_period=h.dt, sec_list=pyramidal_sec_list)
             le = LfpElectrode(x=el_x[idx_el], y=el_y[idx_el], z=el_z[idx_el], sampling_period=h.dt, \
-                              method='RC', sec_list=pyramidal_sec_list)
+                              method='Line', sec_list=pyramidal_sec_list)
             electrodes.append(le)
         else:
             electrodes.append(None)

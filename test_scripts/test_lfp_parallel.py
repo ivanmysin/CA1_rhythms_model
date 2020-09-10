@@ -38,16 +38,23 @@ cellclass = getattr(h, params["CellParameters"][postsynaptic_cell]["cellclass"])
 
 all_cells = h.List()
 pyramidal_sec_list = h.SectionList()
-for idx in range(pc.id() + 1):
+for idx in range(1):  # pc.id() +
     cell = cellclass(0, 0)
+    
     for sec in cell.all:
+        sec.insert("IextNoise")
+        sec.myseed_IextNoise = np.random.randint(0, 1000000000000000, 1)
+        sec.sigma_IextNoise = 0.005
+        sec.mean_IextNoise = 0.005
+        
         pyramidal_sec_list.append(sec)
     all_cells.append(cell)
 
 radius_for_pyramids = 0.2
 pyr_coord_in_layer_x = radius_for_pyramids * 2 * (np.random.rand() - 0.5) # density of the pyramidal cells  
 pyr_coord_in_layer_y = radius_for_pyramids * 2 * (np.random.rand() - 0.5) # density of the pyramidal cells  
-cell.position(pyr_coord_in_layer_x, 0, pyr_coord_in_layer_y)
+pyr_coord_in_layer_z =  np.random.normal(0, 20)
+cell.position(pyr_coord_in_layer_x, pyr_coord_in_layer_z, pyr_coord_in_layer_y)
             
 for sec in cell.all:
     sec.insert("IextNoise")
@@ -108,7 +115,7 @@ for pre_name, phase in cell_phases.items():
 
 Nelecs = params["Nelecs"]
 el_x = np.zeros(Nelecs)
-el_y = np.linspace(-200, 1000, Nelecs)
+el_y = np.linspace(-200, 600, Nelecs)
 el_z = np.zeros(Nelecs)
 
 
@@ -117,14 +124,14 @@ for idx_el in range(Nelecs):
     le = LfpElectrode(x=el_x[idx_el], y=el_y[idx_el], z=el_z[idx_el], sampling_period=h.dt, sec_list=pyramidal_sec_list)
     electrodes.append(le)
 
-h.tstop = params["duration"] * ms
+h.tstop = 500 * ms # params["duration"]
 pc.set_maxstep(10 * ms)
 h.finitialize()
 
 pc.barrier()
 print("Start simulation")
 
-pc.psolve(params["duration"] * ms)
+pc.psolve(500 * ms) # params["duration"] 
 # print("Time of simulation in sec ", time()-timer)
 pc.barrier()
 comm = MPI.COMM_WORLD
@@ -133,10 +140,28 @@ lfp_data = join_lfp(comm, electrodes)
 
 
 if pc.id() == 0:
-    for lfp in lfp_data:
-        plt.figure()
-        plt.plot(lfp)
-
+    fig, axes = plt.subplots( nrows=Nelecs, figsize=(15, 10))
+    
+    for key_idx, el in enumerate(electrodes):
+                
+        lfp = np.asarray(el.values)
+        t = np.asarray(el.times)
+        
+        rem = t > 200
+        lfp = lfp[rem]
+        t = t[rem]
+        
+        
+        
+        axes[key_idx].plot(t, lfp, label=str(key_idx+1), color="blue" )
+    
+    
+        axes[key_idx].legend()
+                
+                
+            
+    plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=0.4)
+            
     plt.show()
 
 

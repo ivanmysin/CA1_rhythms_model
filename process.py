@@ -30,7 +30,7 @@ processing_param = {
 
 def processing_and_save(filepath):
     with h5py.File(filepath, 'a') as h5file:
-        t = h5file["time"][:]
+        # t = h5file["time"][:]
 
         lfp_group = h5file["extracellular/electrode_1/lfp"]
         lfp_group_origin = lfp_group["origin_data"]

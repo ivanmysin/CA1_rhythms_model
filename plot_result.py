@@ -63,22 +63,41 @@ def plot_lfp(filepath):
     with h5py.File(filepath, 'r') as h5file:
         t = h5file["time"][:]
         
+        meanpyrV = 0
+        pyrVgroup = h5file["intracellular/origin_data"]
+        for v_dset in pyrVgroup.values():
+            if v_dset.attrs["celltype"] == "pyr":
+                meanpyrV += v_dset[:]
+        
+        # meanpyrV /= 100
+        # plt.plot(t, meanpyrV)
+        meanpyrV -= np.mean(meanpyrV)
+        meanpyrV /= np.std(meanpyrV)
+        
+        
         lfp_group = h5file["extracellular/electrode_1/lfp/origin_data"]
 
         lfp_keys = sorted(lfp_group.keys(), key = lambda x: int(x.split("_")[1]), reverse=True )
         
         
-
+        fig, axes = plt.subplots( nrows=len(lfp_keys), figsize=(15, 10))
         for key_idx, key in enumerate(lfp_keys):
-            fig, axes = plt.subplots()
-            axes.set_title(key)
-            axes.plot(t[:lfp_group[key].size], lfp_group[key][:], label=key, color="blue" )
             
-            #lfp = h5file["extracellular/electrode_1/lfp/processing/"+key+"_bands/theta"]
+            # axes[key_idx].set_title(key)
+            lfp = lfp_group[key][:]
+            axes[key_idx].plot(t[:lfp_group[key].size], lfp, label=key, color="blue" )
+            
+            meanpyrVnorm = meanpyrV * lfp.std()  + np.mean(lfp)
+            axes[key_idx].plot(t, meanpyrVnorm, label="soma V", color="red" )
+            
+            axes[key_idx].set_xlim(0, 2000)
+            # lfp = h5file["extracellular/electrode_1/lfp/processing/"+key+"_bands/theta"]
             # axes.plot(t, lfp, label=key, color="red" )
+            axes[key_idx].legend()
+            
             
         
-        
+        plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=0.4)
         plt.show()
 
 
@@ -88,17 +107,25 @@ def plot_phase_disrtibution(filepath):
         
         keys = distr_group.keys()
         
-        fig, axes = plt.subplots(nrows=len(keys), figsize=(4, 20))
+        fig, axes = plt.subplots(nrows=5, ncols=3, figsize=(16, 11))
 
+        row_idx = 0
+        cols_idx = 0
         for key_idx, key in enumerate(keys):
+            
+            if row_idx > 4:
+                row_idx = 0
+                cols_idx += 1
             
             phase_distr = distr_group[key][:]
             
             phases = np.linspace(-np.pi, np.pi, phase_distr.size)
-            axes[key_idx].plot(phases, phase_distr, label=key )
-            axes[key_idx].legend()
+            axes[row_idx, cols_idx].plot( phases, phase_distr, label=key )
+            axes[row_idx, cols_idx].legend()
+            
+            row_idx += 1
         
-        plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
+        plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=0.4)
         plt.show()
 
 
@@ -110,8 +137,8 @@ if __name__ == "__main__":
 
     # plot_v(path)
     # plot_spike_raster(path)
-    # plot_lfp(path)
-    plot_phase_disrtibution(path)
+    plot_lfp(path)
+    # plot_phase_disrtibution(path)
 
 
 

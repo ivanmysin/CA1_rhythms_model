@@ -171,7 +171,7 @@ basic_params = {
     
         "bis" : {
             "cellclass" : "CA1BistratifiedCell", # "bistratifiedcell",
-            "iext" : 0.003,
+            "iext" : 0.004,
             "iext_std" : 0.005,
         },
         
@@ -759,8 +759,8 @@ basic_params = {
         
         # hypotetical connections
         "mec2aac": {
-            "gmax": 0.25,
-            "gmax_std" : 0.12,
+            "gmax": 0.1,
+            "gmax_std" : 0.05,
             
             "Erev": 0,
             "tau_rise": 2,
@@ -777,8 +777,8 @@ basic_params = {
         },
         
         "lec2aac": {
-            "gmax": 0.2,
-            "gmax_std" : 0.1,
+            "gmax": 0.1,
+            "gmax_std" : 0.05,
             
             "Erev": 0,
             "tau_rise": 2,
@@ -937,6 +937,44 @@ basic_params = {
 
             "sourse_compartment" : "axon",
             "target_compartment" : "soma",
+        },
+       
+       
+       # hypotetical connections
+       "ivy2olm": {
+            "gmax": 1.5,
+            "gmax_std" : 0.7,
+            
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.2, 
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "dendrite_list",
+        },
+       
+       "sca2olm": {
+            "gmax": 1.5,
+            "gmax_std" : 0.7,
+            
+            "Erev": -75,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.2, 
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "soma",
+            "target_compartment" : "dendrite_list",
         },
         # end connections to olm
         
@@ -1308,7 +1346,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.1, 
+            "prob": 0.2, 
             
             "delay": 1.2,
             "delay_std" : 0.2,

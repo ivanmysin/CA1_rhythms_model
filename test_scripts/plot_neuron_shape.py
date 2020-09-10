@@ -1,5 +1,5 @@
 import os
-os.chdir("../")
+
 from mpl_toolkits.mplot3d import Axes3D 
 import matplotlib.pyplot as plt
 from matplotlib import cm
@@ -8,9 +8,8 @@ import neuron
 from neuron import h
 h.load_file("stdgui.hoc")
 h.load_file("import3d.hoc")
-neuron.load_mechanisms("./mods/")
+neuron.load_mechanisms("../mods/")
 
-os.chdir("./cells/")
 # h.load_file("class_cckcell.hoc")
 # h.load_file("class_ivycell.hoc")
 # h.load_file("class_axoaxoniccell.hoc")
@@ -21,7 +20,7 @@ os.chdir("./cells/")
 # h.load_file("class_poolosyncell.hoc")
 # h.load_file("class_pvbasketcell.hoc")
 # h.load_file("class_scacell.hoc")
-h.load_file("CA1PC.hoc")
+h.load_file("../cells/CA1PC.hoc")
 # cell = h.bistratifiedcell(0, 0)
 # h.axoaxoniccell(0, 0)
 # h.ivycell(0, 0)
@@ -31,7 +30,7 @@ h.load_file("CA1PC.hoc")
 # cell = h.olmcell(0, 0) 
 # cell = h.poolosyncell()
 
-cell1 = h.CA1PyramidalCell(0, 0)
+cell1 = h.CA1PyramidalCell(1, 1)
 cell1.position(-200, 0, 0)
 
 cell2 = h.CA1PyramidalCell(0, 0)
@@ -45,7 +44,7 @@ cell2.position(200, 0, 0)
 # cell3.position(0, 0, -200)
 
 el_x = np.zeros(10)
-el_y = np.linspace(-300, 800, 10)
+el_y = np.linspace(-200, 600, 10)
 el_z = np.zeros(10)
 
 
