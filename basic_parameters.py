@@ -1381,11 +1381,20 @@ basic_params = {
 
 
 cell_types_in_model = []
+gids_of_celltypes = {}
 
 for celltype, numbers in sorted(basic_params["CellNumbers"].items()):
     
     celltype = celltype[1:]
+    
+    start_idx = len(cell_types_in_model)
+    
     cell_types_in_model.extend( [celltype, ] * numbers )
+    
+    end_idx = len(cell_types_in_model)
+    gids_of_celltypes[celltype] = np.arange(start_idx, end_idx)
+    
+    
 
 basic_params["celltypes"] = cell_types_in_model
 
@@ -1470,8 +1479,13 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
             if delay <= 0.5:
                 delay = 0.5
             
-            
             gmax =  np.random.lognormal(mean=np.log(conn_data["gmax"]), sigma=conn_data["gmax_std"])
+            
+            if conn_name == "ca32pyr":
+                medium_pyr_idx = gids_of_celltypes["pyr"][gids_of_celltypes["pyr"].size//2]
+                
+                coef = 3*np.exp( -0.5*(postsynaptic_cell_idx - medium_pyr_idx)**2 / 55 ) 
+                gmax *= coef
                 
             if gmax < 0:
                 gmax = 0.000001
