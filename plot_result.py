@@ -129,16 +129,48 @@ def plot_phase_disrtibution(filepath):
         plt.show()
 
 
+def plot_pyr_layer_lfp_vs_raster(filepath):
+    with h5py.File(filepath, 'r') as h5file:
+        
+        lfp = h5file["extracellular/electrode_1/lfp/origin_data/channel_3"][:]
+        
+        raster_group = h5file["extracellular/electrode_1/firing/origin_data"]
+        
+        sampling_rate = h5file["extracellular/electrode_1/lfp/origin_data"].attrs["SamplingRate"]
+        t = 1000 * np.linspace(0, lfp.size/sampling_rate, lfp.size)
+                
+        uniq_celltypes = raster_group.keys()
+
+        for celltype in uniq_celltypes:
+            fig, axes = plt.subplots(nrows=2, sharex=True)
+            fig.suptitle(celltype)
+            
+            axes[0].plot(t, lfp)
+            sp_idx = 0
+            for cell_key, firing in raster_group[celltype].items():
+                # celltype_idx = int(cell_key.split("_")[-1])
+            
+                axes[1].scatter(firing,  np.zeros(firing.size) + sp_idx + 1, color="b", s=1 )
+        
+                sp_idx += 1
+            
+            axes[1].set_ylim(1, sp_idx)
+        
+       
+        
+        
+        plt.show()
 
 
 
 if __name__ == "__main__":
-    path = basic_params["file_results"]   #"/home/ivan/Data/CA1_simulation/test.hdf5"
+    filepath = basic_params["file_results"]   #"/home/ivan/Data/CA1_simulation/test.hdf5"
 
-    # plot_v(path)
-    # plot_spike_raster(path)
-    plot_lfp(path)
-    # plot_phase_disrtibution(path)
+    # plot_v(filepath)
+    # plot_spike_raster(filepath)
+    # plot_lfp(filepath)
+    # plot_phase_disrtibution(filepath)
+    plot_pyr_layer_lfp_vs_raster(filepath)
 
 
 
