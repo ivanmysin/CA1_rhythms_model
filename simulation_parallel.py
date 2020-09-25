@@ -70,7 +70,7 @@ def run_simulation(params):
     h.load_file("stdrun.hoc")
     h.load_file("import3d.hoc")
 
-   
+    RNG = np.random.default_rng()
     
     load_mechanisms("./mods/")
 
@@ -120,8 +120,8 @@ def run_simulation(params):
             for sec in cell.all:
                 pyramidal_sec_list.append(sec)
         
-            pyr_coord_in_layer_x = radius_for_pyramids * 2 * (np.random.rand() - 0.5) # density of the pyramidal cells  
-            pyr_coord_in_layer_y = radius_for_pyramids * 2 * (np.random.rand() - 0.5) # density of the pyramidal cells  
+            pyr_coord_in_layer_x = radius_for_pyramids * 2 * (RNG.random() - 0.5) # density of the pyramidal cells
+            pyr_coord_in_layer_y = radius_for_pyramids * 2 * (RNG.random() - 0.5) # density of the pyramidal cells
 
             cell.position(pyr_coord_in_layer_x, 0, pyr_coord_in_layer_y)
   
@@ -132,12 +132,12 @@ def run_simulation(params):
         if cell.is_art() == 0:
             for sec in cell.all:
                 sec.insert("IextNoise")
-                sec.myseed_IextNoise = np.random.randint(0, 1000000000000000, 1)
-                sec.sigma_IextNoise = params["CellParameters"][celltypename]["iext_std"] 
-                sec.mean_IextNoise = params["CellParameters"][celltypename]["iext"] + np.random.randn() * 0.5 * params["CellParameters"][celltypename]["iext_std"]
+                sec.myseed_IextNoise = RNG.integers(0, 1000000000000000, 1)
+                sec.sigma_IextNoise = 0.005
+                sec.mean_IextNoise = RNG.normal(params["CellParameters"][celltypename]["iext"], params["CellParameters"][celltypename]["iext_std"])
             
             firing = h.NetCon(cell.soma[0](0.5)._ref_v, None, sec=cell.soma[0])
-            firing.threshold = -5 * mV
+            firing.threshold = -30 * mV
 
         else:
             cell.celltype = celltypename
@@ -147,7 +147,7 @@ def run_simulation(params):
             cell.acell.spike_rate = params["CellParameters"][celltypename]["spike_train_freq"]
             cell.acell.kappa = params["CellParameters"][celltypename]["kappa"]
             cell.acell.I0 = params["CellParameters"][celltypename]["I0"]
-            cell.acell.myseed = np.random.randint(0, 1000000000, 1)
+            cell.acell.myseed = RNG.integers(0, 1000000000, 1)
             cell.acell.delta_t = 0.2
             firing = h.NetCon(cell.acell, None)
         
@@ -198,7 +198,7 @@ def run_simulation(params):
         if len_postlist == 1:
             post_idx = 0
         else:
-            post_idx = np.random.randint(0, len_postlist-1)
+            post_idx = RNG.integers(0, len_postlist-1)
 
         for idx_tmp, post_comp_tmp in enumerate(post_list):
             if idx_tmp == post_idx: post_comp = post_comp_tmp
@@ -212,6 +212,7 @@ def run_simulation(params):
         conn = pc.gid_connect(syn_params["pre_gid"], syn)
         conn.delay = syn_params["delay"]
         conn.weight[0] = syn_params["gmax"]
+        conn.threshold = -30 * mV
 
                 
         connections.append(conn)
