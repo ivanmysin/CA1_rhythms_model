@@ -224,18 +224,17 @@ def run_simulation(params):
   
     
         
-    
-    
-    Nelecs = params["Nelecs"]
-    el_x = np.zeros(Nelecs)
-    el_y = np.linspace(-200, 600, Nelecs)
-    el_z = np.zeros(Nelecs)
+
+    el_x = params["elecs"]["el_x"]
+    el_y = params["elecs"]["el_y"]
+    el_z = params["elecs"]["el_z"]
+
     
     electrodes = []
     
     
     
-    for idx_el in range(Nelecs):
+    for idx_el in range(el_x.size):
         if is_pyrs_thread:
             le = LfpElectrode(x=el_x[idx_el], y=el_y[idx_el], z=el_z[idx_el], sampling_period=h.dt, \
                               method='Line', sec_list=pyramidal_sec_list)
