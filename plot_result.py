@@ -129,7 +129,7 @@ def plot_phase_disrtibution(filepath):
 def plot_pyr_layer_lfp_vs_raster(filepath):
     with h5py.File(filepath, 'r') as h5file:
         
-        lfp = h5file["extracellular/electrode_1/lfp/origin_data/channel_3"][:]
+        lfp = h5file["extracellular/electrode_1/lfp/origin_data/channel_1"][:]
         
         raster_group = h5file["extracellular/electrode_1/firing/origin_data"]
         
@@ -163,7 +163,7 @@ def plot_pyr_layer_lfp_vs_raster(filepath):
 if __name__ == "__main__":
     filepath = basic_params["file_results"]   #"/home/ivan/Data/CA1_simulation/test.hdf5"
 
-    #plot_v(filepath)
+    # plot_v(filepath)
     # plot_spike_raster(filepath)
     # plot_lfp(filepath)
     # plot_phase_disrtibution(filepath)

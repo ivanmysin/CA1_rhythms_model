@@ -20,18 +20,18 @@ lec - FAN cells of the lateral entorhinal cortex
 
 """
 
-Nelecs = 10 # number of electrodes
+Nelecs = 1 # number of electrodes
 
 basic_params = {
     "elecs" : {
         "el_x" : np.zeros(Nelecs),
-        "el_y" : np.linspace(-200, 600, Nelecs),
+        "el_y" : np.zeros(Nelecs), # np.linspace(-200, 600, Nelecs),
         "el_z" : np.zeros(Nelecs),
     },
     "PyrDencity" : 0.2, # pyramidal cells / micrometer^2
     
     "file_results":  "../../Data/CA1_simulation/test.hdf5", # None, #
-    "duration" : 1000, # 1900, #  1400, # simulation time
+    "duration" : 2000, # 1900, #  1400, # simulation time
     
     "del_start_time" : 400, # time after start for remove  
     
@@ -58,23 +58,23 @@ basic_params = {
     },
     
     "CellNumbers" : {
-        "Npyr" :    100, # 500,
+        "Npyr" :    10, # 500,
         "Npvbas" :  100, # 100,
-        "Nolm" :    40,
-        "Ncckbas" : 80, # 80
-        "Nivy" :    130,
-        "Nngf" :    65,
-        "Nbis" :    35,
-        "Naac" :    30,
-        "Nsca" :    20,
+        "Nolm" :    0, #40,
+        "Ncckbas" : 0, #80, # 80
+        "Nivy" :    0, #130,
+        "Nngf" :    0, #65,
+        "Nbis" :    0, #35,
+        "Naac" :    0, #30,
+        "Nsca" :    0, #20,
         
         
-        "Nca3" : 500,
-        "Nmec" : 500,
-        "Nlec" : 500,
-        "Nmsteevracells" : 200,
+        "Nca3" : 500, #500,
+        "Nmec" : 0, #500,
+        "Nlec" : 0, #500,
+        "Nmsteevracells" : 0, #200,
         "Nmskomalicells" : 0, # 200,
-        "Nmsach"         : 150,
+        "Nmsach"         : 0, #150,
     },
     
     "CellParameters" : {
@@ -134,14 +134,14 @@ basic_params = {
         
         "pyr" : {
             "cellclass" : "CA1PyramidalCell", # "poolosyncell", # 
-            "iext" : 0.005,
+            "iext" : 0.007, # 0.02,
             "iext_std" : 0.002,
         },
         
         "pvbas" : {
             "cellclass" : "pvbasketcell",
             "iext" : 0.0,
-            "iext_std" : 0.002, # !!!!
+            "iext_std" : 0.002,
         },
         
         "cckbas" : {
@@ -189,8 +189,8 @@ basic_params = {
     },
     
     "save_soma_v" : {
-        "pyr" : [95, ], # [range(100)],    # [0, ],
-        "pvbas" : [0, ],
+        "pyr" : [range(10)], # [0, ], # [range(100)],    # [0, ],
+        "pvbas" : [range(100)], # [0, ],
         "olm" : [0, ],
         "cckbas" : [0, ],
         "ivy" : [0, ],
@@ -208,14 +208,14 @@ basic_params = {
         
         # connection to pyramidal neurons
         "ca32pyr": {
-            "gmax": 0.09, # 0.016,
+            "gmax": 50, # 0.09, # 0.016,
             "gmax_std" : 0.002,
             
             "Erev": 0,
             "tau_rise": 0.5,
             "tau_decay": 3,
 
-            "prob": 0.06,
+            "prob": 1, #0.06,
             
             "delay": 1.5,
             "delay_std" : 0.5,
@@ -263,14 +263,14 @@ basic_params = {
         
 
         "pyr2pyr": {
-            "gmax": 0.01,
+            "gmax": 0.1, #  0.01,
             "gmax_std" : 0.007,
 
             "Erev": 0.0,
             "tau_rise": 0.1,
             "tau_decay": 1.5,
 
-            "prob": 0.009,
+            "prob": 100.0, #  0.009,
 
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -355,14 +355,14 @@ basic_params = {
         },
         
        "pvbas2pyr": {
-            "gmax": 0.05,
+            "gmax": 0.5, # 0.05,
             "gmax_std" : 0.025,
             
             "Erev": -75,
             "tau_rise": 0.3,
             "tau_decay": 6.2,
 
-            "prob": 0.29,
+            "prob": 1, #  0.29,
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -436,7 +436,7 @@ basic_params = {
             "tau_rise": 2.0,
             "tau_decay": 6.3,
 
-            "prob": 0.02,
+            "prob": 0.2, #  0.02,
             
             "delay": 1.5,
             "delay_std" : 0.5,
@@ -447,14 +447,14 @@ basic_params = {
         },
         
         "pyr2pvbas": {
-            "gmax": 0.2, # !!!! 0.05,
+            "gmax": 100, # !!!! 0.05,
             "gmax_std" : 0.04,
             
             "Erev": 0,
             "tau_rise": 0.07,
             "tau_decay": 0.2,
 
-            "prob": 0.13,
+            "prob": 1, # 0.13,
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -465,7 +465,7 @@ basic_params = {
         },
         
         "pvbas2pvbas": {
-            "gmax": 0.08, # 0.05 !!!! 0.023,
+            "gmax": 8, # 0.08, # 0.05 !!!! 0.023,
             "gmax_std" : 0.01, #  0.01,
             
             "Erev": -75,
@@ -1468,10 +1468,10 @@ for conname, conn_data in basic_params["connections"].items():
     # print(conname)
     precell, postcell = conname.split("2")
     
-    try:
-        conn_data["prob"] = conn_data["prob"] * basic_params["CellNumbersInFullModel"]["N"+precell] / basic_params["CellNumbers"]["N"+precell]
-    except ZeroDivisionError:
-        conn_data["prob"] = 0
+    # try:
+    #     conn_data["prob"] = conn_data["prob"] * basic_params["CellNumbersInFullModel"]["N"+precell] / basic_params["CellNumbers"]["N"+precell]
+    # except ZeroDivisionError:
+    #     conn_data["prob"] = 0
 
 # print(basic_params["connections"]["ca32pyr"])
 
@@ -1541,7 +1541,7 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
             #     gmax = gmax * dist_normalizer
                 
             
-            if gmax < 0.000001 or gmax > 0.01:
+            if gmax < 0.000001: # or gmax > 0.1:
                 continue
 
             connection = {
