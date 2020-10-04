@@ -134,14 +134,14 @@ basic_params = {
         
         "pyr" : {
             "cellclass" : "CA1PyramidalCell", # "poolosyncell", # 
-            "iext" : 0.007, # 0.02,
+            "iext" : 0.0, # 0.02,
             "iext_std" : 0.002,
         },
         
         "pvbas" : {
             "cellclass" : "pvbasketcell",
-            "iext" : 0.0,
-            "iext_std" : 0.002,
+            "iext" : 0.002,
+            "iext_std" : 0.0,
         },
         
         "cckbas" : {
@@ -208,7 +208,7 @@ basic_params = {
         
         # connection to pyramidal neurons
         "ca32pyr": {
-            "gmax": 50, # 0.09, # 0.016,
+            "gmax": 5, # 0.09, # 0.016,
             "gmax_std" : 0.002,
             
             "Erev": 0,
@@ -263,14 +263,14 @@ basic_params = {
         
 
         "pyr2pyr": {
-            "gmax": 0.1, #  0.01,
+            "gmax": 5, #  0.01,
             "gmax_std" : 0.007,
 
             "Erev": 0.0,
             "tau_rise": 0.1,
             "tau_decay": 1.5,
 
-            "prob": 100.0, #  0.009,
+            "prob": 1.0, #  0.009,
 
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -355,7 +355,7 @@ basic_params = {
         },
         
        "pvbas2pyr": {
-            "gmax": 0.5, # 0.05,
+            "gmax": 1.5, # 0.05,
             "gmax_std" : 0.025,
             
             "Erev": -75,
@@ -429,14 +429,14 @@ basic_params = {
         
         # connection to pvbas
         "ca32pvbas": {
-            "gmax": 0.5, # 0.7,
+            "gmax": 0.7, # 0.7,
             "gmax_std" : 0.2,
             
             "Erev": 0,
             "tau_rise": 2.0,
             "tau_decay": 6.3,
 
-            "prob": 0.2, #  0.02,
+            "prob": 0.2, # 0.02,
             
             "delay": 1.5,
             "delay_std" : 0.5,
@@ -447,7 +447,7 @@ basic_params = {
         },
         
         "pyr2pvbas": {
-            "gmax": 100, # !!!! 0.05,
+            "gmax": 5, # !!!! 0.05,
             "gmax_std" : 0.04,
             
             "Erev": 0,
@@ -465,7 +465,7 @@ basic_params = {
         },
         
         "pvbas2pvbas": {
-            "gmax": 8, # 0.08, # 0.05 !!!! 0.023,
+            "gmax": 10, # 0.08, # 0.05 !!!! 0.023,
             "gmax_std" : 0.01, #  0.01,
             
             "Erev": -75,
@@ -537,23 +537,23 @@ basic_params = {
             "target_compartment" : "dendrite_list",
         },
         
-        "ngf2pvbas": {
-            "gmax": 0.1,
-            "gmax_std" : 0.05,
-            
-            "Erev": -75,
-            "tau_rise": 0.5,
-            "tau_decay": 4.0,
-
-            "prob": 0.2, 
-            
-            "delay": 1.2,
-            "delay_std" : 0.2,
-            
-
-            "sourse_compartment" : "soma",
-            "target_compartment" : "dendrite_list",
-        },
+        # "ngf2pvbas": {
+        #     "gmax": 0.1,
+        #     "gmax_std" : 0.05,
+        #
+        #     "Erev": -75,
+        #     "tau_rise": 0.5,
+        #     "tau_decay": 4.0,
+        #
+        #     "prob": 0.2,
+        #
+        #     "delay": 1.2,
+        #     "delay_std" : 0.2,
+        #
+        #
+        #     "sourse_compartment" : "soma",
+        #     "target_compartment" : "dendrite_list",
+        # },
         
         "ivy2pvbas": {
             "gmax": 1.1,
