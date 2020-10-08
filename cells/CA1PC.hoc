@@ -157,8 +157,8 @@ proc biophys() {
 
     soma {  
         insert hha2     // HH mechanism with low threshold for Na spikes (-57 mV)
-            gnabar_hha2 = 0.007
-            gkbar_hha2  = 0.007/5
+            gnabar_hha2 = 0.007 
+            gkbar_hha2  = 0.007/5 
             gl_hha2     = 0
             el_hha2     = -70
             
