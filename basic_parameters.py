@@ -31,7 +31,7 @@ basic_params = {
     "PyrDencity" : 0.2, # pyramidal cells / micrometer^2
     
     "file_results":  "../../Data/CA1_simulation/test.hdf5", # None, #
-    "duration" : 2000, # 1900, #  1400, # simulation time
+    "duration" : 1900, #  1400, # simulation time
     
     "del_start_time" : 400, # time after start for remove  
     
@@ -61,7 +61,7 @@ basic_params = {
         "Npyr" :    100, # 500,
         "Npvbas" :  100, # 100, # 100,
         "Nolm" :    0, #40,
-        "Ncckbas" : 0, #80, # 80
+        "Ncckbas" : 80, # 80
         "Nivy" :    0, #130,
         "Nngf" :    0, #65,
         "Nbis" :    0, #35,
@@ -72,7 +72,7 @@ basic_params = {
         "Nca3" : 500, #500,
         "Nmec" : 0, #500,
         "Nlec" : 0, #500,
-        "Nmsteevracells" : 0, #200,
+        "Nmsteevracells" : 200,
         "Nmskomalicells" : 0, # 200,
         "Nmsach"         : 0, #150,
     },
@@ -134,13 +134,13 @@ basic_params = {
         
         "pyr" : {
             "cellclass" : "CA1PyramidalCell", # "poolosyncell", # 
-            "iext" : 0.002, # 0.02,
+            "iext" : 0.0, # 0.002,
             "iext_std" : 0.002,
         },
         
         "pvbas" : {
             "cellclass" : "pvbasketcell",
-            "iext" : 0.002,
+            "iext" : 0.0,
             "iext_std" : 0.0,
         },
         
@@ -1459,21 +1459,6 @@ for celltypename, cellparam in basic_params["CellParameters"].items():
     except KeyError:
         continue
 
-for conname, conn_data in basic_params["connections"].items():
-    
-    conn_data["gmax"] *= 0.001       # recalulate nS to micromhos 
-    conn_data["gmax_std"] *= 0.001
-    conn_data["delay"] += 1.5        # add delay on spike generation
-    
-    # print(conname)
-    precell, postcell = conname.split("2")
-    
-    # try:
-    #     conn_data["prob"] = conn_data["prob"] * basic_params["CellNumbersInFullModel"]["N"+precell] / basic_params["CellNumbers"]["N"+precell]
-    # except ZeroDivisionError:
-    #     conn_data["prob"] = 0
-
-# print(basic_params["connections"]["ca32pyr"])
 
 synapses = []
 
@@ -1494,7 +1479,7 @@ NNN = len( basic_params["celltypes"] )
 # print(NNN)
 
 
-Wpyrbas = np.zeros( [NNN, NNN],  dtype=np.float)
+# Wpyrbas = np.zeros( [NNN, NNN],  dtype=np.float)
 
 
 for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
@@ -1531,7 +1516,7 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
 
             if dist_normalizer > 0.7:
                 number_connections += 1
-                gmax = 2
+                gmax = 3
 
         elif conn_name == "pyr2pyr":
             pyr_idx1 = postsynaptic_cell_idx - gids_of_celltypes["pyr"][0]
@@ -1542,7 +1527,7 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
             # Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
             if dist_normalizer > 0.7:
                 number_connections += 1
-                gmax = 0.5
+                gmax = 1.5
             else:
                 number_connections = 0
 
@@ -1557,7 +1542,7 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
 
             if dist_normalizer > 0.7:
                 number_connections += 1
-                gmax = 0.5
+                gmax = 50
             else:
                 number_connections = 0
 
@@ -1571,7 +1556,7 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
 
             if dist_normalizer > 0.7:
                 number_connections += 1
-                gmax = 0.1
+                gmax = 2
             else:
                 number_connections = 0
 
@@ -1588,7 +1573,7 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
             # Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
             if dist_normalizer > 0.7:
                 number_connections += 1
-                gmax = 0.2
+                gmax = 1
             else:
                 number_connections = 0
 
@@ -1601,17 +1586,12 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
             dist_normalizer = np.exp(-0.5 * dist**2 / 0.2)
             if dist_normalizer > 0.7:
                 number_connections += 1
-                gmax = 1
+                gmax = 500
             else:
                 number_connections = 0
 
 
-        Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
-
-
-
-
-
+        # Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
 
         for _ in range(number_connections):
             
@@ -1622,7 +1602,7 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
             gmax_syn =  np.random.lognormal(mean=np.log(gmax), sigma=conn_data["gmax_std"])
 
 
-            if gmax_syn < 0.000001: # or gmax_syn > 0.1:
+            if gmax_syn < 0.000001: # or gmax_syn > 50:
                 continue
 
 
@@ -1642,6 +1622,21 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
             }
             
             synapses.append(connection)
+
+
+for syn in synapses:
+    syn["gmax"] *= 0.001  # recalulate nS to micromhos
+    # conn_data["gmax_std"] *= 0.001
+    syn["delay"] += 1.5  # add delay on spike generation
+
+    # print(conname)
+    # precell, postcell = conname.split("2")
+
+    # try:
+    #     conn_data["prob"] = conn_data["prob"] * basic_params["CellNumbersInFullModel"]["N"+precell] / basic_params["CellNumbers"]["N"+precell]
+    # except ZeroDivisionError:
+    #     conn_data["prob"] = 0
+
 
 #print(len(synapses))
 basic_params["synapses_params"] = synapses
