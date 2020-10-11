@@ -163,7 +163,7 @@ def plot_pyr_layer_lfp_vs_raster(filepath):
 if __name__ == "__main__":
     filepath = basic_params["file_results"]   #"/home/ivan/Data/CA1_simulation/test.hdf5"
 
-    # plot_v(filepath)
+    plot_v(filepath)
     # plot_spike_raster(filepath)
     # plot_lfp(filepath)
     # plot_phase_disrtibution(filepath)

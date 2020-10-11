@@ -31,7 +31,7 @@ basic_params = {
     "PyrDencity" : 0.2, # pyramidal cells / micrometer^2
     
     "file_results":  "../../Data/CA1_simulation/test.hdf5", # None, #
-    "duration" : 1900, #  1400, # simulation time
+    "duration" : 1000, #  1400, # simulation time
     
     "del_start_time" : 400, # time after start for remove  
     
@@ -58,10 +58,10 @@ basic_params = {
     },
     
     "CellNumbers" : {
-        "Npyr" :    100, # 500,
+        "Npyr" :    0, # 100, # 500,
         "Npvbas" :  100, # 100, # 100,
         "Nolm" :    0, #40,
-        "Ncckbas" : 80, # 80
+        "Ncckbas" : 0, # 80, # 80
         "Nivy" :    0, #130,
         "Nngf" :    0, #65,
         "Nbis" :    0, #35,
@@ -72,7 +72,7 @@ basic_params = {
         "Nca3" : 500, #500,
         "Nmec" : 0, #500,
         "Nlec" : 0, #500,
-        "Nmsteevracells" : 200,
+        "Nmsteevracells" : 0, #200,
         "Nmskomalicells" : 0, # 200,
         "Nmsach"         : 0, #150,
     },
@@ -190,7 +190,7 @@ basic_params = {
     
     "save_soma_v" : {
         "pyr" :  [range(100)],    # [0, ],
-        "pvbas" : [range(10)], #
+        "pvbas" : [range(20, 31)], #
         "olm" : [0, ],
         "cckbas" : [0, ],
         "ivy" : [0, ],
@@ -1573,7 +1573,7 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
             # Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
             if dist_normalizer > 0.7:
                 number_connections += 1
-                gmax = 1
+                gmax = 0.3
             else:
                 number_connections = 0
 
@@ -1586,7 +1586,7 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
             dist_normalizer = np.exp(-0.5 * dist**2 / 0.2)
             if dist_normalizer > 0.7:
                 number_connections += 1
-                gmax = 500
+                gmax = 1.0 # 500
             else:
                 number_connections = 0
 
