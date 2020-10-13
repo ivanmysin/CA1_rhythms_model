@@ -141,14 +141,41 @@ def run_simulation(params):
 
         else:
             cell.celltype = celltypename
-            cell.acell.mu = params["CellParameters"][celltypename]["phase"]
-            cell.acell.latency = params["CellParameters"][celltypename]["latency"]
-            cell.acell.freqs = params["CellParameters"][celltypename]["freqs"]
-            cell.acell.spike_rate = params["CellParameters"][celltypename]["spike_train_freq"]
-            cell.acell.kappa = params["CellParameters"][celltypename]["kappa"]
-            cell.acell.I0 = params["CellParameters"][celltypename]["I0"]
-            cell.acell.myseed = RNG.integers(0, 1000000000, 1)
-            cell.acell.delta_t = 0.2
+
+            if celltypename != "ca3":
+                cell.acell.mu = params["CellParameters"][celltypename]["phase"]
+                cell.acell.latency = params["CellParameters"][celltypename]["latency"]
+                cell.acell.freqs = params["CellParameters"][celltypename]["freqs"]
+                cell.acell.spike_rate = params["CellParameters"][celltypename]["spike_train_freq"]
+                cell.acell.kappa = params["CellParameters"][celltypename]["kappa"]
+                cell.acell.I0 = params["CellParameters"][celltypename]["I0"]
+                cell.acell.myseed = RNG.integers(0, 1000000000, 1)
+                cell.acell.delta_t = 0.2
+
+            else:
+                # print("Hello")
+
+                cell.acell.low_mu = params["CellParameters"][celltypename]["theta_phase"]
+                cell.acell.high_mu = params["CellParameters"][celltypename]["gamma_phase"]
+
+
+                cell.acell.place_t_radius = params["CellParameters"][celltypename]["place_t_radius"]
+
+                cell.acell.low_kappa = params["CellParameters"][celltypename]["theta_kappa"]
+                cell.acell.low_I0 = params["CellParameters"][celltypename]["theta_i0"]
+                cell.acell.high_kappa = params["CellParameters"][celltypename]["gamma_kappa"]
+                cell.acell.high_I0 = params["CellParameters"][celltypename]["gamma_i0"]
+                cell.acell.spike_rate = params["CellParameters"][celltypename]["rate_norm"]
+                cell.acell.latency = params["CellParameters"][celltypename]["latency"]
+                cell.acell.delta_t = 0.2
+
+                cell.acell.myseed = RNG.integers(0, 1000000000, 1)
+
+                ca3_idx = int(np.argwhere( params["gids_of_celltypes"]["ca3"] == gid).ravel()[0])
+                # print(ca3_idx)
+
+                cell.acell.place_center_t = params["place_field_coordinates"]["ca3"][ca3_idx]
+
             firing = h.NetCon(cell.acell, None)
         
         pc.cell(gid, firing)

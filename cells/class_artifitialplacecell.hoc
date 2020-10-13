@@ -1,0 +1,19 @@
+begintemplate ArtifitialPlaceCell
+
+    public pattern_generator, acell, is_art, gid
+    create pattern_generator
+    objref acell
+    strdef celltype
+
+    proc init() {
+        gid = $1
+        rand = $2
+        
+        pattern_generator acell  = new ArtificialRhytmicPlaceCell()
+        
+    }
+    
+    func is_art() {return 1} 
+    
+
+endtemplate ArtifitialPlaceCell

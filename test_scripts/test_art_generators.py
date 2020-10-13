@@ -13,9 +13,9 @@ from time import time
 
 
 ###### parameters block ############
-dur = 1000
-Ngens = 100
-Rtheta = 0.6
+dur = 5000
+Ngens = 500
+Rtheta = 0.4
 Rgamma = 0.6
 #####################################
 
@@ -38,10 +38,10 @@ for idx in range(Ngens):
 	gen = h.ArtificialRhytmicPlaceCell()
 	gen.delta_t = 0.5
 
-	gen.spike_rate = 500000
+	gen.spike_rate = 100000
 	gen.place_center_t = places[idx]
 	gen.place_t_radius = 1000
-	gen.latency = 1
+	gen.latency = 10
 
 	gen.low_kappa = theta_kappa
 	gen.low_I0 = theta_i0

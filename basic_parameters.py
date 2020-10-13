@@ -29,9 +29,13 @@ basic_params = {
         "el_z" : np.zeros(Nelecs),
     },
     "PyrDencity" : 0.2, # pyramidal cells / micrometer^2
+
+    "place_field_coordinates" : {
+        "ca3" : None,
+    },
     
     "file_results":  "../../Data/CA1_simulation/test.hdf5", # None, #
-    "duration" : 1000, #  1400, # simulation time
+    "duration" : 5000, #  1400, # simulation time
     
     "del_start_time" : 400, # time after start for remove  
     
@@ -79,12 +83,24 @@ basic_params = {
     
     "CellParameters" : {
         "ca3" : {
-            "cellclass" : "ArtifitialCell",
-            "R" : 0.4,
-            "phase" : 1.5,
-            "freqs" : 5.0,
+            "cellclass" : "ArtifitialPlaceCell",
+            "Rtheta" : 0.4,
+            "theta_phase" : 1.5,
+
+            "Rgamma" : 0.6,
+            "gamma_phase" : 0.0,
+
+            "rate_norm" : 100000.0,
             "latency" : 10.0,
-            "spike_train_freq" : 5.0,      
+
+            "place_center_t" : 500,
+            "place_t_radius" : 1000,
+
+            # "R" : 0.4,
+            # "phase" : 1.5,
+            # "freqs" : 5.0,
+            # "latency" : 10.0,
+            # "spike_train_freq" : 5.0,
         },
         
         "mec" : {
@@ -1450,14 +1466,28 @@ for celltype, list_idx in basic_params["save_soma_v"].items():
 basic_params["save_soma_v"]["vect_idxes"] = save_soma_v_idx
 
 for celltypename, cellparam in basic_params["CellParameters"].items():
-    try:
-        Rgen = cellparam["R"]
-        kappa, I0 = prelib.r2kappa(Rgen)
-        cellparam["kappa"] = kappa
-        cellparam["I0"] = I0
-    
-    except KeyError:
-        continue
+
+
+    if celltypename == "ca3":
+        Rtheta = cellparam["Rtheta"]
+        Rgamma = cellparam["Rgamma"]
+
+        theta_kappa, theta_i0 = prelib.r2kappa(Rtheta)
+        gamma_kappa, gamma_i0 = prelib.r2kappa(Rgamma)
+        cellparam["theta_kappa"] = theta_kappa
+        cellparam["gamma_kappa"] = gamma_kappa
+        cellparam["theta_i0"] = theta_i0
+        cellparam["gamma_i0"] = gamma_i0
+
+        cellparam["place_center_t"] = 500  # !!!!!
+    else:
+        try:
+            Rgen = cellparam["R"]
+            kappa, I0 = prelib.r2kappa(Rgen)
+            cellparam["kappa"] = kappa
+            cellparam["I0"] = I0
+        except KeyError:
+            continue
 
 
 synapses = []
@@ -1473,6 +1503,10 @@ pvbas_coord_x = np.linspace(0, 1, Npvbas) # np.zeros( Npvbas,  dtype=np.float)  
 # pvbas_coord_x[20:30] = 0.5
 
 ca3_coord_x = np.linspace(0, 1, Nca3) #  np.zeros( Nca3,  dtype=np.float) + 0.5
+
+basic_params["place_field_coordinates"]["ca3"] = ca3_coord_x
+
+
 
 
 NNN = len( basic_params["celltypes"] )
@@ -1647,6 +1681,7 @@ for syn in synapses:
 
 
 #print(len(synapses))
+basic_params["gids_of_celltypes"] = gids_of_celltypes
 basic_params["synapses_params"] = synapses
 
 
