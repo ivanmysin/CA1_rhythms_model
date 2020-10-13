@@ -8,24 +8,24 @@ rng = np.random.default_rng()
 
 
 # CA3 place cell artificial generator
-dt = 0.005
-dur = 5
+dt = 0.5
+dur = 5000
 Ngens = 100
 
 
 theta_w = 5
 theta_phase_mean = 1.5
-Rteta = 0.6
+Rteta = 0.1
 theta_kappa, theta_i0 = lib.r2kappa(Rteta)
 
 
 gamma_w = 30
 gamma_phase_mean = 0
-Rgamma = 0.6
+Rgamma = 0.9
 gamma_kappa, gamma_i0 = lib.r2kappa(Rgamma)
 
 place_cent_t = np.flip( np.linspace(0, dur, Ngens) )
-place_radius = 1.0
+place_radius = 1000
 
 
 
@@ -37,8 +37,8 @@ n_indxes = np.arange(1, Ngens+1, 1)
 theta_phase = 0
 gamma_phase = 0
 
-dfi_theta = dt * theta_w
-dfi_gamma = dt * gamma_w
+dfi_theta = dt * 0.001 * theta_w * 2 * np.pi
+dfi_gamma = dt * 0.001 * gamma_w * 2 * np.pi
 
 
 for t in np.arange(0, dur, dt):
@@ -49,7 +49,7 @@ for t in np.arange(0, dur, dt):
 
     pdf_place = np.exp( -0.5 * ( (t - place_cent_t) / place_radius)**2 ) / (place_radius * np.sqrt(2*np.pi) )
 
-    pdf = dfi_gamma * pdf_gamma * pdf_theta * dfi_theta * 500 * pdf_place
+    pdf = dfi_gamma * pdf_gamma * pdf_theta * dfi_theta * 500000 * pdf_place
 
     fired = generators < pdf
     firing_n = np.append(firing_n, n_indxes[fired] )

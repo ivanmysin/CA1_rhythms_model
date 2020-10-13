@@ -1472,7 +1472,7 @@ pyr_coord_x = np.linspace(0, 1, Npyr) # np.zeros( Npyr,  dtype=np.float) #
 pvbas_coord_x = np.linspace(0, 1, Npvbas) # np.zeros( Npvbas,  dtype=np.float)  #
 # pvbas_coord_x[20:30] = 0.5
 
-ca3_coord_x = np.zeros( Nca3,  dtype=np.float) + 0.5
+ca3_coord_x = np.linspace(0, 1, Nca3) #  np.zeros( Nca3,  dtype=np.float) + 0.5
 
 
 NNN = len( basic_params["celltypes"] )
