@@ -13,7 +13,7 @@ from time import time
 
 
 ###### parameters block ############
-dur = 5000
+dur = 6000
 Ngens = 500
 Rtheta = 0.4
 Rgamma = 0.6
@@ -29,7 +29,9 @@ load_mechanisms("../mods/")
 generators = []
 firings = []
 spike_times_vecs = []
-places = np.flip( np.linspace(0, dur, Ngens) )
+places = np.flip( np.cumsum( np.zeros(Ngens) + 10 ) ) #  np.flip( np.linspace(0, dur, Ngens) )
+
+# print(places.size)
 
 for idx in range(Ngens):
 	theta_kappa, theta_i0 = prelib.r2kappa(Rtheta)
@@ -74,6 +76,7 @@ for idx in range(Ngens):
 	fir = np.zeros_like(t) + idx + 1
 	ax.scatter(t, fir, color="blue", s=0.5)
 
+ax.set_ylim(0, Ngens)
 plt.show()
 
 

@@ -35,7 +35,7 @@ basic_params = {
     },
     
     "file_results":  "../../Data/CA1_simulation/test.hdf5", # None, #
-    "duration" : 5000, #  1400, # simulation time
+    "duration" : 1000, #  1400, # simulation time
     
     "del_start_time" : 400, # time after start for remove  
     
@@ -1496,24 +1496,32 @@ Npyr = gids_of_celltypes["pyr"].size
 Npvbas = gids_of_celltypes["pvbas"].size
 Nca3 = gids_of_celltypes["ca3"].size
 
-pyr_coord_x = np.linspace(0, 1, Npyr) # np.zeros( Npyr,  dtype=np.float) #
+var_conns = 5000
+
+pyr_coord_x = np.flip( np.cumsum( np.zeros(Npyr) + 10 ) )
+
+# print(pyr_coord_x)
+# np.linspace(0, 1, Npyr) # np.zeros( Npyr,  dtype=np.float) #
 # pyr_coord_x[20:30] = 0.5
 
-pvbas_coord_x = np.linspace(0, 1, Npvbas) # np.zeros( Npvbas,  dtype=np.float)  #
+pvbas_coord_x = np.flip( np.cumsum( np.zeros(Npvbas) + 10 ) )
+# np.linspace(0, 1, Npvbas) # np.zeros( Npvbas,  dtype=np.float)  #
 # pvbas_coord_x[20:30] = 0.5
 
-ca3_coord_x = np.linspace(0, 1, Nca3) #  np.zeros( Nca3,  dtype=np.float) + 0.5
+ca3_coord_x = np.flip( np.cumsum( np.zeros(Nca3) + 10 ) )
+# np.linspace(0, 1, Nca3) #  np.zeros( Nca3,  dtype=np.float) + 0.5
+# print(ca3_coord_x)
 
 basic_params["place_field_coordinates"]["ca3"] = ca3_coord_x
 
-
+tmp_cout = 1
 
 
 NNN = len( basic_params["celltypes"] )
 # print(NNN)
 
 
-# Wpyrbas = np.zeros( [NNN, NNN],  dtype=np.float)
+Wpyrbas = np.zeros( [NNN, NNN],  dtype=np.float)
 
 
 for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
@@ -1542,26 +1550,27 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
             pyr_idx = postsynaptic_cell_idx - gids_of_celltypes["pyr"][0]
             ca3_idx = presynaptic_cell_idx - gids_of_celltypes["ca3"][0]
             dist = pyr_coord_x[pyr_idx] - ca3_coord_x[ca3_idx]
-            dist_normalizer = np.exp(-0.5 * dist**2 / 0.08)
+            dist_normalizer = np.exp(-0.5 * dist**2 / var_conns )
 
-            # Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
+            Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
             # medium_pyr_idx = gids_of_celltypes["pyr"][gids_of_celltypes["pyr"].size // 2]
             # dist_normalizer = np.exp(-0.5 * (postsynaptic_cell_idx - medium_pyr_idx) ** 2 / 50)
 
-            # if dist_normalizer > 0.7:
+            if dist_normalizer > 0.1:
+                tmp_cout += 1
             #    number_connections += 1
             #    gmax = 2.5
 
 
-            gmax = 6.5 * dist_normalizer + gmax
+            gmax = 50 * 6.5 * dist_normalizer + gmax
 
         elif conn_name == "pyr2pyr":
             pyr_idx1 = postsynaptic_cell_idx - gids_of_celltypes["pyr"][0]
             pyr_idx2 = presynaptic_cell_idx - gids_of_celltypes["pyr"][0]
             dist = pyr_coord_x[pyr_idx1] - pyr_coord_x[pyr_idx2]
-            dist_normalizer = np.exp(-0.5 * dist**2 / 0.08)
+            dist_normalizer = np.exp(-0.5 * dist**2 / var_conns )
 
-            # Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
+            Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
             if dist_normalizer > 0.7:
                 number_connections += 1
             #     gmax = 0.5
@@ -1573,9 +1582,9 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
             pyr_idx = postsynaptic_cell_idx - gids_of_celltypes["pyr"][0]
             pvbas_idx = presynaptic_cell_idx - gids_of_celltypes["pvbas"][0]
             dist = pyr_coord_x[pyr_idx] - pvbas_coord_x[pvbas_idx]
-            dist_normalizer = np.exp(-0.5 * dist**2 / 0.08)
+            dist_normalizer = np.exp(-0.5 * dist**2 / var_conns )
 
-            # Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
+            Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
 
 
             if dist_normalizer > 0.7:
@@ -1589,9 +1598,9 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
             pyr_idx = presynaptic_cell_idx - gids_of_celltypes["pyr"][0]
             pvbas_idx = postsynaptic_cell_idx - gids_of_celltypes["pvbas"][0]
             dist = pyr_coord_x[pyr_idx] - pvbas_coord_x[pvbas_idx]
-            dist_normalizer = np.exp(-0.5 * dist**2 / 0.08)
+            dist_normalizer = np.exp(-0.5 * dist**2 / var_conns )
 
-            # Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
+            Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
 
             # if dist_normalizer > 0.7:
             #     number_connections += 1
@@ -1608,23 +1617,26 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
             ca3_idx = presynaptic_cell_idx - gids_of_celltypes["ca3"][0]
 
             dist = pvbas_coord_x[pvbas_idx] - ca3_coord_x[ca3_idx]
-            dist_normalizer = np.exp(-0.5 * dist**2 / 0.08)
+            dist_normalizer = np.exp(-0.5 * dist**2 / var_conns )
 
-            # Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
+            Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
             if dist_normalizer > 0.7:
                 number_connections += 1
             #     gmax = 0.3
             # else:
             #     number_connections = 0
-            gmax = 0.3 * dist_normalizer
+            gmax = 15 * 0.3 * dist_normalizer
+            # print(gmax)
 
         elif conn_name == "pvbas2pvbas":
             pvbas_idx1 = postsynaptic_cell_idx - gids_of_celltypes["pvbas"][0]
             pvbas_idx2 = presynaptic_cell_idx - gids_of_celltypes["pvbas"][0]
             dist = pvbas_coord_x[pvbas_idx1] - pvbas_coord_x[pvbas_idx2]
 
-            # Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
-            dist_normalizer = np.exp(-0.5 * dist**2 / 0.08)
+
+            dist_normalizer = np.exp(-0.5 * dist**2 / var_conns )
+
+            Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
             if dist_normalizer > 0.7:
                 number_connections += 1
             #     gmax = 50.0 # 500
@@ -1634,6 +1646,8 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
 
 
         # Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
+        if gmax < 0.000001:
+            number_connections = 0
 
         for _ in range(number_connections):
             
@@ -1684,9 +1698,9 @@ for syn in synapses:
 basic_params["gids_of_celltypes"] = gids_of_celltypes
 basic_params["synapses_params"] = synapses
 
-
+# print(tmp_cout)
 # import matplotlib.pyplot as plt
-#
+
 # plt.imshow(Wpyrbas)
 # plt.show()
 
