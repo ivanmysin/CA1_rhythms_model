@@ -13,7 +13,7 @@ from time import time
 
 
 ###### parameters block ############
-dur = 6000
+dur = 1000
 Ngens = 500
 Rtheta = 0.4
 Rgamma = 0.6
@@ -29,7 +29,7 @@ load_mechanisms("../mods/")
 generators = []
 firings = []
 spike_times_vecs = []
-places = np.flip( np.cumsum( np.zeros(Ngens) + 10 ) ) #  np.flip( np.linspace(0, dur, Ngens) )
+places = np.flip( np.cumsum( np.zeros(Ngens) + 5 ) ) #  np.flip( np.linspace(0, dur, Ngens) )
 
 # print(places.size)
 
@@ -42,7 +42,7 @@ for idx in range(Ngens):
 
 	gen.spike_rate = 100000
 	gen.place_center_t = places[idx]
-	gen.place_t_radius = 1000
+	gen.place_t_radius = 300
 	gen.latency = 10
 
 	gen.low_kappa = theta_kappa
