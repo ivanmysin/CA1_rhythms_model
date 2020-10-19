@@ -168,13 +168,21 @@ def plot_phase_precession(filepath):
         firing_group =  h5file["extracellular/electrode_1/firing/origin_data/pyr"]
 
         sampling_rate *= 0.001
+
+        fig_in, ax_in = plt.subplots()
+        fig_out, ax_out = plt.subplots()
+
+
+        ax_in.set_title("In")
+        ax_out.set_title("Out")
+
         for firing in firing_group.values():
             if firing.size < 10: continue
             indexes = (firing * sampling_rate).astype(np.int)
 
             place_center = np.median(firing)
 
-            if np.abs(place_center - 5000) > 2000: continue
+
 
             firing_during_place = firing - place_center
 
@@ -185,10 +193,14 @@ def plot_phase_precession(filepath):
             firing_during_place = firing_during_place[is_inside]
             phases_during_place = phases_during_place[is_inside]
 
-            fig, ax = plt.subplots()
 
-            ax.set_title(str(place_center))
-            ax.scatter(firing_during_place, phases_during_place, s=2)
+            if np.abs(place_center - 5000) < 100:
+                ax_in.scatter(firing_during_place, phases_during_place, s=2)
+            else:
+                ax_out.scatter(firing_during_place, phases_during_place, s=2)
+
+
+
 
     plt.show()
 
@@ -200,8 +212,8 @@ if __name__ == "__main__":
     # plot_spike_raster(filepath)
     # plot_lfp(filepath)
     # plot_phase_disrtibution(filepath)
-    # plot_pyr_layer_lfp_vs_raster(filepath)
-    plot_phase_precession(filepath)
+    plot_pyr_layer_lfp_vs_raster(filepath)
+    # plot_phase_precession(filepath)
 
 
 
