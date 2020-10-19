@@ -32,10 +32,11 @@ basic_params = {
 
     "place_field_coordinates" : {
         "ca3" : None,
+        "mec" : None,
     },
     
     "file_results":  "../../Data/CA1_simulation/test.hdf5", # None, #
-    "duration" : 2000, #  1400, # simulation time
+    "duration" : 8000, #  1400, # simulation time
     
     "del_start_time" : 0, # 400, # time after start for remove
     
@@ -74,7 +75,7 @@ basic_params = {
         
         
         "Nca3" : 500, #500,
-        "Nmec" : 0, #500,
+        "Nmec" : 500,
         "Nlec" : 0, #500,
         "Nmsteevracells" : 200,
         "Nmskomalicells" : 0, # 200,
@@ -94,7 +95,7 @@ basic_params = {
             "latency" : 10.0,
 
             "place_center_t" : 500,
-            "place_t_radius" : 300, # 1000,
+            "place_t_radius" : 1000, # 300,
 
             # "R" : 0.4,
             # "phase" : 1.5,
@@ -104,12 +105,25 @@ basic_params = {
         },
         
         "mec" : {
-            "cellclass" : "ArtifitialCell",
-            "R" : 0.4,
-            "phase" : 0.0,
-            "freqs" : 5.0,
-            "latency" : 10.0,
-            "spike_train_freq" : 5.0,    
+            "cellclass" : "ArtifitialPlaceCell", #  "ArtifitialCell",
+
+            "Rtheta": 0.4,
+            "theta_phase": 1.5,
+
+            "Rgamma": 0.6,
+            "gamma_phase": 0.0,
+
+            "rate_norm": 100000,  # 100000.0,
+            "latency": 10.0,
+
+            "place_center_t": 600,
+            "place_t_radius": 1000, # !!!!300,  #
+
+            # "R" : 0.4,
+            # "phase" : 0.0,
+            # "freqs" : 5.0,
+            # "latency" : 10.0,
+            # "spike_train_freq" : 5.0,
         },
         
         "lec" : {
@@ -242,7 +256,7 @@ basic_params = {
         },
         
        "mec2pyr": {
-            "gmax": 0.06,
+            "gmax": 15, # !!!!  0.06,
             "gmax_std" : 0.007,
             
             "Erev": 0,
@@ -1468,7 +1482,7 @@ basic_params["save_soma_v"]["vect_idxes"] = save_soma_v_idx
 for celltypename, cellparam in basic_params["CellParameters"].items():
 
 
-    if celltypename == "ca3":
+    if celltypename == "ca3" or celltypename == "mec":
         Rtheta = cellparam["Rtheta"]
         Rgamma = cellparam["Rgamma"]
 
@@ -1512,7 +1526,10 @@ ca3_coord_x =  np.cumsum( np.zeros(Nca3) + 10 ) #np.flip()
 # np.linspace(0, 1, Nca3) #  np.zeros( Nca3,  dtype=np.float) + 0.5
 # print(ca3_coord_x)
 
+mec_coord_x =  np.zeros(gids_of_celltypes["mec"].size) + 5500  #np.flip()
+
 basic_params["place_field_coordinates"]["ca3"] = ca3_coord_x
+basic_params["place_field_coordinates"]["mec"] = mec_coord_x
 
 tmp_cout = 1
 
