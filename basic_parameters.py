@@ -1510,7 +1510,7 @@ Npyr = gids_of_celltypes["pyr"].size
 Npvbas = gids_of_celltypes["pvbas"].size
 Nca3 = gids_of_celltypes["ca3"].size
 
-var_conns = 8000
+var_conns = 80000
 
 pyr_coord_x = np.cumsum( np.zeros(Npyr) + 10 ) #np.flip( ) # 10
 
@@ -1518,7 +1518,7 @@ pyr_coord_x = np.cumsum( np.zeros(Npyr) + 10 ) #np.flip( ) # 10
 # np.linspace(0, 1, Npyr) # np.zeros( Npyr,  dtype=np.float) #
 # pyr_coord_x[20:30] = 0.5
 
-pvbas_coord_x = np.cumsum( np.zeros(Npvbas) + 12) #np.flip( )
+pvbas_coord_x = np.cumsum( np.zeros(Npvbas) + 10) #np.flip( )
 # np.linspace(0, 1, Npvbas) # np.zeros( Npvbas,  dtype=np.float)  #
 # pvbas_coord_x[20:30] = 0.5
 
@@ -1579,7 +1579,7 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
             #    gmax = 2.5
 
 
-            gmax = 1.0 * 6.5 * dist_normalizer + gmax
+            gmax = 3.0 * 6.5 * dist_normalizer + gmax
 
         elif conn_name == "pyr2pyr":
             pyr_idx1 = postsynaptic_cell_idx - gids_of_celltypes["pyr"][0]
@@ -1642,7 +1642,7 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
             #     gmax = 0.3
             # else:
             #     number_connections = 0
-            gmax = 10 * 0.3 * dist_normalizer
+            gmax = 15 * 0.3 * dist_normalizer
             # print(gmax)
 
         elif conn_name == "pvbas2pvbas":
