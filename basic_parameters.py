@@ -1510,7 +1510,7 @@ Npyr = gids_of_celltypes["pyr"].size
 Npvbas = gids_of_celltypes["pvbas"].size
 Nca3 = gids_of_celltypes["ca3"].size
 
-var_conns = 80000
+var_conns = 8000
 
 pyr_coord_x = np.cumsum( np.zeros(Npyr) + 10 ) #np.flip( ) # 10
 
