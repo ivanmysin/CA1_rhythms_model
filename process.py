@@ -109,7 +109,7 @@ def processing_and_save(filepath):
                 celltype_firings = np.append(celltype_firings, cell_firing_dset[:])
 
             # тут нужно взять канал из пирамидного слоя
-            theta_lfp = h5file["extracellular/electrode_1/lfp/processing/bands/channel_3/theta"][:]
+            theta_lfp = h5file["extracellular/electrode_1/lfp/processing/bands/channel_1/theta"][:]
             bins, phase_distr = plib.get_phase_disrtibution(celltype_firings, theta_lfp, fd)
 
             
@@ -122,8 +122,8 @@ def processing_and_save(filepath):
 if __name__ == "__main__":
     from basic_parameters import basic_params
     
-    filepath = basic_params["file_results"] # "/home/ivan/Data/CA1_simulation/test_.hdf5" # 
-    
+    filepath = basic_params["file_results"] # "/home/ivan/Data/CA1_simulation/test.hdf5" #  
+    # print(filepath)
     processing_and_save(filepath)
 
 

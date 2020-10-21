@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.signal import hilbert
 import matplotlib.pyplot as plt
 import h5py
 from basic_parameters import basic_params
@@ -158,16 +159,61 @@ def plot_pyr_layer_lfp_vs_raster(filepath):
         
         plt.show()
 
+def plot_phase_precession(filepath):
+    with h5py.File(filepath, 'r') as h5file:
+        sampling_rate = h5file["extracellular/electrode_1/lfp/origin_data"].attrs["SamplingRate"]
+        theta_signal = h5file["extracellular/electrode_1/lfp/processing/bands/channel_1/theta"][:]
+        theta_phases = np.angle( hilbert(theta_signal) )
+
+        firing_group =  h5file["extracellular/electrode_1/firing/origin_data/pyr"]
+
+        sampling_rate *= 0.001
+
+        fig_in, ax_in = plt.subplots()
+        fig_out, ax_out = plt.subplots()
+
+
+        ax_in.set_title("In")
+        ax_out.set_title("Out")
+
+        for firing in firing_group.values():
+            if firing.size < 10: continue
+            indexes = (firing * sampling_rate).astype(np.int)
+
+            place_center = np.median(firing)
+
+
+
+            firing_during_place = firing - place_center
+
+            is_inside = np.abs(firing_during_place) < 2000
+
+            phases_during_place = theta_phases[indexes]
+
+            firing_during_place = firing_during_place[is_inside]
+            phases_during_place = phases_during_place[is_inside]
+
+
+            if np.abs(place_center - 5000) < 100:
+                ax_in.scatter(firing_during_place, phases_during_place, s=2)
+            else:
+                ax_out.scatter(firing_during_place, phases_during_place, s=2)
+
+
+
+
+    plt.show()
 
 
 if __name__ == "__main__":
-    filepath = basic_params["file_results"]   #"/home/ivan/Data/CA1_simulation/test.hdf5"
+    filepath = basic_params["file_results"]  #  "/home/ivan/Data/CA1_simulation/test.hdf5"
 
     # plot_v(filepath)
     # plot_spike_raster(filepath)
     # plot_lfp(filepath)
     # plot_phase_disrtibution(filepath)
     plot_pyr_layer_lfp_vs_raster(filepath)
+    # plot_phase_precession(filepath)
 
 
 

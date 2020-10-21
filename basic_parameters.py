@@ -32,10 +32,11 @@ basic_params = {
 
     "place_field_coordinates" : {
         "ca3" : None,
+        "mec" : None,
     },
     
     "file_results":  "../../Data/CA1_simulation/test.hdf5", # None, #
-    "duration" : 2000, #  1400, # simulation time
+    "duration" : 1000, #  1400, # simulation time
     
     "del_start_time" : 0, # 400, # time after start for remove
     
@@ -62,7 +63,7 @@ basic_params = {
     },
     
     "CellNumbers" : {
-        "Npyr" :    100, # 500,
+        "Npyr" :    200, # 500,
         "Npvbas" :  100, # 100, # 100,
         "Nolm" :    0, #40,
         "Ncckbas" : 80, # 80
@@ -74,7 +75,7 @@ basic_params = {
         
         
         "Nca3" : 500, #500,
-        "Nmec" : 0, #500,
+        "Nmec" : 500,
         "Nlec" : 0, #500,
         "Nmsteevracells" : 200,
         "Nmskomalicells" : 0, # 200,
@@ -94,7 +95,7 @@ basic_params = {
             "latency" : 10.0,
 
             "place_center_t" : 500,
-            "place_t_radius" : 300, # 1000,
+            "place_t_radius" : 1000, # 300,
 
             # "R" : 0.4,
             # "phase" : 1.5,
@@ -104,12 +105,25 @@ basic_params = {
         },
         
         "mec" : {
-            "cellclass" : "ArtifitialCell",
-            "R" : 0.4,
-            "phase" : 0.0,
-            "freqs" : 5.0,
-            "latency" : 10.0,
-            "spike_train_freq" : 5.0,    
+            "cellclass" : "ArtifitialPlaceCell", #  "ArtifitialCell",
+
+            "Rtheta": 0.4,
+            "theta_phase": 1.5,
+
+            "Rgamma": 0.6,
+            "gamma_phase": 0.0,
+
+            "rate_norm": 100000,  # 100000.0,
+            "latency": 10.0,
+
+            "place_center_t": 2500,
+            "place_t_radius": 1000, # !!!!300,  #
+
+            # "R" : 0.4,
+            # "phase" : 0.0,
+            # "freqs" : 5.0,
+            # "latency" : 10.0,
+            # "spike_train_freq" : 5.0,
         },
         
         "lec" : {
@@ -242,7 +256,7 @@ basic_params = {
         },
         
        "mec2pyr": {
-            "gmax": 0.06,
+            "gmax": 0.5, # !!!!  0.06,
             "gmax_std" : 0.007,
             
             "Erev": 0,
@@ -1468,7 +1482,7 @@ basic_params["save_soma_v"]["vect_idxes"] = save_soma_v_idx
 for celltypename, cellparam in basic_params["CellParameters"].items():
 
 
-    if celltypename == "ca3":
+    if celltypename == "ca3" or celltypename == "mec":
         Rtheta = cellparam["Rtheta"]
         Rgamma = cellparam["Rgamma"]
 
@@ -1512,7 +1526,10 @@ ca3_coord_x =  np.cumsum( np.zeros(Nca3) + 10 ) #np.flip()
 # np.linspace(0, 1, Nca3) #  np.zeros( Nca3,  dtype=np.float) + 0.5
 # print(ca3_coord_x)
 
+mec_coord_x =  np.zeros(gids_of_celltypes["mec"].size) + 2500  #np.flip()
+
 basic_params["place_field_coordinates"]["ca3"] = ca3_coord_x
+basic_params["place_field_coordinates"]["mec"] = mec_coord_x
 
 tmp_cout = 1
 
@@ -1562,7 +1579,7 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
             #    gmax = 2.5
 
 
-            gmax = 15 * 6.5 * dist_normalizer + gmax
+            gmax = 3.0 * 6.5 * dist_normalizer + gmax
 
         elif conn_name == "pyr2pyr":
             pyr_idx1 = postsynaptic_cell_idx - gids_of_celltypes["pyr"][0]
@@ -1607,7 +1624,7 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
             #     gmax = 0.5
             # else:
             #     number_connections = 0
-            gmax = 0.5 * dist_normalizer
+            gmax = 5 * 0.5 * dist_normalizer
 
 
         elif conn_name == "ca32pvbas":

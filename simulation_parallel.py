@@ -142,7 +142,7 @@ def run_simulation(params):
         else:
             cell.celltype = celltypename
 
-            if celltypename != "ca3":
+            if celltypename != "ca3" and celltypename != "mec" :
                 cell.acell.mu = params["CellParameters"][celltypename]["phase"]
                 cell.acell.latency = params["CellParameters"][celltypename]["latency"]
                 cell.acell.freqs = params["CellParameters"][celltypename]["freqs"]
@@ -153,7 +153,7 @@ def run_simulation(params):
                 cell.acell.delta_t = 0.2
 
             else:
-                # print("Hello")
+
 
                 cell.acell.low_mu = params["CellParameters"][celltypename]["theta_phase"]
                 cell.acell.high_mu = params["CellParameters"][celltypename]["gamma_phase"]
@@ -171,10 +171,10 @@ def run_simulation(params):
 
                 cell.acell.myseed = RNG.integers(0, 1000000000, 1)
 
-                ca3_idx = int(np.argwhere( params["gids_of_celltypes"]["ca3"] == gid).ravel()[0])
+                gens_idx = int(np.argwhere( params["gids_of_celltypes"][celltypename] == gid).ravel()[0])
                 # print(ca3_idx)
 
-                cell.acell.place_center_t = params["place_field_coordinates"]["ca3"][ca3_idx]
+                cell.acell.place_center_t = params["place_field_coordinates"][celltypename][gens_idx]
 
             firing = h.NetCon(cell.acell, None)
         
