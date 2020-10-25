@@ -253,6 +253,12 @@ basic_params = {
 
             "sourse_compartment" : "acell",
             "target_compartment" : "rad_list",
+
+            "NMDA" : {
+                "gNMDAmax" : 0.1, # mS
+                "tcon" : 2.3,   # ms
+                "tcoff" : 95.0, # ms
+            },
         },
         
        "mec2pyr": {
