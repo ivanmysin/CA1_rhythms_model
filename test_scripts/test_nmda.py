@@ -48,11 +48,11 @@ conn.threshold = -30
 syn_nmda = h.NMDA(post_pyr.soma[0](0.5), sec=post_pyr.soma[0])
 syn_nmda.tcon = 2.4
 syn_nmda.tcoff = 94.0
-syn_nmda.gNMDAmax = 0.05
+syn_nmda.gNMDAmax = 1.0 # 0.05
 
 conn2 = h.NetCon(pre_pyr.soma[0](0.5)._ref_v, syn_nmda, sec=pre_pyr.soma[0])
 conn2.delay = 0.5
-conn2.weight[0] = 0.2 * 3 # * 0.01
+conn2.weight[0] = 0.005 # * 0.01
 conn2.threshold = -30
 
 soma_v_pre = h.Vector()

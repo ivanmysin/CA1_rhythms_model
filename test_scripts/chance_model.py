@@ -8,8 +8,8 @@ track_len = 200 # cm
 duration = track_len / animal_velocity
 dt = 0.1
 t = np.arange(0, duration, 0.001*dt)
-place_ca3 = 90 / animal_velocity
-place_mec = 110 / animal_velocity
+place_ca3 = 110 / animal_velocity
+place_mec = 100 / animal_velocity
 w = 5
 
 print(duration)
@@ -17,7 +17,7 @@ print(place_ca3)
 print(place_mec)
 
 
-"""
+
 fi_ca3 = np.deg2rad(260)
 fi_mec = np.deg2rad(100)
 sigma = 21.2 / animal_velocity
@@ -91,4 +91,4 @@ axes.set_xlim(0, 200)
 
 plt.show()
 
-"""
+

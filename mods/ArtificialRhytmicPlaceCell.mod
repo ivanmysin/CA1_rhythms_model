@@ -3,7 +3,7 @@
 
 NEURON  { 
   ARTIFICIAL_CELL ArtificialRhytmicPlaceCell
-  RANGE low_freqs, latency, low_mu, low_kappa, low_I0, high_mu, high_kappa, high_I0
+  RANGE low_freqs, high_freqs, latency, low_mu, low_kappa, low_I0, high_mu, high_kappa, high_I0
   RANGE myseed, delta_t, spike_rate, place_center_t, place_t_radius
 }
 

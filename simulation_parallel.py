@@ -73,7 +73,7 @@ def run_simulation(params):
     RNG = np.random.default_rng()
     
     load_mechanisms("./mods/")
-
+    
     h.cvode.use_fast_imem(1)
 
     sys.path.append("../LFPsimpy/")
@@ -84,6 +84,7 @@ def run_simulation(params):
     for file in os.listdir(cell_path):
         if file.find(".hoc") != -1:
             h.load_file(cell_path + file)
+    
     
     ncells = len(params["celltypes"])  # whole number of cells in the model
     gid_vect = np.arange( pc.id(), ncells, pc.nhost(), dtype=np.int )
@@ -105,11 +106,11 @@ def run_simulation(params):
     
     
     for gid in gid_vect:
-       
+        
         celltypename = params["celltypes"][gid]
         cellclass = getattr(h, params["CellParameters"][celltypename]["cellclass"])
         
-
+        # print(celltypename)
         cell = cellclass(gid, 0)
 
         pc.set_gid2node(gid, pc.id())
@@ -130,52 +131,63 @@ def run_simulation(params):
         
         # set counters for spike generation
         if cell.is_art() == 0:
+            # print("Hello from real neurons setting")
             for sec in cell.all:
                 sec.insert("IextNoise")
                 sec.myseed_IextNoise = RNG.integers(0, 1000000000000000, 1)
                 sec.sigma_IextNoise = 0.005
                 sec.mean_IextNoise = RNG.normal(params["CellParameters"][celltypename]["iext"], params["CellParameters"][celltypename]["iext_std"])
             
+            
             firing = h.NetCon(cell.soma[0](0.5)._ref_v, None, sec=cell.soma[0])
             firing.threshold = -30 * mV
 
         else:
+            # print("Hello from art neurons setting")
             cell.celltype = celltypename
+            
+            for p_name, p_val in params["CellParameters"][celltypename].items():
+                if hasattr(cell.acell, p_name):
+                    setattr(cell.acell, p_name, p_val)
+                else:
+                    print(celltypename, " ", p_name)
 
-            if celltypename != "ca3" and celltypename != "mec" :
-                cell.acell.mu = params["CellParameters"][celltypename]["phase"]
-                cell.acell.latency = params["CellParameters"][celltypename]["latency"]
-                cell.acell.freqs = params["CellParameters"][celltypename]["freqs"]
-                cell.acell.spike_rate = params["CellParameters"][celltypename]["spike_train_freq"]
-                cell.acell.kappa = params["CellParameters"][celltypename]["kappa"]
-                cell.acell.I0 = params["CellParameters"][celltypename]["I0"]
-                cell.acell.myseed = RNG.integers(0, 1000000000, 1)
-                cell.acell.delta_t = 0.2
-
-            else:
-
-
-                cell.acell.low_mu = params["CellParameters"][celltypename]["theta_phase"]
-                cell.acell.high_mu = params["CellParameters"][celltypename]["gamma_phase"]
+            
+            # if celltypename != "ca3" and celltypename != "mec" :
+                # cell.acell.mu = params["CellParameters"][celltypename]["phase"]
+                # cell.acell.latency = params["CellParameters"][celltypename]["latency"]
+                # cell.acell.freqs = params["CellParameters"][celltypename]["freqs"]
+                # cell.acell.spike_rate = params["CellParameters"][celltypename]["spike_train_freq"]
+                # cell.acell.kappa = params["CellParameters"][celltypename]["kappa"]
+                # cell.acell.I0 = params["CellParameters"][celltypename]["I0"]
+                # cell.acell.myseed = RNG.integers(0, 1000000000, 1)
+                # cell.acell.delta_t = 0.2
+                
+            # else:
 
 
-                cell.acell.place_t_radius = params["CellParameters"][celltypename]["place_t_radius"]
+                # cell.acell.low_mu = params["CellParameters"][celltypename]["theta_phase"]
+                # cell.acell.high_mu = params["CellParameters"][celltypename]["gamma_phase"]
 
-                cell.acell.low_kappa = params["CellParameters"][celltypename]["theta_kappa"]
-                cell.acell.low_I0 = params["CellParameters"][celltypename]["theta_i0"]
-                cell.acell.high_kappa = params["CellParameters"][celltypename]["gamma_kappa"]
-                cell.acell.high_I0 = params["CellParameters"][celltypename]["gamma_i0"]
-                cell.acell.spike_rate = params["CellParameters"][celltypename]["rate_norm"]
-                cell.acell.latency = params["CellParameters"][celltypename]["latency"]
-                cell.acell.delta_t = 0.2
 
-                cell.acell.myseed = RNG.integers(0, 1000000000, 1)
+                # cell.acell.place_t_radius = params["CellParameters"][celltypename]["place_t_radius"]
 
-                gens_idx = int(np.argwhere( params["gids_of_celltypes"][celltypename] == gid).ravel()[0])
-                # print(ca3_idx)
+                # cell.acell.low_kappa = params["CellParameters"][celltypename]["theta_kappa"]
+                # cell.acell.low_I0 = params["CellParameters"][celltypename]["theta_i0"]
+                # cell.acell.high_kappa = params["CellParameters"][celltypename]["gamma_kappa"]
+                # cell.acell.high_I0 = params["CellParameters"][celltypename]["gamma_i0"]
+                # cell.acell.spike_rate = params["CellParameters"][celltypename]["rate_norm"]
+                # cell.acell.latency = params["CellParameters"][celltypename]["latency"]
+                # cell.acell.delta_t = 0.2
 
-                cell.acell.place_center_t = params["place_field_coordinates"][celltypename][gens_idx]
+                # cell.acell.myseed = RNG.integers(0, 1000000000, 1)
 
+                # gens_idx = int(np.argwhere( params["gids_of_celltypes"][celltypename] == gid).ravel()[0])
+                # # print(ca3_idx)
+
+                # cell.acell.place_center_t = params["place_field_coordinates"][celltypename][gens_idx]
+            
+                # # print("Hello from art neurons setting")
             firing = h.NetCon(cell.acell, None)
         
         pc.cell(gid, firing)
@@ -208,6 +220,7 @@ def run_simulation(params):
     # set connection
     connections = h.List()
     synapses = h.List()
+    # nmda_synapses = h.List()
     
     
     for syn_params in params["synapses_params"]:
@@ -240,17 +253,79 @@ def run_simulation(params):
         conn.delay = syn_params["delay"]
         conn.weight[0] = syn_params["gmax"]
         conn.threshold = -30 * mV
-
-                
-        connections.append(conn)
         
+        connections.append(conn)
         synapses.append(syn)
         
+        #print("Hello before nmda sets")
+        try:
+            
+            gmax_nmda = syn_params["NMDA"]["gNMDAmax"]
+            
+            syn_nmda = h.NMDA(post_comp(0.5), sec=post_comp)
+            syn_nmda.tcon = syn_params["NMDA"]["tcon"]
+            syn_nmda.tcoff = syn_params["NMDA"]["tcoff"]
+            syn_nmda.gNMDAmax = gmax_nmda
+            
+            conn2 = pc.gid_connect(syn_params["pre_gid"], syn_nmda)  # h.NetCon(pre_pyr.soma[0](0.5)._ref_v, syn_nmda, sec=pre_pyr.soma[0])
+            conn2.delay = syn_params["delay"]
+            conn2.weight[0] = syn_params["NMDA"]["gNMDAmax"]
+            conn2.threshold = -30 * mV
+       
+            connections.append(conn2)
+            synapses.append(syn_nmda)
+            
+       
+        except KeyError:
+            pass
+
+
+    gap_junctions = h.List()
+    for gap_params in params["gap_junctions"]:
         
+        idx1 = np.argwhere( gid_vect == gap_params["gid1"] ).ravel()
+        idx2 = np.argwhere( gid_vect == gap_params["gid2"] ).ravel()
         
-  
-    
+        if idx1.size == 0 or idx2.size == 0: continue
+        idx1 = idx1[0]
+        idx2 = idx2[0]
         
+        cell1 = all_cells[ idx1 ]
+        cell2 = all_cells[ idx2 ]
+        
+        comp1_list = getattr(cell1, gap_params["compartment1"])
+        len_list = sum([1 for _ in comp1_list])
+        
+        if len_list == 1:
+            idx1 = 0
+        else:
+            idx1 = RNG.integers(0, len_postlist-1)
+
+        for idx_tmp, comp_tmp in enumerate(comp1_list):
+            if idx_tmp == idx1: comp1 = comp_tmp
+        
+        comp2_list = getattr(cell2, gap_params["compartment2"])
+        len_list = sum([1 for _ in comp2_list])
+        
+        if len_list == 1:
+            idx2 = 0
+        else:
+            idx2 = RNG.integers(0, len_postlist-1)
+
+        for idx_tmp, comp_tmp in enumerate(comp1_list):
+            if idx_tmp == idx2: comp2 = comp_tmp
+        
+
+        gap = h.GAP(comp1(0.5), sec=comp1)
+        gap.r = gap_params["r"]
+        h.setpointer(comp2(0.5)._ref_v, 'vgap', gap)
+        gap_junctions.append(gap)
+        
+        gap = h.GAP(comp2(0.5), sec=comp2)
+        gap.r = gap_params["r"]
+        h.setpointer(comp1(0.5)._ref_v, 'vgap', gap)
+        gap_junctions.append(gap)
+
 
     el_x = params["elecs"]["el_x"]
     el_y = params["elecs"]["el_y"]

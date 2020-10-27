@@ -36,7 +36,7 @@ basic_params = {
     },
     
     "file_results":  "../../Data/CA1_simulation/test.hdf5", # None, #
-    "duration" : 1000, #  1400, # simulation time
+    "duration" : 10, #  1400, # simulation time
     
     "del_start_time" : 0, # 400, # time after start for remove
     
@@ -66,7 +66,7 @@ basic_params = {
         "Npyr" :    200, # 500,
         "Npvbas" :  100, # 100, # 100,
         "Nolm" :    0, #40,
-        "Ncckbas" : 80, # 80
+        "Ncckbas" : 0, # 80
         "Nivy" :    0, #130,
         "Nngf" :    0, #65,
         "Nbis" :    0, #35,
@@ -86,17 +86,21 @@ basic_params = {
         "ca3" : {
             "cellclass" : "ArtifitialPlaceCell",
             "Rtheta" : 0.4,
-            "theta_phase" : 1.5,
+            "low_mu" : 1.5,
 
             "Rgamma" : 0.6,
-            "gamma_phase" : 0.0,
+            "high_mu" : 0.0,
 
-            "rate_norm" : 100000,# 100000.0,
+            "spike_rate" : 100000,# 100000.0,
             "latency" : 10.0,
 
             "place_center_t" : 500,
             "place_t_radius" : 1000, # 300,
+            
+            "low_freqs" : 5.0,
+            "high_freqs" : 30.0,
 
+            "delta_t" : 0.2,
             # "R" : 0.4,
             # "phase" : 1.5,
             # "freqs" : 5.0,
@@ -105,20 +109,25 @@ basic_params = {
         },
         
         "mec" : {
-            "cellclass" : "ArtifitialPlaceCell", #  "ArtifitialCell",
+            "cellclass" : "ArtifitialGridCell", #  "ArtifitialGridCell",
 
             "Rtheta": 0.4,
-            "theta_phase": 1.5,
+            "low_mu": 1.5,
 
             "Rgamma": 0.6,
-            "gamma_phase": 0.0,
+            "high_mu": 0.0,
 
-            "rate_norm": 100000,  # 100000.0,
+            "spike_rate": 100000,  # 100000.0,
             "latency": 10.0,
 
-            "place_center_t": 2500,
-            "place_t_radius": 1000, # !!!!300,  #
-
+            "delta_t" : 0.2,
+            
+            "low_freqs" : 5.0,
+            "high_freqs" : 30.0,
+            
+            "Rgrid" : 0.8,
+            "grid_freqs" : 1.0,
+            "grid_phase" : 0, 
             # "R" : 0.4,
             # "phase" : 0.0,
             # "freqs" : 5.0,
@@ -129,37 +138,37 @@ basic_params = {
         "lec" : {
             "cellclass" : "ArtifitialCell",
             "R" : 0.1,
-            "phase" : 0.0,
+            "mu" : 0.0,
             "freqs" : 5.0,
             "latency" : 10.0,
-            "spike_train_freq" : 5.0,      
+            "spike_rate" : 5.0,      
         },
         
         "msteevracells" : {
             "cellclass" : "ArtifitialCell",
             "R" : 0.8,
-            "phase" : np.pi,
+            "mu" : np.pi,
             "freqs" : 5.0,
             "latency" : 4.0,
-            "spike_train_freq" : 15.0,      
+            "spike_rate" : 15.0,      
         },
         
         "mskomalicells" : {
             "cellclass" : "ArtifitialCell",
             "R" : 0.8,
-            "phase" : 0.0,  # !!!!
+            "mu" : 0.0,  # !!!!
             "freqs" : 5.0,
             "latency" : 4.0,
-            "spike_train_freq" : 15.0,      
+            "spike_rate" : 15.0,      
         },
         
         "msach" : {
             "cellclass" : "ArtifitialCell",
             "R" : 0.6,
-            "phase" : np.pi,  # !!!!
+            "mu" : np.pi,  # !!!!
             "freqs" : 5.0,
             "latency" : 10.0,
-            "spike_train_freq" : 10.0,      
+            "spike_rate" : 10.0,      
         },
         
         "pyr" : {
@@ -256,8 +265,11 @@ basic_params = {
 
             "NMDA" : {
                 "gNMDAmax" : 0.1, # mS
+                "gmax_std" : 0.001, 
+                
                 "tcon" : 2.3,   # ms
                 "tcoff" : 95.0, # ms
+                "enmda" : 0, 
             },
         },
         
@@ -1435,6 +1447,24 @@ basic_params = {
   
 
     }, # end of connetion settings
+    
+    "gap_junctions_params" : {
+        "pvbas2pvbas" : {
+            "r" : 100000,
+            "r_std" : 10000,
+            "prob": 0.1,
+            "compartment1" : "dendrite_list",
+            "compartment2" : "dendrite_list",
+        },
+        
+        "ngf2ngf" : {
+            "r" : 100000,
+            "r_std" : 10000,
+            "prob": 0.7,
+            "compartment1" : "dendrite_list",
+            "compartment2" : "dendrite_list",
+        },
+    },
 
 }
 
@@ -1488,18 +1518,35 @@ basic_params["save_soma_v"]["vect_idxes"] = save_soma_v_idx
 for celltypename, cellparam in basic_params["CellParameters"].items():
 
 
-    if celltypename == "ca3" or celltypename == "mec":
+    if celltypename == "ca3":
         Rtheta = cellparam["Rtheta"]
         Rgamma = cellparam["Rgamma"]
 
         theta_kappa, theta_i0 = prelib.r2kappa(Rtheta)
         gamma_kappa, gamma_i0 = prelib.r2kappa(Rgamma)
-        cellparam["theta_kappa"] = theta_kappa
-        cellparam["gamma_kappa"] = gamma_kappa
-        cellparam["theta_i0"] = theta_i0
-        cellparam["gamma_i0"] = gamma_i0
+        cellparam["low_kappa"] = theta_kappa
+        cellparam["high_kappa"] = gamma_kappa
+        cellparam["low_I0"] = theta_i0
+        cellparam["high_I0"] = gamma_i0
 
         cellparam["place_center_t"] = 500  # !!!!!
+    elif celltypename == "mec":
+        Rtheta = cellparam["Rtheta"]
+        Rgamma = cellparam["Rgamma"]
+        Rgrid = cellparam["Rgrid"]
+
+        theta_kappa, theta_i0 = prelib.r2kappa(Rtheta)
+        gamma_kappa, gamma_i0 = prelib.r2kappa(Rgamma)
+        grid_kappa, grid_I0 = prelib.r2kappa(Rgrid)
+        
+        cellparam["low_kappa"] = theta_kappa
+        cellparam["high_kappa"] = gamma_kappa
+        cellparam["low_I0"] = theta_i0
+        cellparam["high_I0"] = gamma_i0
+        
+        cellparam["grid_kappa"] = grid_kappa
+        cellparam["grid_I0"] = grid_I0
+
     else:
         try:
             Rgen = cellparam["R"]
@@ -1684,7 +1731,6 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
             if gmax_syn < 0.000001: # or gmax_syn > 50:
                 continue
 
-
             connection = {
                 "pre_gid" : presynaptic_cell_idx,
                 "post_gid" : postsynaptic_cell_idx,
@@ -1700,6 +1746,20 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
 
             }
             
+            try: 
+                gmax_nmda = conn_data["NMDA"]["gNMDAmax"]
+                gmax_nmda =  np.random.lognormal(mean=np.log(gmax_nmda), sigma=conn_data["NMDA"]["gmax_std"])
+                
+                connection["NMDA"] = {
+                    "gNMDAmax" : gmax_nmda,
+                    "tcon" : conn_data["NMDA"]["tcon"],   
+                    "tcoff" : conn_data["NMDA"]["tcoff"], 
+                    "enmda" : conn_data["NMDA"]["enmda"], 
+                }
+
+            except KeyError:
+                pass
+
             synapses.append(connection)
 
 
@@ -1707,7 +1767,13 @@ for syn in synapses:
     syn["gmax"] *= 0.001  # recalulate nS to micromhos
     # conn_data["gmax_std"] *= 0.001
     syn["delay"] += 1.5  # add delay on spike generation
+    
+    try: 
+        syn["NMDA"]["delay"] += 1.5
+        syn["NMDA"]["gNMDAmax"] *= 0.001
 
+    except KeyError:
+        pass
     # print(conname)
     # precell, postcell = conname.split("2")
 
@@ -1721,7 +1787,41 @@ for syn in synapses:
 basic_params["gids_of_celltypes"] = gids_of_celltypes
 basic_params["synapses_params"] = synapses
 
-# print(tmp_cout)
+
+gap_juncs = []
+
+for cell1_idx, celltype1 in enumerate(basic_params["celltypes"]):
+    for cell2_idx, celltype2 in enumerate(basic_params["celltypes"]):
+
+        if cell1_idx == cell2_idx: continue
+
+        try:
+            conn_name = celltype1 + "2" + celltype2
+            conn_data = basic_params["gap_junctions_params"][conn_name]
+                
+        except AttributeError:
+            continue
+        except KeyError:
+            continue
+
+        if (np.random.rand() > conn_data["prob"]): continue
+        
+        gap = {
+            "gid1" : cell1_idx,
+            "gid2" : cell2_idx,
+            "r" : np.random.normal(conn_data["r"], conn_data["r_std"], 1),
+            
+            "compartment1" : conn_data["compartment1"],
+            "compartment2" : conn_data["compartment2"],
+        }
+        
+        gap_juncs.append(gap)
+        
+            
+basic_params["gap_junctions"] = gap_juncs
+
+
+
 # import matplotlib.pyplot as plt
 #
 # plt.imshow(Wpyrbas)
