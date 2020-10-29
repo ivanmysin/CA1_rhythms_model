@@ -1,6 +1,6 @@
 import numpy as np
 import presimulation_lib as prelib
-
+from copy import deepcopy
 """
 pyr - CA1 piramidal cells
 olm - Oriens-Lacunosum/Moleculare (OLM) Cells
@@ -30,13 +30,8 @@ basic_params = {
     },
     "PyrDencity" : 0.2, # pyramidal cells / micrometer^2
 
-    "place_field_coordinates" : {
-        "ca3" : None,
-        "mec" : None,
-    },
-    
     "file_results":  "../../Data/CA1_simulation/test.hdf5", # None, #
-    "duration" : 10, #  1400, # simulation time
+    "duration" : 1000, #  1400, # simulation time
     
     "del_start_time" : 0, # 400, # time after start for remove
     
@@ -63,8 +58,8 @@ basic_params = {
     },
     
     "CellNumbers" : {
-        "Npyr" :    200, # 500,
-        "Npvbas" :  100, # 100, # 100,
+        "Npyr" :    0, # 200, # 500,
+        "Npvbas" :  5, # 100, # 100, # 100,
         "Nolm" :    0, #40,
         "Ncckbas" : 0, # 80
         "Nivy" :    0, #130,
@@ -74,10 +69,10 @@ basic_params = {
         "Nsca" :    0, #20,
         
         
-        "Nca3" : 500, #500,
-        "Nmec" : 500,
+        "Nca3" : 0, # 500, #500,
+        "Nmec" : 0, # 500,
         "Nlec" : 0, #500,
-        "Nmsteevracells" : 200,
+        "Nmsteevracells" : 0, # 200,
         "Nmskomalicells" : 0, # 200,
         "Nmsach"         : 0, #150,
     },
@@ -101,15 +96,10 @@ basic_params = {
             "high_freqs" : 30.0,
 
             "delta_t" : 0.2,
-            # "R" : 0.4,
-            # "phase" : 1.5,
-            # "freqs" : 5.0,
-            # "latency" : 10.0,
-            # "spike_train_freq" : 5.0,
         },
         
         "mec" : {
-            "cellclass" : "ArtifitialGridCell", #  "ArtifitialGridCell",
+            "cellclass" : "ArtifitialGridCell",  # "ArtifitialPlaceCell", #  
 
             "Rtheta": 0.4,
             "low_mu": 1.5,
@@ -228,8 +218,8 @@ basic_params = {
     },
     
     "save_soma_v" : {
-        "pyr" :  [range(20, 30)],    # [0, ],
-        "pvbas" : [range(20, 31)], #
+        "pyr" :  [0, 1, 2, 3, 4] , # [range(20, 30)],    # [0, ],
+        "pvbas" : [0, 1, 2, 3, 4], # [range(20, 31)], #
         "olm" : [0, ],
         "cckbas" : [0, ],
         "ivy" : [0, ],
@@ -1483,11 +1473,12 @@ for celltype, numbers in sorted(basic_params["CellNumbers"].items()):
     end_idx = len(cell_types_in_model)
     gids_of_celltypes[celltype] = np.arange(start_idx, end_idx)
     
-    
+
+
 
 basic_params["celltypes"] = cell_types_in_model
 
-# print(basic_params["celltypes"])
+
 
 save_soma_v_idx = np.empty(shape=0, dtype=np.int)
 
@@ -1509,10 +1500,6 @@ for celltype, list_idx in basic_params["save_soma_v"].items():
 
 
 
-#for idx in save_soma_v_idx:
-#    print(basic_params["celltypes"][idx])
-
-
 basic_params["save_soma_v"]["vect_idxes"] = save_soma_v_idx
 
 for celltypename, cellparam in basic_params["CellParameters"].items():
@@ -1530,6 +1517,7 @@ for celltypename, cellparam in basic_params["CellParameters"].items():
         cellparam["high_I0"] = gamma_i0
 
         cellparam["place_center_t"] = 500  # !!!!!
+    
     elif celltypename == "mec":
         Rtheta = cellparam["Rtheta"]
         Rgamma = cellparam["Rgamma"]
@@ -1557,32 +1545,57 @@ for celltypename, cellparam in basic_params["CellParameters"].items():
             continue
 
 
-synapses = []
+Npyr = basic_params["CellNumbers"]["Npyr"]  #  gids_of_celltypes["pyr"].size
+Npvbas = basic_params["CellNumbers"]["Npvbas"]
+Nca3 = basic_params["CellNumbers"]["Nca3"]
+Nmec = basic_params["CellNumbers"]["Nmec"]
 
-Npyr = gids_of_celltypes["pyr"].size
-Npvbas = gids_of_celltypes["pvbas"].size
-Nca3 = gids_of_celltypes["ca3"].size
+
+pyr_coord_x = np.cumsum( np.zeros(Npyr) + 10 ) #np.flip( ) # 
+pvbas_coord_x = np.cumsum( np.zeros(Npvbas) + 10) #np.flip( )
+ca3_coord_x =  np.cumsum( np.zeros(Nca3) + 10 ) #np.flip()
+mec_coord_x =  np.zeros(Nmec) + 2500  #np.flip()
+
+# basic_params["place_field_coordinates"]["ca3"] = ca3_coord_x
+# basic_params["place_field_coordinates"]["mec"] = mec_coord_x
+
+neurons = []
+for cell_idx, celltype in enumerate(cell_types_in_model):
+    cell_param = basic_params["CellParameters"][celltype]
+    
+    neuron = {
+        "celltype" : celltype, 
+        "cellclass" : cell_param["cellclass"],
+        "cellparams" : {},
+    }
+    neuron["cellparams"] = deepcopy(cell_param)
+
+        
+    if cell_param["cellclass"] == "ArtifitialPlaceCell":
+        neuron["cellparams"]["place_center_t"] = 500 #  None
+    elif cell_param["cellclass"] == "ArtifitialGridCell":
+        # neuron["cellparams"]["grid_freqs"] = None
+        neuron["cellparams"]["grid_phase"] = 0 # None
+    elif cell_param["cellclass"] == "ArtifitialCell":
+        pass
+    else:
+        if cell_idx == 0:
+            neuron["cellparams"]["iext"] = 0.008
+        else:
+            neuron["cellparams"]["iext"] = 0.0
+        """
+        if neuron["cellparams"]["iext"] > 0:
+            neuron["cellparams"]["iext"] = np.random.lognormal( np.log(neuron["cellparams"]["iext"]), neuron["cellparams"]["iext_std"]   )
+        else:
+            neuron["cellparams"]["iext"] = np.random.normal( neuron["cellparams"]["iext"], neuron["cellparams"]["iext_std"]   )
+        """
+    neurons.append(neuron)
+
+basic_params["neurons"] = neurons
 
 var_conns = 8000
+synapses = []
 
-pyr_coord_x = np.cumsum( np.zeros(Npyr) + 10 ) #np.flip( ) # 10
-
-# print(pyr_coord_x)
-# np.linspace(0, 1, Npyr) # np.zeros( Npyr,  dtype=np.float) #
-# pyr_coord_x[20:30] = 0.5
-
-pvbas_coord_x = np.cumsum( np.zeros(Npvbas) + 10) #np.flip( )
-# np.linspace(0, 1, Npvbas) # np.zeros( Npvbas,  dtype=np.float)  #
-# pvbas_coord_x[20:30] = 0.5
-
-ca3_coord_x =  np.cumsum( np.zeros(Nca3) + 10 ) #np.flip()
-# np.linspace(0, 1, Nca3) #  np.zeros( Nca3,  dtype=np.float) + 0.5
-# print(ca3_coord_x)
-
-mec_coord_x =  np.zeros(gids_of_celltypes["mec"].size) + 2500  #np.flip()
-
-basic_params["place_field_coordinates"]["ca3"] = ca3_coord_x
-basic_params["place_field_coordinates"]["mec"] = mec_coord_x
 
 tmp_cout = 1
 
@@ -1763,6 +1776,36 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
             synapses.append(connection)
 
 
+synapses = []
+"""
+connection = {
+    "pre_gid" : 0, # presynaptic_cell_idx,
+    "post_gid" : 1, # postsynaptic_cell_idx,
+                
+    "gmax" : 0.05, # gmax_syn,
+    "Erev" : 0 , # conn_data["Erev"],
+    "tau_rise" : 0.5, # conn_data["tau_rise"],
+    "tau_decay" : 2.5, # conn_data["tau_decay"],
+    "delay" : 1.5, # delay,
+                
+    "sourse_compartment" : "axon_list", # conn_data["sourse_compartment"],
+    "target_compartment" : "soma_list" , # conn_data["target_compartment"],
+    
+    
+    
+    "NMDA" : {
+        "gNMDAmax" : 0.5, # gmax_nmda,
+        "tcon" : 2.5, # conn_data["NMDA"]["tcon"],   
+        "tcoff" : 95, # conn_data["NMDA"]["tcoff"], 
+        "enmda" : 0, # conn_data["NMDA"]["enmda"], 
+                
+    },
+    
+}
+synapses.append(connection)
+"""
+
+
 for syn in synapses:
     syn["gmax"] *= 0.001  # recalulate nS to micromhos
     # conn_data["gmax_std"] *= 0.001
@@ -1774,16 +1817,10 @@ for syn in synapses:
 
     except KeyError:
         pass
-    # print(conname)
-    # precell, postcell = conname.split("2")
-
-    # try:
-    #     conn_data["prob"] = conn_data["prob"] * basic_params["CellNumbersInFullModel"]["N"+precell] / basic_params["CellNumbers"]["N"+precell]
-    # except ZeroDivisionError:
-    #     conn_data["prob"] = 0
 
 
-#print(len(synapses))
+
+
 basic_params["gids_of_celltypes"] = gids_of_celltypes
 basic_params["synapses_params"] = synapses
 
@@ -1817,7 +1854,29 @@ for cell1_idx, celltype1 in enumerate(basic_params["celltypes"]):
         
         gap_juncs.append(gap)
         
+gap_juncs = []
+
+gap = {
+    "gid1" : 0, # cell1_idx,
+    "gid2" : 1, # cell2_idx,
+    "r" : 10, #  np.random.normal(conn_data["r"], conn_data["r_std"], 1),
             
+    "compartment1" : "soma_list", # conn_data["compartment1"],
+    "compartment2" : "soma_list", # conn_data["compartment2"],
+}
+gap_juncs.append(gap)
+
+gap = {
+    "gid1" : 0, # cell1_idx,
+    "gid2" : 4, # cell2_idx,
+    "r" : 10, #  np.random.normal(conn_data["r"], conn_data["r_std"], 1),
+            
+    "compartment1" : "soma_list", # conn_data["compartment1"],
+    "compartment2" : "soma_list", # conn_data["compartment2"],
+}
+gap_juncs.append(gap)
+
+
 basic_params["gap_junctions"] = gap_juncs
 
 
@@ -1826,9 +1885,6 @@ basic_params["gap_junctions"] = gap_juncs
 #
 # plt.imshow(Wpyrbas)
 # plt.show()
-
-
-
 
 
 

@@ -27,16 +27,16 @@ for cellfile in os.listdir("../cells/"):
     if ext != ".hoc": continue
     h.load_file("../cells/" + cellfile)
 
-cell1 = h.pvbasketcell(0, 0)
+cell1 = h.CA1PyramidalCell(0, 0)
 for sec in cell1.all:
     sec.insert("IextNoise")
-    sec.mean_IextNoise = 0.003
+    sec.mean_IextNoise = 0.009
     sec.sigma_IextNoise = 0.001
 
 
-cell2 = h.pvbasketcell(1, 1)
+cell2 = h.CA1PyramidalCell(1, 1)
 gap = h.GAP(cell2.soma[0](0.5), sec=cell2.soma[0])
-gap.r = 100000
+gap.r = 1000
 h.setpointer(cell1.soma[0](0.5)._ref_v, 'vgap', gap)
 
 soma_v_pre = h.Vector()

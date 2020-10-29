@@ -107,7 +107,7 @@ def run_simulation(params):
     
     for gid in gid_vect:
         
-        celltypename = params["celltypes"][gid]
+        celltypename = params["neurons"][gid]["celltype"] #  params["celltypes"][gid]
         cellclass = getattr(h, params["CellParameters"][celltypename]["cellclass"])
         
         # print(celltypename)
@@ -136,7 +136,8 @@ def run_simulation(params):
                 sec.insert("IextNoise")
                 sec.myseed_IextNoise = RNG.integers(0, 1000000000000000, 1)
                 sec.sigma_IextNoise = 0.005
-                sec.mean_IextNoise = RNG.normal(params["CellParameters"][celltypename]["iext"], params["CellParameters"][celltypename]["iext_std"])
+                sec.mean_IextNoise = params["neurons"][gid]["cellparams"]["iext"]
+                # RNG.normal(params["CellParameters"][celltypename]["iext"], params["CellParameters"][celltypename]["iext_std"])
             
             
             firing = h.NetCon(cell.soma[0](0.5)._ref_v, None, sec=cell.soma[0])
@@ -146,48 +147,10 @@ def run_simulation(params):
             # print("Hello from art neurons setting")
             cell.celltype = celltypename
             
-            for p_name, p_val in params["CellParameters"][celltypename].items():
+            for p_name, p_val in params["neurons"][gid]["cellparams"].items():
                 if hasattr(cell.acell, p_name):
                     setattr(cell.acell, p_name, p_val)
-                else:
-                    print(celltypename, " ", p_name)
 
-            
-            # if celltypename != "ca3" and celltypename != "mec" :
-                # cell.acell.mu = params["CellParameters"][celltypename]["phase"]
-                # cell.acell.latency = params["CellParameters"][celltypename]["latency"]
-                # cell.acell.freqs = params["CellParameters"][celltypename]["freqs"]
-                # cell.acell.spike_rate = params["CellParameters"][celltypename]["spike_train_freq"]
-                # cell.acell.kappa = params["CellParameters"][celltypename]["kappa"]
-                # cell.acell.I0 = params["CellParameters"][celltypename]["I0"]
-                # cell.acell.myseed = RNG.integers(0, 1000000000, 1)
-                # cell.acell.delta_t = 0.2
-                
-            # else:
-
-
-                # cell.acell.low_mu = params["CellParameters"][celltypename]["theta_phase"]
-                # cell.acell.high_mu = params["CellParameters"][celltypename]["gamma_phase"]
-
-
-                # cell.acell.place_t_radius = params["CellParameters"][celltypename]["place_t_radius"]
-
-                # cell.acell.low_kappa = params["CellParameters"][celltypename]["theta_kappa"]
-                # cell.acell.low_I0 = params["CellParameters"][celltypename]["theta_i0"]
-                # cell.acell.high_kappa = params["CellParameters"][celltypename]["gamma_kappa"]
-                # cell.acell.high_I0 = params["CellParameters"][celltypename]["gamma_i0"]
-                # cell.acell.spike_rate = params["CellParameters"][celltypename]["rate_norm"]
-                # cell.acell.latency = params["CellParameters"][celltypename]["latency"]
-                # cell.acell.delta_t = 0.2
-
-                # cell.acell.myseed = RNG.integers(0, 1000000000, 1)
-
-                # gens_idx = int(np.argwhere( params["gids_of_celltypes"][celltypename] == gid).ravel()[0])
-                # # print(ca3_idx)
-
-                # cell.acell.place_center_t = params["place_field_coordinates"][celltypename][gens_idx]
-            
-                # # print("Hello from art neurons setting")
             firing = h.NetCon(cell.acell, None)
         
         pc.cell(gid, firing)
@@ -283,49 +246,92 @@ def run_simulation(params):
     gap_junctions = h.List()
     for gap_params in params["gap_junctions"]:
         
+        
         idx1 = np.argwhere( gid_vect == gap_params["gid1"] ).ravel()
         idx2 = np.argwhere( gid_vect == gap_params["gid2"] ).ravel()
         
-        if idx1.size == 0 or idx2.size == 0: continue
-        idx1 = idx1[0]
-        idx2 = idx2[0]
+        if idx1.size != 0 and idx2.size != 0: 
         
-        cell1 = all_cells[ idx1 ]
-        cell2 = all_cells[ idx2 ]
-        
-        comp1_list = getattr(cell1, gap_params["compartment1"])
-        len_list = sum([1 for _ in comp1_list])
-        
-        if len_list == 1:
+            idx1 = idx1[0]
+            idx2 = idx2[0]
+            
+            cell1 = all_cells[ idx1 ]
+            cell2 = all_cells[ idx2 ]
+            
+            comp1_list = getattr(cell1, gap_params["compartment1"])
+            len_list = sum([1 for _ in comp1_list])
+            
+            if len_list == 1:
+                idx1 = 0
+            else:
+                idx1 = RNG.integers(0, len_list-1)
+
+            for idx_tmp, comp_tmp in enumerate(comp1_list):
+                if idx_tmp == idx1: comp1 = comp_tmp
+            
+            comp2_list = getattr(cell2, gap_params["compartment2"])
+            len_list = sum([1 for _ in comp2_list])
+            
+            if len_list == 1:
+                idx2 = 0
+            else:
+                idx2 = RNG.integers(0, len_list-1)
+
+            for idx_tmp, comp_tmp in enumerate(comp2_list):
+                if idx_tmp == idx2: comp2 = comp_tmp
+            
+
+            gap = h.GAP(comp1(0.5), sec=comp1)
+            gap.r = gap_params["r"]
+            h.setpointer(comp2(0.5)._ref_v, 'vgap', gap)
+            gap_junctions.append(gap)
+            
+            gap = h.GAP(comp2(0.5), sec=comp2)
+            gap.r = gap_params["r"]
+            h.setpointer(comp1(0.5)._ref_v, 'vgap', gap)
+            gap_junctions.append(gap)
+            print("Hello from one thread")
+            
+        elif  idx1.size != 0 or idx2.size != 0:
+            print("Hello")
+            if idx1.size != 0:
+                this_idx = idx1[0]
+                this_gid = gap_params["gid1"]
+                out_gid = gap_params["gid2"]
+                comp_name = gap_params["compartment1"]
+            else:
+                this_idx = idx2[0]
+                this_gid = gap_params["gid2"]
+                out_gid = gap_params["gid1"]
+                comp_name = gap_params["compartment2"]
+            
+            cell = all_cells[ this_idx ]
+            comp_list = getattr(cell, comp_name)
+            # len_list = sum([1 for _ in comp1_list])
+            
             idx1 = 0
+            for idx_tmp, comp_tmp in enumerate(comp_list):
+                if idx_tmp == idx1: comp = comp_tmp
+                
+                
+            # gap = h.GAP(comp(0.5), sec=comp)
+            # gap.r = gap_params["r"]
+            
+            # pc.source_var(comp1(0.5)._ref_v, 1)
+            # pc.target_var(gap._ref_vgap, 0)
+            
+            # gap_junctions.append(gap)
+            
+            
+            
+            
         else:
-            idx1 = RNG.integers(0, len_postlist-1)
-
-        for idx_tmp, comp_tmp in enumerate(comp1_list):
-            if idx_tmp == idx1: comp1 = comp_tmp
+            pass
         
-        comp2_list = getattr(cell2, gap_params["compartment2"])
-        len_list = sum([1 for _ in comp2_list])
         
-        if len_list == 1:
-            idx2 = 0
-        else:
-            idx2 = RNG.integers(0, len_postlist-1)
-
-        for idx_tmp, comp_tmp in enumerate(comp1_list):
-            if idx_tmp == idx2: comp2 = comp_tmp
         
-
-        gap = h.GAP(comp1(0.5), sec=comp1)
-        gap.r = gap_params["r"]
-        h.setpointer(comp2(0.5)._ref_v, 'vgap', gap)
-        gap_junctions.append(gap)
         
-        gap = h.GAP(comp2(0.5), sec=comp2)
-        gap.r = gap_params["r"]
-        h.setpointer(comp1(0.5)._ref_v, 'vgap', gap)
-        gap_junctions.append(gap)
-
+        
 
     el_x = params["elecs"]["el_x"]
     el_y = params["elecs"]["el_y"]
@@ -371,7 +377,7 @@ def run_simulation(params):
     print("Time of simulation in sec ", time()-timer)
     pc.barrier()
     
-    
+    # print(np.asarray(v_tmp))
     # if pc.id() == 0:
     #    soma1_v = np.asarray(soma1_v)
     #    # print(soma1_v)
