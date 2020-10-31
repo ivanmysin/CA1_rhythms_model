@@ -59,7 +59,7 @@ basic_params = {
     
     "CellNumbers" : {
         "Npyr" :    0, # 200, # 500,
-        "Npvbas" :  5, # 100, # 100, # 100,
+        "Npvbas" :  8, # 100, # 100, # 100,
         "Nolm" :    0, #40,
         "Ncckbas" : 0, # 80
         "Nivy" :    0, #130,
@@ -219,7 +219,7 @@ basic_params = {
     
     "save_soma_v" : {
         "pyr" :  [0, 1, 2, 3, 4] , # [range(20, 30)],    # [0, ],
-        "pvbas" : [0, 1, 2, 3, 4], # [range(20, 31)], #
+        "pvbas" : [0, 1, 2, 3, 4, 5, 6, 7], # [range(20, 31)], #
         "olm" : [0, ],
         "cckbas" : [0, ],
         "ivy" : [0, ],
@@ -1559,6 +1559,8 @@ mec_coord_x =  np.zeros(Nmec) + 2500  #np.flip()
 # basic_params["place_field_coordinates"]["ca3"] = ca3_coord_x
 # basic_params["place_field_coordinates"]["mec"] = mec_coord_x
 
+
+
 neurons = []
 for cell_idx, celltype in enumerate(cell_types_in_model):
     cell_param = basic_params["CellParameters"][celltype]
@@ -1581,6 +1583,8 @@ for cell_idx, celltype in enumerate(cell_types_in_model):
     else:
         if cell_idx == 0:
             neuron["cellparams"]["iext"] = 0.008
+        elif cell_idx == 5:
+            neuron["cellparams"]["iext"] = 0.008
         else:
             neuron["cellparams"]["iext"] = 0.0
         """
@@ -1589,6 +1593,8 @@ for cell_idx, celltype in enumerate(cell_types_in_model):
         else:
             neuron["cellparams"]["iext"] = np.random.normal( neuron["cellparams"]["iext"], neuron["cellparams"]["iext_std"]   )
         """
+
+
     neurons.append(neuron)
 
 basic_params["neurons"] = neurons
@@ -1803,7 +1809,7 @@ connection = {
     
 }
 synapses.append(connection)
-"""
+
 
 
 for syn in synapses:
@@ -1817,6 +1823,7 @@ for syn in synapses:
 
     except KeyError:
         pass
+"""
 
 
 
@@ -1857,10 +1864,10 @@ for cell1_idx, celltype1 in enumerate(basic_params["celltypes"]):
 gap_juncs = []
 
 gap = {
-    "gid1" : 0, # cell1_idx,
-    "gid2" : 1, # cell2_idx,
-    "r" : 10, #  np.random.normal(conn_data["r"], conn_data["r_std"], 1),
-            
+    "gid1" : 5, # cell1_idx,
+    "gid2" : 4, # cell2_idx,
+    "r" : 100, #  np.random.normal(conn_data["r"], conn_data["r_std"], 1),
+
     "compartment1" : "soma_list", # conn_data["compartment1"],
     "compartment2" : "soma_list", # conn_data["compartment2"],
 }
@@ -1868,9 +1875,9 @@ gap_juncs.append(gap)
 
 gap = {
     "gid1" : 0, # cell1_idx,
-    "gid2" : 4, # cell2_idx,
+    "gid2" : 2, # cell2_idx,
     "r" : 10, #  np.random.normal(conn_data["r"], conn_data["r_std"], 1),
-            
+
     "compartment1" : "soma_list", # conn_data["compartment1"],
     "compartment2" : "soma_list", # conn_data["compartment2"],
 }

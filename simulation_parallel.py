@@ -109,8 +109,7 @@ def run_simulation(params):
         
         celltypename = params["neurons"][gid]["celltype"] #  params["celltypes"][gid]
         cellclass = getattr(h, params["CellParameters"][celltypename]["cellclass"])
-        
-        # print(celltypename)
+
         cell = cellclass(gid, 0)
 
         pc.set_gid2node(gid, pc.id())
@@ -139,7 +138,7 @@ def run_simulation(params):
                 sec.mean_IextNoise = params["neurons"][gid]["cellparams"]["iext"]
                 # RNG.normal(params["CellParameters"][celltypename]["iext"], params["CellParameters"][celltypename]["iext_std"])
             
-            
+
             firing = h.NetCon(cell.soma[0](0.5)._ref_v, None, sec=cell.soma[0])
             firing.threshold = -30 * mV
 
@@ -177,13 +176,14 @@ def run_simulation(params):
         
         all_cells.append(cell)
 
-    print("End of neurons settings")
 
+    print("End of neurons settings")
+    pc.barrier()
     
     # set connection
     connections = h.List()
     synapses = h.List()
-    # nmda_synapses = h.List()
+
     
     
     for syn_params in params["synapses_params"]:
@@ -220,7 +220,7 @@ def run_simulation(params):
         connections.append(conn)
         synapses.append(syn)
         
-        #print("Hello before nmda sets")
+
         try:
             
             gmax_nmda = syn_params["NMDA"]["gNMDAmax"]
@@ -242,16 +242,18 @@ def run_simulation(params):
         except KeyError:
             pass
 
-
+    pc.barrier()
     gap_junctions = h.List()
     for gap_params in params["gap_junctions"]:
         
         
         idx1 = np.argwhere( gid_vect == gap_params["gid1"] ).ravel()
         idx2 = np.argwhere( gid_vect == gap_params["gid2"] ).ravel()
-        
-        if idx1.size != 0 and idx2.size != 0: 
-        
+
+
+        if idx1.size != 0 and idx2.size != 0:
+
+
             idx1 = idx1[0]
             idx2 = idx2[0]
             
@@ -279,21 +281,28 @@ def run_simulation(params):
 
             for idx_tmp, comp_tmp in enumerate(comp2_list):
                 if idx_tmp == idx2: comp2 = comp_tmp
-            
+
+            pc.source_var(comp1(0.5)._ref_v, gap_params["gid1"], sec=comp1)
 
             gap = h.GAP(comp1(0.5), sec=comp1)
             gap.r = gap_params["r"]
-            h.setpointer(comp2(0.5)._ref_v, 'vgap', gap)
+            pc.target_var(gap._ref_vgap, gap_params["gid2"])
+
             gap_junctions.append(gap)
-            
+
+            pc.source_var(comp2(0.5)._ref_v, gap_params["gid2"], sec=comp2)
             gap = h.GAP(comp2(0.5), sec=comp2)
             gap.r = gap_params["r"]
-            h.setpointer(comp1(0.5)._ref_v, 'vgap', gap)
+            pc.target_var(gap._ref_vgap, gap_params["gid1"])
+
+
             gap_junctions.append(gap)
-            print("Hello from one thread")
-            
-        elif  idx1.size != 0 or idx2.size != 0:
-            print("Hello")
+
+
+
+        elif idx1.size != 0 or idx2.size != 0:
+            if idx1.size != 0 and idx2.size != 0: continue
+
             if idx1.size != 0:
                 this_idx = idx1[0]
                 this_gid = gap_params["gid1"]
@@ -309,28 +318,28 @@ def run_simulation(params):
             comp_list = getattr(cell, comp_name)
             # len_list = sum([1 for _ in comp1_list])
             
-            idx1 = 0
+
             for idx_tmp, comp_tmp in enumerate(comp_list):
-                if idx_tmp == idx1: comp = comp_tmp
-                
-                
-            # gap = h.GAP(comp(0.5), sec=comp)
-            # gap.r = gap_params["r"]
-            
-            # pc.source_var(comp1(0.5)._ref_v, 1)
-            # pc.target_var(gap._ref_vgap, 0)
-            
-            # gap_junctions.append(gap)
-            
-            
-            
-            
+                if idx_tmp == 0: comp = comp_tmp
+
+
+            pc.source_var(comp(0.5)._ref_v, this_gid, sec=comp)
+
+            gap = h.GAP(0.5, sec=comp)
+            gap.r = gap_params["r"]
+
+
+
+            pc.target_var(gap._ref_vgap, out_gid)
+
+
+
+
         else:
+            # print( pc.id() )
             pass
-        
-        
-        
-        
+
+    pc.setup_transfer()
         
 
     el_x = params["elecs"]["el_x"]
@@ -363,15 +372,21 @@ def run_simulation(params):
         t_sim.record(h._ref_t)
     else:
         t_sim = None
-        
+
+
+
+
     h.tstop = params["duration"] * ms
-    
+
+
     
     pc.set_maxstep(10 * ms)
+
+    print("Bye")
     h.finitialize()
-    
-    pc.barrier()
     print("Start simulation")
+    pc.barrier()
+
     timer = time()
     pc.psolve(params["duration"] * ms)
     print("Time of simulation in sec ", time()-timer)

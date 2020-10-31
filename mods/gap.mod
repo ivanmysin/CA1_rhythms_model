@@ -1,8 +1,8 @@
 NEURON {
 	POINT_PROCESS GAP
 	NONSPECIFIC_CURRENT i
-	RANGE r, i
-	POINTER vgap
+	RANGE r, i, vgap
+	: POINTER vgap
 }
 
 PARAMETER {
@@ -16,5 +16,5 @@ ASSIGNED {
 }
 
 BREAKPOINT {
-	i = (v - vgap)/r
+	i = (v - vgap) / r
 }
