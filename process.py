@@ -43,7 +43,8 @@ def processing_and_save(filepath):
 
         wavelet_group = process_group.create_group("wavelet")
         bands_group = process_group.create_group("bands")
-        
+
+        theta_gamma_coupling_group = process_group.create_group("theta_gamma_coupling")
 
         fd = lfp_group_origin.attrs["SamplingRate"]
 
@@ -72,6 +73,8 @@ def processing_and_save(filepath):
                 W = sigp.wavelet_transform(lfp, freqs[start_idx:end_idx], nco=processing_param["morlet_w0"], fs=fd)
                 wdset[start_idx:end_idx, : ] = W
 
+
+            #####################################
             channel_bands_group = bands_group.create_group(key)
             for band_name, freq_lims in processing_param["filt_bands"].items():
                 lfp = zscore(lfp)
@@ -79,6 +82,24 @@ def processing_and_save(filepath):
                     lowpass_freq=freq_lims[1], order=processing_param["butter_order"], fs=fd )
 
                 channel_bands_group.create_dataset(band_name, data = filtered_signal)
+            #####################################
+
+            channel_theta_gamma_coupling_group = theta_gamma_coupling_group.create_group(key)
+            phase_signal = channel_bands_group["theta"][:]
+            gamma_freqs = channel_wavelet_group["frequecies"][:]
+
+            is_gamma_freqs = (gamma_freqs>=30)&(gamma_freqs<=150)
+            coefAmp = channel_wavelet_group["wavelet_coeff"][:]
+            coefAmp = coefAmp[is_gamma_freqs, :]
+            gamma_freqs = gamma_freqs[is_gamma_freqs]
+            phasebins = 20
+            coupling = plib.cossfrequency_phase_amp_coupling(phase_signal, coefAmp, phasebins=phasebins)
+
+            channel_theta_gamma_coupling_group.create_dataset("coupling_matrix", data = coupling)
+            channel_theta_gamma_coupling_group.create_dataset("gamma_freqs", data = gamma_freqs)
+            channel_theta_gamma_coupling_group.create_dataset("theta_phase", data = np.linspace(-np.pi, np.pi, phasebins))
+
+            ####################################################################################
 
 
 
@@ -122,7 +143,7 @@ def processing_and_save(filepath):
 if __name__ == "__main__":
     from basic_parameters import basic_params
     
-    filepath = basic_params["file_results"] # "/home/ivan/Data/CA1_simulation/test.hdf5" #  
+    filepath =  "/home/ivan/Data/CA1_simulation/theta_nice.hdf5" # basic_params["file_results"] #
     # print(filepath)
     processing_and_save(filepath)
 
