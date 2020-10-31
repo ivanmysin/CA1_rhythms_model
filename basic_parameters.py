@@ -1581,18 +1581,18 @@ for cell_idx, celltype in enumerate(cell_types_in_model):
     elif cell_param["cellclass"] == "ArtifitialCell":
         pass
     else:
-        if cell_idx == 0:
-            neuron["cellparams"]["iext"] = 0.008
-        elif cell_idx == 5:
-            neuron["cellparams"]["iext"] = 0.008
-        else:
-            neuron["cellparams"]["iext"] = 0.0
-        """
+        # if cell_idx == 0:
+        #     neuron["cellparams"]["iext"] = 0.008
+        # elif cell_idx == 5:
+        #     neuron["cellparams"]["iext"] = 0.008
+        # else:
+        #     neuron["cellparams"]["iext"] = 0.0
+
         if neuron["cellparams"]["iext"] > 0:
             neuron["cellparams"]["iext"] = np.random.lognormal( np.log(neuron["cellparams"]["iext"]), neuron["cellparams"]["iext_std"]   )
         else:
             neuron["cellparams"]["iext"] = np.random.normal( neuron["cellparams"]["iext"], neuron["cellparams"]["iext_std"]   )
-        """
+
 
 
     neurons.append(neuron)
@@ -1782,35 +1782,6 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
             synapses.append(connection)
 
 
-synapses = []
-"""
-connection = {
-    "pre_gid" : 0, # presynaptic_cell_idx,
-    "post_gid" : 1, # postsynaptic_cell_idx,
-                
-    "gmax" : 0.05, # gmax_syn,
-    "Erev" : 0 , # conn_data["Erev"],
-    "tau_rise" : 0.5, # conn_data["tau_rise"],
-    "tau_decay" : 2.5, # conn_data["tau_decay"],
-    "delay" : 1.5, # delay,
-                
-    "sourse_compartment" : "axon_list", # conn_data["sourse_compartment"],
-    "target_compartment" : "soma_list" , # conn_data["target_compartment"],
-    
-    
-    
-    "NMDA" : {
-        "gNMDAmax" : 0.5, # gmax_nmda,
-        "tcon" : 2.5, # conn_data["NMDA"]["tcon"],   
-        "tcoff" : 95, # conn_data["NMDA"]["tcoff"], 
-        "enmda" : 0, # conn_data["NMDA"]["enmda"], 
-                
-    },
-    
-}
-synapses.append(connection)
-
-
 
 for syn in synapses:
     syn["gmax"] *= 0.001  # recalulate nS to micromhos
@@ -1823,7 +1794,7 @@ for syn in synapses:
 
     except KeyError:
         pass
-"""
+
 
 
 
@@ -1861,27 +1832,27 @@ for cell1_idx, celltype1 in enumerate(basic_params["celltypes"]):
         
         gap_juncs.append(gap)
         
-gap_juncs = []
-
-gap = {
-    "gid1" : 5, # cell1_idx,
-    "gid2" : 4, # cell2_idx,
-    "r" : 100, #  np.random.normal(conn_data["r"], conn_data["r_std"], 1),
-
-    "compartment1" : "soma_list", # conn_data["compartment1"],
-    "compartment2" : "soma_list", # conn_data["compartment2"],
-}
-gap_juncs.append(gap)
-
-gap = {
-    "gid1" : 0, # cell1_idx,
-    "gid2" : 2, # cell2_idx,
-    "r" : 10, #  np.random.normal(conn_data["r"], conn_data["r_std"], 1),
-
-    "compartment1" : "soma_list", # conn_data["compartment1"],
-    "compartment2" : "soma_list", # conn_data["compartment2"],
-}
-gap_juncs.append(gap)
+# gap_juncs = []
+#
+# gap = {
+#     "gid1" : 5, # cell1_idx,
+#     "gid2" : 4, # cell2_idx,
+#     "r" : 100, #  np.random.normal(conn_data["r"], conn_data["r_std"], 1),
+#
+#     "compartment1" : "soma_list", # conn_data["compartment1"],
+#     "compartment2" : "soma_list", # conn_data["compartment2"],
+# }
+# gap_juncs.append(gap)
+#
+# gap = {
+#     "gid1" : 0, # cell1_idx,
+#     "gid2" : 2, # cell2_idx,
+#     "r" : 10, #  np.random.normal(conn_data["r"], conn_data["r_std"], 1),
+#
+#     "compartment1" : "soma_list", # conn_data["compartment1"],
+#     "compartment2" : "soma_list", # conn_data["compartment2"],
+# }
+# gap_juncs.append(gap)
 
 
 basic_params["gap_junctions"] = gap_juncs
