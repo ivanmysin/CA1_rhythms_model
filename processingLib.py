@@ -9,6 +9,8 @@ import scipy.stats as stat
 import scipy.signal as sig
 from scipy.ndimage.filters import convolve1d
 from scipy.signal.windows import parzen
+from elephant import signal_processing as sigp
+from elephant.current_source_density import estimate_csd
 
 #####################################################################
 def circular_distribution(amples, angles, angle_step, nkernel=15, density=True):
@@ -48,31 +50,32 @@ def cossfrequency_phase_amp_coupling(phase_signal, coefAmp, phasebins=20):
     return coupling.T
 
 ###################################################################
-def cossfrequency_phase_phase_coupling(signal1, signal2, nmarray, thresh_std=None, circ_distr=False):
-    coupling = np.zeros(nmarray.shape[1])
-    hilbert1 = sig.hilbert(signal1)
-    hilbert2 = sig.hilbert(signal2)
+def cossfrequency_phase_phase_coupling(low_fr_signal, high_fr_signal, nmarray, thresh_std=None, circ_distr=False):
+    coupling = np.zeros(nmarray.size)
+
+    low_fr_analitic_signal = sig.hilbert(low_fr_signal)
+    high_fr_analitic_signal = sig.hilbert(high_fr_signal)
 
     if not thresh_std is None:
 
-        abs_signal = np.abs(hilbert1 * hilbert2)
+        abs_signal = np.abs(low_fr_analitic_signal * high_fr_analitic_signal)
 
         signif_poits = abs_signal > (np.mean(abs_signal) + thresh_std * np.std(abs_signal))
 
-        hilbert1 = hilbert1[signif_poits]
-        hilbert2 = hilbert2[signif_poits]
+        low_fr_analitic_signal = low_fr_analitic_signal[signif_poits]
+        high_fr_analitic_signal = high_fr_analitic_signal[signif_poits]
 
-        if hilbert1.size == 0:
+        if low_fr_analitic_signal.size == 0:
             return coupling
 
-    angles1 = np.angle(hilbert1, deg=False)
-    angles2 = np.angle(hilbert2, deg=False)
+    low_fr_angles = np.angle(low_fr_analitic_signal, deg=False)
+    high_fr_angles2 = np.angle(high_fr_analitic_signal, deg=False)
 
     distrs = []
     bins = []
-    for i in range(nmarray.shape[1]):
+    for i in range(nmarray.size):
 
-        vects_angle = angles1 * nmarray[0, i] - angles2 * nmarray[1, i]
+        vects_angle = low_fr_angles * nmarray[i] - high_fr_angles2
         x_vect = np.cos(vects_angle)
         y_vect = np.sin(vects_angle)
         mean_resultant_length = np.sqrt(np.sum(x_vect) ** 2 + np.sum(y_vect) ** 2) / vects_angle.size
@@ -87,7 +90,18 @@ def cossfrequency_phase_phase_coupling(signal1, signal2, nmarray, thresh_std=Non
             bins.append(bins_anles)
 
     return coupling, bins, distrs
+###################################################################
+def phase_phase_coupling(low_fr_signal, high_fr_signal, bands4highfr, fd, nmarray, thresh_std=None, circ_distr=False, butter_order=2):
+    couplings = []
+    distrss = []
+    for band in bands4highfr:
+        high_signal_band = sigp.butter(high_fr_signal, highpass_freq=band[0], lowpass_freq=band[1], order=butter_order, fs=fd )
+        coupling, bins, distrs = cossfrequency_phase_phase_coupling(low_fr_signal, high_signal_band, nmarray, thresh_std=thresh_std, circ_distr=circ_distr)
 
+        couplings.append(coupling)
+        distrss.append(distrs)
+
+    return couplings, bins, distrss
 ###################################################################
 def get_asymetry_index(lfp, orders = 25):
     idx_max = sig.argrelmax(lfp, order=orders)[0]
@@ -177,3 +191,11 @@ def get_phase_disrtibution(train, lfp, fs):
     count, bins = np.histogram(train_phases, bins=20, density=True, range=[-np.pi, np.pi] , weights=train_ampls )
     bins = np.convolve(bins, [0.5, 0.5], mode="valid")
     return bins, count
+
+#################################################################
+
+def current_sourse_density(lfp, dz=1):
+    lfp = np.asarray(lfp)
+    weights = np.array([1, -2, 1]) / dz**2
+    csd = convolve1d(lfp, weights, axis=0, mode="nearest")
+    return csd

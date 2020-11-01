@@ -24,6 +24,11 @@ processing_param = {
    
     },
 
+    "freqs4theta_gamma_coupling" : [30, 150],
+
+    "gamma_bands4phase_phase_coupling": [ [30, 90], [30, 40], [40, 60], [50, 70], [60, 80], ],
+    "nmarray" : np.arange(1, 14),
+
 }
 
 
@@ -45,6 +50,7 @@ def processing_and_save(filepath):
         bands_group = process_group.create_group("bands")
 
         theta_gamma_coupling_group = process_group.create_group("theta_gamma_coupling")
+        theta_gamma_phase_phase_coupling_group = process_group.create_group("theta_gamma_phase_phase_coupling_group")
 
         fd = lfp_group_origin.attrs["SamplingRate"]
 
@@ -83,12 +89,14 @@ def processing_and_save(filepath):
 
                 channel_bands_group.create_dataset(band_name, data = filtered_signal)
             #####################################
+            # theta-gamma phase amplitude coupling
 
             channel_theta_gamma_coupling_group = theta_gamma_coupling_group.create_group(key)
             phase_signal = channel_bands_group["theta"][:]
             gamma_freqs = channel_wavelet_group["frequecies"][:]
 
-            is_gamma_freqs = (gamma_freqs>=30)&(gamma_freqs<=150)
+
+            is_gamma_freqs = (gamma_freqs>=processing_param["freqs4theta_gamma_coupling"][0])&(gamma_freqs<=processing_param["freqs4theta_gamma_coupling"][1])
             coefAmp = channel_wavelet_group["wavelet_coeff"][:]
             coefAmp = coefAmp[is_gamma_freqs, :]
             gamma_freqs = gamma_freqs[is_gamma_freqs]
@@ -100,9 +108,29 @@ def processing_and_save(filepath):
             channel_theta_gamma_coupling_group.create_dataset("theta_phase", data = np.linspace(-np.pi, np.pi, phasebins))
 
             ####################################################################################
+            # theta-gamma phase phase coupling
+            channel_theta_gamma_phase_phase_coupling_group = theta_gamma_phase_phase_coupling_group.create_group(key)
+
+            phase_signal = channel_bands_group["theta"][:]
+            couplings, binss, distrss = plib.phase_phase_coupling(phase_signal, lfp, processing_param["gamma_bands4phase_phase_coupling"], \
+                    fd, processing_param["nmarray"], thresh_std=None, circ_distr=True, butter_order=processing_param["butter_order"])
+
+            channel_theta_gamma_phase_phase_coupling_group.create_dataset("nmarray" , data = processing_param["nmarray"])
+            channel_theta_gamma_phase_phase_coupling_group.create_dataset("bins", data=binss)
+            for band_idx, phase_phase_band in enumerate(processing_param["gamma_bands4phase_phase_coupling"]):
+                diap_name = "_" + str(phase_phase_band[0]) + "-" + str(phase_phase_band[1])
+                channel_theta_gamma_phase_phase_coupling_group.create_dataset("coupling"+diap_name , data = couplings[band_idx])
+                channel_theta_gamma_phase_phase_coupling_group.create_dataset("distrs"+diap_name , data = distrss[band_idx])
+
+            ####################################################################################
+            # phase amplidute modulation index
 
 
 
+
+
+        ####################################################################################
+        # current source density
 
 
 
@@ -135,6 +163,12 @@ def processing_and_save(filepath):
 
             
             firing_theta.create_dataset(celltype, data = phase_distr)
+
+            ####################################################################################
+            # gamma phase modulation index for all neurons
+
+            ####################################################################################
+            # phase precessions
         
         
     return
