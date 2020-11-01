@@ -138,7 +138,6 @@ def processing_and_save(filepath):
             for channel_name, channel_group in sorted(process_group["bands"].items(), key=lambda x: int(x[0].split("_")[-1]) ):
                 lfp_band_list.append(channel_group[band_name][:])
 
-
             csd = plib.current_sourse_density(lfp_band_list, dz=1)
             current_source_density_group.create_dataset(band_name, data=csd)
 
@@ -147,7 +146,6 @@ def processing_and_save(filepath):
         firing_group = h5file["extracellular/electrode_1/firing"]
 
         try:
-            # тут можно сделать цикл по ритмам, пока берем только тета 
             firing_process_group = firing_group.create_group("processing")
         except ValueError:
             del h5file["extracellular/electrode_1/firing/processing"]
@@ -155,27 +153,29 @@ def processing_and_save(filepath):
 
         firing_origin = firing_group["origin_data"]
 
-        firing_theta = firing_process_group.create_group("theta")
+        phase_distrs_group = firing_process_group.create_group("phase_distrs")
 
-        # print( firing_origin.keys() )
+
+        # тут нужно взять канал из пирамидного слоя
+        band_pyr_channel = h5file["extracellular/electrode_1/lfp/processing/bands/channel_1/"]
 
         for celltype in firing_origin.keys():
+            celltype_phase_distrs_group = phase_distrs_group.create_group(celltype)
 
             celltype_firings = np.empty(shape=0, dtype=np.float64)
-
             for dsetname, cell_firing_dset in firing_origin[celltype].items():
-
                 celltype_firings = np.append(celltype_firings, cell_firing_dset[:])
 
-            # тут нужно взять канал из пирамидного слоя
-            theta_lfp = h5file["extracellular/electrode_1/lfp/processing/bands/channel_1/theta"][:]
-            bins, phase_distr = plib.get_phase_disrtibution(celltype_firings, theta_lfp, fd)
+            for band_name in processing_param["filt_bands"].keys():
+                lfp_band = band_pyr_channel[band_name][:]
+                bins, phase_distr, R = plib.get_phase_disrtibution(celltype_firings, lfp_band, fd)
+                celltype_phase_distrs_group.create_dataset(band_name, data = phase_distr)
 
-            
-            firing_theta.create_dataset(celltype, data = phase_distr)
+                ####################################################################################
+                # save modulation (R) for all neurons
+                celltype_phase_distrs_group.create_dataset(band_name + "_R", data = np.asarray(R) )
 
-            ####################################################################################
-            # gamma phase modulation index for all neurons
+
 
             ####################################################################################
             # phase precessions
