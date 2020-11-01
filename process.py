@@ -82,8 +82,8 @@ def processing_and_save(filepath):
 
             #####################################
             channel_bands_group = bands_group.create_group(key)
+            # lfp = zscore(lfp)
             for band_name, freq_lims in processing_param["filt_bands"].items():
-                lfp = zscore(lfp)
                 filtered_signal = sigp.butter(lfp, highpass_freq=freq_lims[0], \
                     lowpass_freq=freq_lims[1], order=processing_param["butter_order"], fs=fd )
 
@@ -131,6 +131,16 @@ def processing_and_save(filepath):
 
         ####################################################################################
         # current source density
+        current_source_density_group = process_group.create_group("current_source_density")
+
+        for band_name in processing_param["filt_bands"].keys():
+            lfp_band_list = []
+            for channel_name, channel_group in sorted(process_group["bands"].items(), key=lambda x: int(x[0].split("_")[-1]) ):
+                lfp_band_list.append(channel_group[band_name][:])
+
+
+            csd = plib.current_sourse_density(lfp_band_list, dz=1)
+            current_source_density_group.create_dataset(band_name, data=csd)
 
 
 
