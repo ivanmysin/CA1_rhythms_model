@@ -61,41 +61,51 @@ def plot_lfp(filepath):
     with h5py.File(filepath, 'r') as h5file:
         t = h5file["time"][:]
         
-        meanpyrV = 0
-        pyrVgroup = h5file["intracellular/origin_data"]
-        for v_dset in pyrVgroup.values():
-            if v_dset.attrs["celltype"] == "pyr":
-                meanpyrV += v_dset[:]
         
-        # meanpyrV /= 100
-        # plt.plot(t, meanpyrV)
-        meanpyrV -= np.mean(meanpyrV)
-        meanpyrV /= np.std(meanpyrV)
+        # meanpyrV = 0
+        # pyrVgroup = h5file["intracellular/origin_data"]
+        # for v_dset in pyrVgroup.values():
+            # if v_dset.attrs["celltype"] == "pyr":
+                # meanpyrV += v_dset[:]
+        # meanpyrV -= np.mean(meanpyrV)
+        # meanpyrV /= np.std(meanpyrV)
         
         
         lfp_group = h5file["extracellular/electrode_1/lfp/origin_data"]
 
-        lfp_keys = sorted(lfp_group.keys(), key = lambda x: int(x.split("_")[1]), reverse=True )
+        lfp_keys = sorted(lfp_group.keys(), key = lambda x: int(x.split("_")[-1]), reverse=True )
         
         
-        fig, axes = plt.subplots( nrows=len(lfp_keys), figsize=(15, 10))
+        fig, axes = plt.subplots( nrows=len(lfp_keys), figsize=(6, 6), sharex=True, sharey=True)
         for key_idx, key in enumerate(lfp_keys):
             
             # axes[key_idx].set_title(key)
             lfp = lfp_group[key][:]
-            axes[key_idx].plot(t[:lfp_group[key].size], lfp, label=key, color="blue" )
+            axes[key_idx].plot(t[:lfp_group[key].size], lfp,  color="blue", label=key)
             
-            meanpyrVnorm = meanpyrV * lfp.std()  + np.mean(lfp)
-            axes[key_idx].plot(t, meanpyrVnorm, label="soma V", color="red" )
+            # meanpyrVnorm = meanpyrV * lfp.std()  + np.mean(lfp)
+            # axes[key_idx].plot(t, meanpyrVnorm, label="soma V", color="red" )
             
-            axes[key_idx].set_xlim(0, 2000)
-            # lfp = h5file["extracellular/electrode_1/lfp/processing/"+key+"_bands/theta"]
-            # axes.plot(t, lfp, label=key, color="red" )
-            axes[key_idx].legend()
+            axes[key_idx].set_xlim(t[0], t[-1])
+            # axes[key_idx].legend()
+            
+            axes[key_idx].spines['right'].set_visible(False)
+            axes[key_idx].spines['top'].set_visible(False)
+
+            axes[key_idx].set_ylabel("mV")
             
             
-        
-        plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=0.4)
+            # axes[key_idx].axis('off')
+            
+            if key_idx == len(lfp_keys) - 1:
+                axes[key_idx].set_xlabel("time, ms")
+            
+            else:
+                
+                # axes[key_idx].spines['left'].set_visible(False)
+                axes[key_idx].spines['bottom'].set_visible(False)
+                axes[key_idx].tick_params(labelbottom=False, bottom=False)
+        # plt.tight_layout(pad=0, w_pad=0, h_pad=0)
         plt.show()
 
 
@@ -198,19 +208,60 @@ def plot_phase_precession(filepath):
                 ax_in.scatter(firing_during_place, phases_during_place, s=2)
             else:
                 ax_out.scatter(firing_during_place, phases_during_place, s=2)
-
-
-
-
     plt.show()
 
+###################################################################################
+def plot_current_source_density(filepath, band_name):
+    from scipy.ndimage import zoom
+    with h5py.File(filepath, 'r') as h5file:
+        sampling_rate = h5file["extracellular/electrode_1/lfp/origin_data"].attrs["SamplingRate"]
+        sampling_rate *= 0.001 
+        csd = h5file["extracellular/electrode_1/lfp/processing/current_source_density/" + band_name][:]
+        csd = zoom(csd, zoom=(20, 1), mode="nearest")
+        # print(csd.shape)
+        
+        t = np.linspace(0, csd.shape[1]/sampling_rate, csd.shape[1])
+        depth = np.linspace(-300, 800, csd.shape[0])
+        
+        fig, axes = plt.subplots()
+        gr = axes.pcolormesh(t, depth, csd, cmap="rainbow", shading='auto')
+        axes.set_xlabel("time, ms")
+        axes.set_ylabel("depth, mkm")
+        
+        q1 = np.quantile(csd, 0.05)
+        q3 = np.quantile(csd, 0.95)
 
+        cbar = fig.colorbar(gr, ticks=[np.min(csd), q1, 0, q3, np.max(csd)])
+        
+        cbar.ax.set_yticklabels(['sink', "{:.2}".format(q1), 0, "{:.2}".format(q3), 'source'])
+        
+    
+    plt.show()
+        
+
+
+def main_plots(filepath):
+    plot_lfp(filepath)
+    
+    
+    
+    return
+    
+    
+    
+    
+    
 if __name__ == "__main__":
-    filepath = basic_params["file_results"]  #  "/home/ivan/Data/CA1_simulation/test.hdf5"
-
-    plot_v(filepath)
-    # plot_spike_raster(filepath)
+    filepath = "/home/ivan/Data/CA1_simulation/test_server.hdf5"  # basic_params["file_results"]  # 
+    
+    # main_plots(filepath)
     # plot_lfp(filepath)
+    plot_current_source_density(filepath, "theta")
+    
+    
+    # plot_v(filepath)
+    # plot_spike_raster(filepath)
+    
     # plot_phase_disrtibution(filepath)
     # plot_pyr_layer_lfp_vs_raster(filepath)
     # plot_phase_precession(filepath)
