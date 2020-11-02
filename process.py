@@ -13,6 +13,8 @@ processing_param = {
     "freqs_step" : 10,      # количество частот, для которых вычисляется вейвлет за один цикл 
     "max_freq_lfp" : 500,   # Гц, анализируем только до этой частоты 
 
+    "number_pyr_layer" : 1, # number of chennel from pyramidal layer
+
     "butter_order" : 2,     # Порядок для фильтра Баттерворда
     "filt_bands" : {
         "delta" : [1, 4], 
@@ -55,7 +57,8 @@ def processing_and_save(filepath):
         bands_group = process_group.create_group("bands")
 
         theta_gamma_coupling_group = process_group.create_group("theta_gamma_coupling")
-        theta_gamma_phase_phase_coupling_group = process_group.create_group("theta_gamma_phase_phase_coupling_group")
+        theta_gamma_phase_phase_coupling_group = process_group.create_group("theta_gamma_phase_phase_coupling")
+        modulation_index_group = process_group.create_group("modulation_index")
 
         fd = lfp_group_origin.attrs["SamplingRate"]
 
@@ -129,6 +132,21 @@ def processing_and_save(filepath):
 
             ####################################################################################
             # phase amplidute modulation index
+            channel_modulation_index_group = modulation_index_group.create_group(key)
+            
+            freqs = channel_wavelet_group["frequecies"][:] 
+            freqs4phase_sl = plib.slice_by_bound_values(freqs, processing_param["modulation_index"]["freqs4phase"][0], processing_param["modulation_index"]["freqs4phase"][1])
+            freqs4ampl_sl = plib.slice_by_bound_values(freqs, processing_param["modulation_index"]["freqs4amplitude"][0], processing_param["modulation_index"]["freqs4amplitude"][1])
+                        
+            
+            W4phase = channel_wavelet_group["wavelet_coeff"][freqs4phase_sl, :]
+            W4ampls = channel_wavelet_group["wavelet_coeff"][freqs4ampl_sl, :]
+            
+            mi = plib.get_modulation_index(W4phase, W4ampls, nbins=20)
+            
+            channel_modulation_index_group.create_dataset("freqs4phase", data=freqs[freqs4phase_sl])
+            channel_modulation_index_group.create_dataset("freqs4ampl", data=freqs[freqs4ampl_sl])
+            channel_modulation_index_group.create_dataset("modulation_index", data=mi)
 
 
 
@@ -162,7 +180,7 @@ def processing_and_save(filepath):
 
 
         # тут нужно взять канал из пирамидного слоя
-        band_pyr_channel = h5file["extracellular/electrode_1/lfp/processing/bands/channel_1/"]
+        band_pyr_channel = h5file["extracellular/electrode_1/lfp/processing/bands/channel_" + str(processing_param["number_pyr_layer"]) ]
 
         for celltype in firing_origin.keys():
             celltype_phase_distrs_group = phase_distrs_group.create_group(celltype)
@@ -192,7 +210,7 @@ def processing_and_save(filepath):
 if __name__ == "__main__":
     from basic_parameters import basic_params
     
-    filepath =  "/home/ivan/Data/CA1_simulation/theta_nice.hdf5" # basic_params["file_results"] #
+    filepath =  "/home/ivan/Data/CA1_simulation/test_server.hdf5" # basic_params["file_results"] #
     # print(filepath)
     processing_and_save(filepath)
 

@@ -248,3 +248,17 @@ def get_mi_by_coherence(phase_band, ampl_w, fd, ph_fr_range=[4, 12], nperseg=409
     f = f[ (f>ph_fr_range[0])&(f<ph_fr_range[1]) ]
     mi = np.vstack(mi)
     return mi, f
+########################################################################
+
+def slice_by_bound_values(arr, left_bound, right_bound):
+    sl = np.s_[ np.argmin(np.abs(arr-left_bound)) : np.argmin(np.abs(arr-right_bound)) ]
+    
+    return sl
+
+
+
+
+
+
+
+
