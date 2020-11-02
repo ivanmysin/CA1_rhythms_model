@@ -13,7 +13,7 @@ processing_param = {
     "freqs_step" : 10,      # количество частот, для которых вычисляется вейвлет за один цикл 
     "max_freq_lfp" : 500,   # Гц, анализируем только до этой частоты 
 
-    "butter_order" : 2,    # Порядок для фильтра Баттерворда
+    "butter_order" : 2,     # Порядок для фильтра Баттерворда
     "filt_bands" : {
         "delta" : [1, 4], 
         "theta" : [4, 12], 
@@ -28,6 +28,11 @@ processing_param = {
 
     "gamma_bands4phase_phase_coupling": [ [30, 90], [30, 40], [40, 60], [50, 70], [60, 80], ],
     "nmarray" : np.arange(1, 14),
+
+    "modulation_index": {
+        "freqs4phase" : [2, 20],
+        "freqs4amplitude" : [20, 150],
+    },
 
 }
 

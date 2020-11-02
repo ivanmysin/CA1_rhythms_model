@@ -199,3 +199,52 @@ def current_sourse_density(lfp, dz=1):
     weights = np.array([1, -2, 1]) / dz**2
     csd = convolve1d(lfp, weights, axis=0, mode="nearest")
     return csd
+    
+#################################################################
+
+def get_modulation_index(W4phase, W4ampls, nbins=20):
+    
+    Nampls = W4ampls.shape[0]
+    Nphs = W4phase.shape[0]
+    
+    modulation_index = np.zeros( [Nampls, Nphs], dtype=np.float )
+    
+    unif = 1.0 / (2*np.pi)
+    
+    ampls = np.abs(W4ampls)
+    phases = np.angle(W4phase)
+    for idx4ampl in range(Nampls):
+        a = ampls[idx4ampl, :]
+        for idx4phase in range(Nphs):
+            p = phases[idx4phase, :]
+            
+            
+            distr, _ = np.histogram(p, bins=nbins, weights=a, range=[-np.pi, np.pi], density=True)
+            mi = np.sum(distr * np.log(distr / unif) )
+            # distr = distr / np.sum(distr)
+            # mi = -np.mean(distr * np.log(distr) )
+            ##########
+            # x = a * np.cos(p)
+            # y = a * np.sin(p)
+            # mi = np.sqrt(np.sum(x)**2 + np.sum(y)**2) / np.sum(a)
+            
+            modulation_index[idx4ampl, idx4phase ] = mi
+    
+    return modulation_index
+
+def get_mi_by_coherence(phase_band, ampl_w, fd, ph_fr_range=[4, 12], nperseg=4096):
+  
+    mi = []
+
+    for fr_idx in range(ampl_w.shape[0]):
+        
+        amples = np.abs(ampl_w[fr_idx, :])
+        
+        f, Coh = sig.coherence(phase_band, amples, fs=fd, nperseg=nperseg)
+        Coh = Coh[ (f>ph_fr_range[0])&(f<ph_fr_range[1]) ]
+        
+        mi.append(Coh)
+    
+    f = f[ (f>ph_fr_range[0])&(f<ph_fr_range[1]) ]
+    mi = np.vstack(mi)
+    return mi, f
