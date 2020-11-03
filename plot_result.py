@@ -27,44 +27,15 @@ plotting_param = {
 
     "neuron_order" : ["pyr", "pvbas", "cckbas", "olm", "aac", "ivy", "bis", "sca", "ngf"],
 
-
+    "number_pyr_layer" : 1,  # number of chennel from pyramidal layer
 }
 
-
-
-
-def plot_v(filepath):
-    
-    with h5py.File(filepath, 'r') as h5file:
-        t = h5file["time"][:]
-        
-        raster_group = h5file["extracellular/electrode_1/firing/origin_data"]
-        intracellular_group = h5file["intracellular/origin_data"]
-        
-        intracell_keys = intracellular_group.keys()
-        
-        for idx, key in enumerate(intracell_keys):
-            fig, axes = plt.subplots()
-            
-            v = intracellular_group[key][:]
-            celltype = intracellular_group[key].attrs["celltype"]
-         
-            axes.plot(t, v, label = celltype )
-            
-            firings = raster_group[celltype][key][:]
-            
-            firings_y = np.zeros_like(firings) - 5
-            axes.scatter(firings, firings_y, s=20, color="red")
-            
-            
-            axes.legend()
-            
-        plt.show()
-
-
+#####################################################################################
 def plot_spike_raster(filepath):
     
     with h5py.File(filepath, 'r') as h5file:
+        t0 = h5file["time"][0]
+        t1 = h5file["time"][-1]
         raster_group = h5file["extracellular/electrode_1/firing/origin_data"]
                 
         fig = plt.figure(figsize=(15, 10))
@@ -74,9 +45,11 @@ def plot_spike_raster(filepath):
             axes = plt.subplot(gs[celltype_idx])
 
             for sp_idx, (cell_key, firing) in enumerate(raster_group[celltype].items()):
-                axes.scatter(firing,  np.zeros(firing.size) + sp_idx + 1, color=plotting_param["neuron_colors"][celltype], s=0.2 )
+                sp_idx += 1
+                axes.scatter(firing,  np.zeros(firing.size) + sp_idx, color=plotting_param["neuron_colors"][celltype], s=0.2 )
 
-            axes.set_ylim(1, sp_idx+1)
+            axes.set_ylim(1, sp_idx)
+            axes.set_xlim(t0, t1)
             axes.set_ylabel(celltype, rotation='horizontal', labelpad=20)
 
             if celltype_idx == len(plotting_param["neuron_order"]) - 1:
@@ -137,6 +110,50 @@ def plot_lfp(filepath):
                 axes[key_idx].spines['bottom'].set_visible(False)
                 axes[key_idx].tick_params(labelbottom=False, bottom=False)
         # plt.tight_layout(pad=0, w_pad=0, h_pad=0)
+        plt.show()
+
+
+def plot_modulation_index(filepath):
+    with h5py.File(filepath, 'r') as h5file:
+
+        mi_group = h5file["extracellular/electrode_1/lfp/processing/modulation_index/channel_"+str(plotting_param["number_pyr_layer"])]
+        mi = mi_group["modulation_index"][:]
+        freqs4ampl = mi_group["freqs4ampl"][:]
+        freqs4phase = mi_group["freqs4phase"][:]
+
+        fig, axes = plt.subplots()
+        gr = axes.pcolormesh(freqs4phase, freqs4ampl, mi, cmap="rainbow", shading='auto')
+        axes.set_ylabel("frequencies for amplitude, Hz")
+        axes.set_xlabel("frequencies for phase, Hz")
+        cbar = fig.colorbar(gr)
+
+    plt.show()
+
+############################################################################
+def plot_v(filepath):
+    with h5py.File(filepath, 'r') as h5file:
+        t = h5file["time"][:]
+
+        raster_group = h5file["extracellular/electrode_1/firing/origin_data"]
+        intracellular_group = h5file["intracellular/origin_data"]
+
+        intracell_keys = intracellular_group.keys()
+
+        for idx, key in enumerate(intracell_keys):
+            fig, axes = plt.subplots()
+
+            v = intracellular_group[key][:]
+            celltype = intracellular_group[key].attrs["celltype"]
+
+            axes.plot(t, v, label=celltype)
+
+            firings = raster_group[celltype][key][:]
+
+            firings_y = np.zeros_like(firings) - 5
+            axes.scatter(firings, firings_y, s=20, color="red")
+
+            axes.legend()
+
         plt.show()
 
 
@@ -288,9 +305,11 @@ if __name__ == "__main__":
     # plot_current_source_density(filepath, "theta")
     
     
+
+    # plot_spike_raster(filepath)
+    plot_modulation_index(filepath)
+
     # plot_v(filepath)
-    plot_spike_raster(filepath)
-    
     # plot_phase_disrtibution(filepath)
     # plot_pyr_layer_lfp_vs_raster(filepath)
     # plot_phase_precession(filepath)
