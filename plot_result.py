@@ -1,8 +1,37 @@
 import numpy as np
 from scipy.signal import hilbert
 import matplotlib.pyplot as plt
+from matplotlib import gridspec
 import h5py
 from basic_parameters import basic_params
+
+plotting_param = {
+    "neuron_colors" : {
+        "pyr" : (1.0, 0.0, 0.0), # red
+        "pvbas": (0.0, 0.0, 1.0), # blue
+        "olm": (0.0, 0.0, 0.5), #
+        "cckbas": (0.0, 1.0, 0.0), # green
+        "ivy": (0.0, 0.5, 0.5), #
+        "ngf": (0.5, 0.5, 0.5), #
+        "bis": (0.1, 0.0, 0.5), #
+        "aac": (1.0, 0.0, 0.5), #
+        "sca": (0.0, 1.0, 0.5), #
+
+        "ca3": (0.5, 0.5, 0.0), #
+        "mec": (0.5, 1.0, 0.0), #
+        "lec": (0.9, 0.7, 0.0), #
+        "msteevracells": (0.0, 0.8, 0.5), #
+        "mskomalicells": (0.0, 0.5, 0.9), #
+        "msach": (0.8, 0.2, 0.0), #
+    },
+
+    "neuron_order" : ["pyr", "pvbas", "cckbas", "olm", "aac", "ivy", "bis", "sca", "ngf"],
+
+
+}
+
+
+
 
 def plot_v(filepath):
     
@@ -38,22 +67,24 @@ def plot_spike_raster(filepath):
     with h5py.File(filepath, 'r') as h5file:
         raster_group = h5file["extracellular/electrode_1/firing/origin_data"]
                 
-        uniq_celltypes = raster_group.keys()
+        fig = plt.figure(figsize=(15, 10))
+        gs = gridspec.GridSpec(9, 1, height_ratios=[3, 1, 1, 1, 1, 1, 1, 1, 1])
 
-        for celltype in uniq_celltypes:
-            fig, axes = plt.subplots()
-            fig.suptitle(celltype)
-            sp_idx = 0
-            for cell_key,firing in raster_group[celltype].items():
-                # celltype_idx = int(cell_key.split("_")[-1])
-            
-                axes.scatter(firing,  np.zeros(firing.size) + sp_idx + 1, color="b", s=1 )
-        
-                sp_idx += 1
-        
-       
-        
-        
+        for celltype_idx, celltype in enumerate(plotting_param["neuron_order"]):
+            axes = plt.subplot(gs[celltype_idx])
+
+            for sp_idx, (cell_key, firing) in enumerate(raster_group[celltype].items()):
+                axes.scatter(firing,  np.zeros(firing.size) + sp_idx + 1, color=plotting_param["neuron_colors"][celltype], s=0.2 )
+
+            axes.set_ylim(1, sp_idx+1)
+            axes.set_ylabel(celltype, rotation='horizontal', labelpad=20)
+
+            if celltype_idx == len(plotting_param["neuron_order"]) - 1:
+                axes.set_xlabel("time, ms")
+            else:
+                axes.tick_params(labelbottom=False, bottom=False)
+
+        fig.tight_layout()
         plt.show()
 
 
@@ -192,8 +223,6 @@ def plot_phase_precession(filepath):
 
             place_center = np.median(firing)
 
-
-
             firing_during_place = firing - place_center
 
             is_inside = np.abs(firing_during_place) < 2000
@@ -212,12 +241,12 @@ def plot_phase_precession(filepath):
 
 ###################################################################################
 def plot_current_source_density(filepath, band_name):
-    from scipy.ndimage import zoom
+
     with h5py.File(filepath, 'r') as h5file:
         sampling_rate = h5file["extracellular/electrode_1/lfp/origin_data"].attrs["SamplingRate"]
         sampling_rate *= 0.001 
         csd = h5file["extracellular/electrode_1/lfp/processing/current_source_density/" + band_name][:]
-        csd = zoom(csd, zoom=(20, 1), mode="nearest")
+
         # print(csd.shape)
         
         t = np.linspace(0, csd.shape[1]/sampling_rate, csd.shape[1])
@@ -252,15 +281,15 @@ def main_plots(filepath):
     
     
 if __name__ == "__main__":
-    filepath = "/home/ivan/Data/CA1_simulation/test_server.hdf5"  # basic_params["file_results"]  # 
+    filepath = "/home/ivan/Data/CA1_simulation/theta_nice.hdf5"  # basic_params["file_results"]  #
     
     # main_plots(filepath)
     # plot_lfp(filepath)
-    plot_current_source_density(filepath, "theta")
+    # plot_current_source_density(filepath, "theta")
     
     
     # plot_v(filepath)
-    # plot_spike_raster(filepath)
+    plot_spike_raster(filepath)
     
     # plot_phase_disrtibution(filepath)
     # plot_pyr_layer_lfp_vs_raster(filepath)

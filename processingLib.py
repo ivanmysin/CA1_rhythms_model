@@ -220,6 +220,7 @@ def get_modulation_index(W4phase, W4ampls, nbins=20):
             
             
             distr, _ = np.histogram(p, bins=nbins, weights=a, range=[-np.pi, np.pi], density=True)
+            distr += 0.000000001
             mi = np.sum(distr * np.log(distr / unif) )
             # distr = distr / np.sum(distr)
             # mi = -np.mean(distr * np.log(distr) )

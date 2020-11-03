@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import h5py
 import processingLib as plib
 from scipy.stats import zscore
-
+from scipy.ndimage import zoom
 
 processing_param = {
 
@@ -35,6 +35,8 @@ processing_param = {
         "freqs4phase" : [2, 20],
         "freqs4amplitude" : [20, 150],
     },
+
+    "upsamling4csd" : 20,
 
 }
 
@@ -162,6 +164,7 @@ def processing_and_save(filepath):
                 lfp_band_list.append(channel_group[band_name][:])
 
             csd = plib.current_sourse_density(lfp_band_list, dz=1)
+            csd = zoom(csd, zoom=(processing_param["upsamling4csd"], 1), mode="nearest")
             current_source_density_group.create_dataset(band_name, data=csd)
 
 
@@ -210,7 +213,7 @@ def processing_and_save(filepath):
 if __name__ == "__main__":
     from basic_parameters import basic_params
     
-    filepath =  "/home/ivan/Data/CA1_simulation/test_server.hdf5" # basic_params["file_results"] #
+    filepath =  "/home/ivan/Data/CA1_simulation/theta_nice.hdf5" # basic_params["file_results"] #
     # print(filepath)
     processing_and_save(filepath)
 
