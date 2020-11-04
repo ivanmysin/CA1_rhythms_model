@@ -298,8 +298,6 @@ def plot_current_source_density(filepath, band_name):
         sampling_rate *= 0.001 
         csd = h5file["extracellular/electrode_1/lfp/processing/current_source_density/" + band_name][:]
 
-        # print(csd.shape)
-        
         t = np.linspace(0, csd.shape[1]/sampling_rate, csd.shape[1])
         depth = np.linspace(-300, 800, csd.shape[0])
         
@@ -312,14 +310,31 @@ def plot_current_source_density(filepath, band_name):
         q3 = np.quantile(csd, 0.95)
 
         cbar = fig.colorbar(gr, ticks=[np.min(csd), q1, 0, q3, np.max(csd)])
-        
         cbar.ax.set_yticklabels(['sink', "{:.2}".format(q1), 0, "{:.2}".format(q3), 'source'])
         
     
     plt.show()
         
+def plot_nm_phase_phase_coupling(filepath):
+    with h5py.File(filepath, 'r') as h5file:
+        gr_name = "extracellular/electrode_1/lfp/processing/theta_gamma_phase_phase_coupling/channel_"
+        gr_name += str(plotting_param["number_pyr_layer"])
+        coup_group = h5file[gr_name]
+        nmarray = coup_group["nmarray"][:]
 
+        fig, axes = plt.subplots(nrows=1, figsize=(5, 5))
+        for key, val in sorted(coup_group.items()):
+            splited_key = key.split("_")
+            if splited_key[0] != "coupling": continue
 
+            diap = splited_key[-1] + " Hz"
+            axes.plot(nmarray, val[:], label=diap)
+        axes.legend()
+        axes.set_xlabel("n * theta phase")
+        axes.set_ylabel("R of (n * theta phase - gamma phase) disrtibution")
+
+    plt.show()
+#################################################################################3
 def main_plots(filepath):
     plot_lfp(filepath)
     
@@ -338,9 +353,10 @@ if __name__ == "__main__":
     # plot_lfp(filepath)
     # plot_current_source_density(filepath, "theta")
     # plot_spike_raster(filepath)
-    #plot_modulation_index(filepath)
-    plot_phase_by_amplitude_coupling(filepath)
+    # plot_modulation_index(filepath)
+    # plot_phase_by_amplitude_coupling(filepath)
 
+    plot_nm_phase_phase_coupling(filepath)
     # plot_v(filepath)
     # plot_phase_disrtibution(filepath)
     # plot_pyr_layer_lfp_vs_raster(filepath)
