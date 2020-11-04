@@ -26,6 +26,7 @@ plotting_param = {
     },
 
     "neuron_order" : ["pyr", "pvbas", "cckbas", "olm", "aac", "ivy", "bis", "sca", "ngf"],
+    "rhytms_order" : ["theta", "slow gamma", "fast gamma"],
 
     "number_pyr_layer" : 1,  # number of chennel from pyramidal layer
 }
@@ -193,29 +194,33 @@ def plot_v(filepath):
 
 def plot_phase_disrtibution(filepath):
     with h5py.File(filepath, 'r') as h5file:
-        distr_group = h5file["extracellular/electrode_1/firing/processing/theta"]
-        
-        keys = distr_group.keys()
-        
-        fig, axes = plt.subplots(nrows=5, ncols=3, figsize=(16, 11))
+        distr_group = h5file["extracellular/electrode_1/firing/processing/phase_distrs"]
 
-        row_idx = 0
-        cols_idx = 0
-        for key_idx, key in enumerate(keys):
-            
-            if row_idx > 4:
-                row_idx = 0
-                cols_idx += 1
-            
-            phase_distr = distr_group[key][:]
-            
-            phases = np.linspace(-np.pi, np.pi, phase_distr.size)
-            axes[row_idx, cols_idx].plot( phases, phase_distr, label=key )
-            axes[row_idx, cols_idx].legend()
-            
-            row_idx += 1
-        
-        plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=0.4)
+        fig, axes = plt.subplots(nrows=9, ncols=3, figsize=(5, 10))
+        for celltypes_idx, celltype in enumerate(plotting_param["neuron_order"]):
+            for rhythm_idx, rhythm_name in enumerate(plotting_param["rhytms_order"]):
+                phase_distr = distr_group[celltype][rhythm_name][:]
+                phases = np.linspace(-np.pi, np.pi, phase_distr.size)
+                signal4phase = np.max(phase_distr) * 0.25 * (np.cos(phases) + 1)
+                axes[celltypes_idx, rhythm_idx].plot( phases, phase_distr, color=plotting_param["neuron_colors"][celltype] )
+                axes[celltypes_idx, rhythm_idx].plot( phases, signal4phase, color="black", linestyle="dotted" )
+
+                axes[celltypes_idx, rhythm_idx].set_xlim(-np.pi, np.pi)
+                axes[celltypes_idx, rhythm_idx].set_ylim(0, None)
+
+                if celltypes_idx == 0:
+                    axes[celltypes_idx, rhythm_idx].set_title(rhythm_name)
+
+                if rhythm_idx == 0:
+                    axes[celltypes_idx, rhythm_idx].set_ylabel(celltype, rotation="horizontal", labelpad=20)
+
+                if celltypes_idx == len(plotting_param["neuron_order"]) - 1:
+                    axes[celltypes_idx, rhythm_idx].set_xlabel("phase, rad")
+                else:
+                    axes[celltypes_idx, rhythm_idx].tick_params(labelbottom=False, bottom=False)
+
+
+        plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=0)
         plt.show()
 
 
@@ -334,7 +339,13 @@ def plot_nm_phase_phase_coupling(filepath):
         axes.set_ylabel("R of (n * theta phase - gamma phase) disrtibution")
 
     plt.show()
-#################################################################################3
+
+
+
+
+
+
+#################################################################################
 def main_plots(filepath):
     plot_lfp(filepath)
     
@@ -355,10 +366,10 @@ if __name__ == "__main__":
     # plot_spike_raster(filepath)
     # plot_modulation_index(filepath)
     # plot_phase_by_amplitude_coupling(filepath)
+    # plot_nm_phase_phase_coupling(filepath)
 
-    plot_nm_phase_phase_coupling(filepath)
     # plot_v(filepath)
-    # plot_phase_disrtibution(filepath)
+    plot_phase_disrtibution(filepath)
     # plot_pyr_layer_lfp_vs_raster(filepath)
     # plot_phase_precession(filepath)
 
