@@ -110,8 +110,8 @@ def processing_and_save(filepath):
             coefAmp = channel_wavelet_group["wavelet_coeff"][:]
             coefAmp = coefAmp[is_gamma_freqs, :]
             gamma_freqs = gamma_freqs[is_gamma_freqs]
-            phasebins = 20
-            coupling = plib.cossfrequency_phase_amp_coupling(phase_signal, coefAmp, phasebins=phasebins)
+            phasebins = 50
+            coupling = plib.cossfrequency_phase_amp_coupling(phase_signal, coefAmp, phasebins=phasebins, nkernel=15)
 
             channel_theta_gamma_coupling_group.create_dataset("coupling_matrix", data = coupling)
             channel_theta_gamma_coupling_group.create_dataset("gamma_freqs", data = gamma_freqs)

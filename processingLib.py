@@ -35,19 +35,21 @@ def get_angles_in_range(angles):
     return anles_in_range
 ################################################################
 
-def cossfrequency_phase_amp_coupling(phase_signal, coefAmp, phasebins=20):
+def cossfrequency_phase_amp_coupling(phase_signal, coefAmp, phasebins=20, nkernel=15):
     phase_signal = np.angle(sig.hilbert(phase_signal), deg=False)
 
     coefAmp = np.abs(coefAmp)
     coefAmp = stat.zscore(coefAmp, axis=1)
 
-    coupling = np.empty(shape=(phasebins, coefAmp.shape[0]), dtype=np.float)
+    coupling = np.empty(shape=(coefAmp.shape[0], phasebins), dtype=np.float)
 
+    kernel = parzen(nkernel)
     for freq_idx in range(coefAmp.shape[0]):
         coup, _ = np.histogram(phase_signal, bins=phasebins, weights=coefAmp[freq_idx, :], range=[-np.pi, np.pi])
-        coupling[:, freq_idx] = coup
-
-    return coupling.T
+        coup = convolve1d(coup, kernel, mode="wrap")
+        coupling[freq_idx, :] = coup
+    coupling = coupling /(coupling.max() - coupling.min())
+    return coupling
 
 ###################################################################
 def cossfrequency_phase_phase_coupling(low_fr_signal, high_fr_signal, nmarray, thresh_std=None, circ_distr=False):

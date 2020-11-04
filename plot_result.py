@@ -141,7 +141,7 @@ def plot_phase_by_amplitude_coupling(filepath):
         theta_signal = np.cos(theta_phase)
 
         fig = plt.figure(figsize=(5, 5))
-        gs = gridspec.GridSpec(2, 2, figure=fig, height_ratios=[1, 5], width_ratios=[10, 1], hspace=0 )
+        gs = gridspec.GridSpec(2, 2, figure=fig, height_ratios=[1, 10], width_ratios=[10, 1], hspace=0 )
 
         axes = plt.subplot(gs[0, 0])
         axes.plot(theta_phase, theta_signal, color="black")
