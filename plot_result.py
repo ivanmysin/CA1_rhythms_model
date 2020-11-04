@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib import gridspec
 import h5py
 from basic_parameters import basic_params
+import processingLib as proclib
 
 plotting_param = {
     "neuron_colors" : {
@@ -29,6 +30,8 @@ plotting_param = {
     "rhytms_order" : ["theta", "slow gamma", "fast gamma"],
 
     "number_pyr_layer" : 1,  # number of chennel from pyramidal layer
+
+    "frequencies4wavelet" : [2, 30],
 }
 
 #####################################################################################
@@ -77,40 +80,52 @@ def plot_lfp(filepath):
         
         
         lfp_group = h5file["extracellular/electrode_1/lfp/origin_data"]
+        wavelet_group = h5file["extracellular/electrode_1/lfp/processing/wavelet"]
 
         lfp_keys = sorted(lfp_group.keys(), key = lambda x: int(x.split("_")[-1]), reverse=True )
         
         
-        fig, axes = plt.subplots( nrows=len(lfp_keys), figsize=(6, 6), sharex=True, sharey=True)
+        fig, axes = plt.subplots( nrows=len(lfp_keys), ncols=2, figsize=(5, 10))
         for key_idx, key in enumerate(lfp_keys):
-            
-            # axes[key_idx].set_title(key)
             lfp = lfp_group[key][:]
-            axes[key_idx].plot(t[:lfp_group[key].size], lfp,  color="blue", label=key)
-            
+            freqs = wavelet_group[key]["frequecies"][:]
+
+
+            freqs_sl = proclib.slice_by_bound_values(freqs, plotting_param["frequencies4wavelet"][0], plotting_param["frequencies4wavelet"][1])
+            freqs = freqs[freqs_sl]
+            w_coefs = np.abs(wavelet_group[key]["wavelet_coeff"][freqs_sl, :])
+
+            axes[key_idx, 0].plot(t[:lfp_group[key].size], lfp,  color="blue", label=key)
+
+            gr = axes[key_idx, 1].pcolormesh(t[:lfp_group[key].size], freqs, w_coefs,  cmap="rainbow", shading='auto')
+            cbar = fig.colorbar(gr, ax=axes[key_idx, 1])
             # meanpyrVnorm = meanpyrV * lfp.std()  + np.mean(lfp)
             # axes[key_idx].plot(t, meanpyrVnorm, label="soma V", color="red" )
             
-            axes[key_idx].set_xlim(t[0], t[-1])
-            # axes[key_idx].legend()
-            
-            axes[key_idx].spines['right'].set_visible(False)
-            axes[key_idx].spines['top'].set_visible(False)
+            axes[key_idx, 0].set_xlim(t[0], t[-1])
+            axes[key_idx, 1].set_xlim(t[0], t[-1])
 
-            axes[key_idx].set_ylabel("mV")
             
-            
-            # axes[key_idx].axis('off')
-            
+            axes[key_idx, 0].spines['right'].set_visible(False)
+            axes[key_idx, 0].spines['top'].set_visible(False)
+
+            axes[key_idx, 0].set_ylabel("mV")
+            axes[key_idx, 1].set_ylabel("Hz")
+
+
             if key_idx == len(lfp_keys) - 1:
-                axes[key_idx].set_xlabel("time, ms")
-            
+                axes[key_idx, 0].set_xlabel("time, ms")
+                axes[key_idx, 1].set_xlabel("time, ms")
+
             else:
                 
                 # axes[key_idx].spines['left'].set_visible(False)
-                axes[key_idx].spines['bottom'].set_visible(False)
-                axes[key_idx].tick_params(labelbottom=False, bottom=False)
-        # plt.tight_layout(pad=0, w_pad=0, h_pad=0)
+                axes[key_idx, 0].spines['bottom'].set_visible(False)
+                axes[key_idx, 0].tick_params(labelbottom=False, bottom=False)
+                axes[key_idx, 1].spines['bottom'].set_visible(False)
+                axes[key_idx, 1].tick_params(labelbottom=False, bottom=False)
+
+        plt.tight_layout(pad=0, w_pad=1, h_pad=0)
         plt.show()
 
 
@@ -343,6 +358,41 @@ def plot_nm_phase_phase_coupling(filepath):
 
 
 
+def plot_v_vs_pyr_lfp(filepath):
+    with h5py.File(filepath, 'r') as h5file:
+        t = h5file["time"][:]
+        lfp = h5file["extracellular/electrode_1/lfp/origin_data/channel_"+str(plotting_param["number_pyr_layer"])][:]
+
+
+        intracellular_group = h5file["intracellular/origin_data"]
+        intracell_keys = intracellular_group.keys()
+
+
+        fig, axes = plt.subplots(nrows=10, sharex=True, figsize=(5, 10))
+        axes[0].plot(t[:lfp.size], lfp, color="black")
+        for celltype_idx, celltype in enumerate(plotting_param["neuron_order"]):
+            for key in intracell_keys:
+                if  intracellular_group[key].attrs["celltype"] != celltype: continue
+
+                celltype_idx += 1
+                v = intracellular_group[key][:]
+                celltype = intracellular_group[key].attrs["celltype"]
+                axes[celltype_idx].plot(t, v, label=celltype, color=plotting_param["neuron_colors"][celltype])
+                axes[celltype_idx].legend()
+
+                axes[celltype_idx].set_xlim(t[0], t[-1])
+                axes[celltype_idx].set_ylim(-90, 60)
+
+                if celltype_idx == len(plotting_param["neuron_order"]):
+                    axes[celltype_idx].set_xlabel("time, ms")
+                    axes[celltype_idx].tick_params(labelbottom=True, bottom=True)
+                else:
+                    axes[celltype_idx].tick_params(labelbottom=False, bottom=True)
+                axes[celltype_idx].set_ylabel("mV")
+
+
+
+        plt.show()
 
 
 #################################################################################
@@ -367,9 +417,11 @@ if __name__ == "__main__":
     # plot_modulation_index(filepath)
     # plot_phase_by_amplitude_coupling(filepath)
     # plot_nm_phase_phase_coupling(filepath)
+    # plot_phase_disrtibution(filepath)
+    plot_v_vs_pyr_lfp(filepath)
+
 
     # plot_v(filepath)
-    plot_phase_disrtibution(filepath)
     # plot_pyr_layer_lfp_vs_raster(filepath)
     # plot_phase_precession(filepath)
 
