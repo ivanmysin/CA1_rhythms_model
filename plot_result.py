@@ -129,6 +129,40 @@ def plot_modulation_index(filepath):
 
     plt.show()
 
+
+def plot_phase_by_amplitude_coupling(filepath):
+    with h5py.File(filepath, 'r') as h5file:
+
+        coup_group = h5file["extracellular/electrode_1/lfp/processing/theta_gamma_coupling/channel_"+str(plotting_param["number_pyr_layer"])]
+        coupling = coup_group["coupling_matrix"][:]
+        gamma_freqs = coup_group["gamma_freqs"][:]
+        theta_phase = coup_group["theta_phase"][:]
+
+        theta_signal = np.cos(theta_phase)
+
+        fig = plt.figure(figsize=(5, 5))
+        gs = gridspec.GridSpec(2, 2, figure=fig, height_ratios=[1, 5], width_ratios=[10, 1], hspace=0 )
+
+        axes = plt.subplot(gs[0, 0])
+        axes.plot(theta_phase, theta_signal, color="black")
+        axes.set_xlim(-np.pi, np.pi)
+        axes.spines['right'].set_visible(False)
+        axes.spines['top'].set_visible(False)
+        axes.spines['left'].set_visible(False)
+        axes.spines['bottom'].set_visible(False)
+        axes.tick_params(labelbottom=False, bottom=False, labelleft=False, left=False)
+
+        axes = plt.subplot(gs[1, 0])
+        gr = axes.pcolormesh(theta_phase, gamma_freqs, coupling, cmap="rainbow", shading='auto')
+        axes.set_xlim(-np.pi, np.pi)
+        axes.set_ylabel("gamma frequency, Hz")
+        axes.set_xlabel("theta phase, rad")
+
+        axes = plt.subplot(gs[1, 1])
+        cbar = fig.colorbar(gr, cax=axes)
+
+    plt.show()
+
 ############################################################################
 def plot_v(filepath):
     with h5py.File(filepath, 'r') as h5file:
@@ -303,11 +337,9 @@ if __name__ == "__main__":
     # main_plots(filepath)
     # plot_lfp(filepath)
     # plot_current_source_density(filepath, "theta")
-    
-    
-
     # plot_spike_raster(filepath)
-    plot_modulation_index(filepath)
+    #plot_modulation_index(filepath)
+    plot_phase_by_amplitude_coupling(filepath)
 
     # plot_v(filepath)
     # plot_phase_disrtibution(filepath)
