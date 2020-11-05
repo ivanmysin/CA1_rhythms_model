@@ -355,9 +355,6 @@ def plot_nm_phase_phase_coupling(filepath):
 
     plt.show()
 
-
-
-
 def plot_v_vs_pyr_lfp(filepath):
     with h5py.File(filepath, 'r') as h5file:
         t = h5file["time"][:]

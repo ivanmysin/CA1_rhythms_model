@@ -60,21 +60,21 @@ basic_params = {
     "CellNumbers" : {
         "Npyr" :    0, # 200, # 500,
         "Npvbas" :  8, # 100, # 100, # 100,
-        "Nolm" :    0, #40,
+        "Nolm" :    0, # 40,
         "Ncckbas" : 0, # 80
-        "Nivy" :    0, #130,
-        "Nngf" :    0, #65,
-        "Nbis" :    0, #35,
-        "Naac" :    0, #30,
-        "Nsca" :    0, #20,
+        "Nivy" :    0, # 130,
+        "Nngf" :    0, # 65,
+        "Nbis" :    0, # 35,
+        "Naac" :    0, # 30,
+        "Nsca" :    0, # 20,
         
         
-        "Nca3" : 0, # 500, #500,
+        "Nca3" : 0, # 500,
         "Nmec" : 0, # 500,
-        "Nlec" : 0, #500,
+        "Nlec" : 0, # 500,
         "Nmsteevracells" : 0, # 200,
         "Nmskomalicells" : 0, # 200,
-        "Nmsach"         : 0, #150,
+        "Nmsach"         : 0, # 150,
     },
     
     "CellParameters" : {
@@ -255,8 +255,7 @@ basic_params = {
 
             "NMDA" : {
                 "gNMDAmax" : 0.1, # mS
-                "gmax_std" : 0.001, 
-                
+                "gmax_std" : 0.001,
                 "tcon" : 2.3,   # ms
                 "tcoff" : 95.0, # ms
                 "enmda" : 0, 
@@ -1833,7 +1832,7 @@ for cell1_idx, celltype1 in enumerate(basic_params["celltypes"]):
         gap_juncs.append(gap)
         
 # gap_juncs = []
-#
+
 # gap = {
 #     "gid1" : 5, # cell1_idx,
 #     "gid2" : 4, # cell2_idx,
@@ -1843,7 +1842,7 @@ for cell1_idx, celltype1 in enumerate(basic_params["celltypes"]):
 #     "compartment2" : "soma_list", # conn_data["compartment2"],
 # }
 # gap_juncs.append(gap)
-#
+
 # gap = {
 #     "gid1" : 0, # cell1_idx,
 #     "gid2" : 2, # cell2_idx,
