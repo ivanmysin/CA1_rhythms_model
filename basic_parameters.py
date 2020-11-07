@@ -58,8 +58,8 @@ basic_params = {
     },
     
     "CellNumbers" : {
-        "Npyr" :    0, # 200, # 500,
-        "Npvbas" :  8, # 100, # 100, # 100,
+        "Npyr" :    500,
+        "Npvbas" :  0, # 100, # 100, # 100,
         "Nolm" :    0, # 40,
         "Ncckbas" : 0, # 80
         "Nivy" :    0, # 130,
@@ -70,7 +70,7 @@ basic_params = {
         
         
         "Nca3" : 0, # 500,
-        "Nmec" : 0, # 500,
+        "Nmec" : 500,
         "Nlec" : 0, # 500,
         "Nmsteevracells" : 0, # 200,
         "Nmskomalicells" : 0, # 200,
@@ -1550,13 +1550,14 @@ Nca3 = basic_params["CellNumbers"]["Nca3"]
 Nmec = basic_params["CellNumbers"]["Nmec"]
 
 
-pyr_coord_x = np.cumsum( np.zeros(Npyr) + 10 ) #np.flip( ) # 
-pvbas_coord_x = np.cumsum( np.zeros(Npvbas) + 10) #np.flip( )
-ca3_coord_x =  np.cumsum( np.zeros(Nca3) + 10 ) #np.flip()
-mec_coord_x =  np.zeros(Nmec) + 2500  #np.flip()
+pyr_coord_x = np.cumsum( np.zeros(Npyr) + 10 ) # np.flip( ) # 
+pvbas_coord_x = np.cumsum( np.zeros(Npvbas) + 10) # np.flip( )
+ca3_coord_x =  np.cumsum( np.zeros(Nca3) + 5 ) # np.flip()
 
-# basic_params["place_field_coordinates"]["ca3"] = ca3_coord_x
-# basic_params["place_field_coordinates"]["mec"] = mec_coord_x
+mec_grid_phases =  np.linspace(-np.pi, np.pi, Nmec)  # rad # np.flip()
+mec_grid_freqs = np.zeros(Nmec) + 0.5    # Hz # np.flip()
+
+
 
 
 
@@ -1606,7 +1607,7 @@ tmp_cout = 1
 
 
 NNN = len( basic_params["celltypes"] )
-# print(NNN)
+
 
 
 Wpyrbas = np.zeros( [NNN, NNN],  dtype=np.float)
@@ -1640,7 +1641,7 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
             dist = pyr_coord_x[pyr_idx] - ca3_coord_x[ca3_idx]
             dist_normalizer = np.exp(-0.5 * dist**2 / var_conns )
 
-            Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
+            
             # medium_pyr_idx = gids_of_celltypes["pyr"][gids_of_celltypes["pyr"].size // 2]
             # dist_normalizer = np.exp(-0.5 * (postsynaptic_cell_idx - medium_pyr_idx) ** 2 / 50)
 
@@ -1652,10 +1653,20 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
 
             gmax = 3.0 * 6.5 * dist_normalizer + gmax
         elif conn_name == "mec2pyr":
-            pyr_idx = postsynaptic_cell_idx - gids_of_celltypes["pyr"][0]
             mec_idx = presynaptic_cell_idx - gids_of_celltypes["mec"][0]
+            pyr_idx = postsynaptic_cell_idx - gids_of_celltypes["pyr"][0]
             
+            grid_freq = mec_grid_freqs[mec_idx]
+            grid_phase = mec_grid_phases[mec_idx]
             
+            grid_centers = 1000 * prelib.get_grid_centers(grid_freq, grid_phase, basic_params["duration"]*0.001)
+            for cent in grid_centers:
+                dist = pyr_coord_x[pyr_idx] - cent
+                dist_normalizer = np.exp(-0.5 * dist**2 / var_conns )
+                if dist_normalizer > 0.7:
+                    number_connections += 1
+                    gmax = 1.0 * dist_normalizer
+
             
         elif conn_name == "pyr2pyr":
             pyr_idx1 = postsynaptic_cell_idx - gids_of_celltypes["pyr"][0]
@@ -1663,7 +1674,7 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
             dist = pyr_coord_x[pyr_idx1] - pyr_coord_x[pyr_idx2]
             dist_normalizer = np.exp(-0.5 * dist**2 / var_conns )
 
-            Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
+
             if dist_normalizer > 0.7:
                 number_connections += 1
             #     gmax = 0.5
@@ -1738,7 +1749,7 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
             gmax = 50.0 * dist_normalizer
 
 
-        # Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
+        Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
         if gmax < 0.000001:
             number_connections = 0
 
@@ -1863,10 +1874,10 @@ basic_params["gap_junctions"] = gap_juncs
 
 
 
-# import matplotlib.pyplot as plt
-#
-# plt.imshow(Wpyrbas)
-# plt.show()
+import matplotlib.pyplot as plt
+
+plt.imshow(Wpyrbas)
+plt.show()
 
 
 
