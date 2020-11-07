@@ -46,21 +46,25 @@ def plot_spike_raster(filepath):
         gs = gridspec.GridSpec(9, 1, height_ratios=[3, 1, 1, 1, 1, 1, 1, 1, 1])
 
         for celltype_idx, celltype in enumerate(plotting_param["neuron_order"]):
-            axes = plt.subplot(gs[celltype_idx])
+            
+            try:
+                celltype_group = raster_group[celltype]
+                axes = plt.subplot(gs[celltype_idx])
+           
+                for sp_idx, (cell_key, firing) in enumerate(celltype_group.items()):
+                    sp_idx += 1
+                    axes.scatter(firing,  np.zeros(firing.size) + sp_idx, color=plotting_param["neuron_colors"][celltype], s=0.2 )
 
-            for sp_idx, (cell_key, firing) in enumerate(raster_group[celltype].items()):
-                sp_idx += 1
-                axes.scatter(firing,  np.zeros(firing.size) + sp_idx, color=plotting_param["neuron_colors"][celltype], s=0.2 )
+                axes.set_ylim(1, sp_idx)
+                axes.set_xlim(t0, t1)
+                axes.set_ylabel(celltype, rotation='horizontal', labelpad=20)
 
-            axes.set_ylim(1, sp_idx)
-            axes.set_xlim(t0, t1)
-            axes.set_ylabel(celltype, rotation='horizontal', labelpad=20)
-
-            if celltype_idx == len(plotting_param["neuron_order"]) - 1:
-                axes.set_xlabel("time, ms")
-            else:
-                axes.tick_params(labelbottom=False, bottom=False)
-
+                if celltype_idx == len(plotting_param["neuron_order"]) - 1:
+                    axes.set_xlabel("time, ms")
+                else:
+                    axes.tick_params(labelbottom=False, bottom=False)
+            except KeyError:
+                continue
         fig.tight_layout()
         plt.show()
 
@@ -84,8 +88,10 @@ def plot_lfp(filepath):
 
         lfp_keys = sorted(lfp_group.keys(), key = lambda x: int(x.split("_")[-1]), reverse=True )
         
+        nrows = len(lfp_keys)
         
-        fig, axes = plt.subplots( nrows=len(lfp_keys), ncols=2, figsize=(5, 10))
+            
+        fig, axes = plt.subplots( nrows=nrows, ncols=2, figsize=(5, 10))
         for key_idx, key in enumerate(lfp_keys):
             lfp = lfp_group[key][:]
             freqs = wavelet_group[key]["frequecies"][:]
@@ -94,36 +100,43 @@ def plot_lfp(filepath):
             freqs_sl = proclib.slice_by_bound_values(freqs, plotting_param["frequencies4wavelet"][0], plotting_param["frequencies4wavelet"][1])
             freqs = freqs[freqs_sl]
             w_coefs = np.abs(wavelet_group[key]["wavelet_coeff"][freqs_sl, :])
+            
+            if nrows == 1:
+                this_axes1 = axes[0]
+                this_axes2 = axes[1]
+            else:
+                this_axes1 = axes[key_idx, 0]
+                this_axes2 = axes[key_idx, 1]
 
-            axes[key_idx, 0].plot(t[:lfp_group[key].size], lfp,  color="blue", label=key)
+            this_axes1.plot(t[:lfp.size], lfp,  color="blue", label=key)
 
-            gr = axes[key_idx, 1].pcolormesh(t[:lfp_group[key].size], freqs, w_coefs,  cmap="rainbow", shading='auto')
-            cbar = fig.colorbar(gr, ax=axes[key_idx, 1])
+            gr = this_axes2.pcolormesh(t[:lfp.size], freqs, w_coefs,  cmap="rainbow", shading='auto')
+            cbar = fig.colorbar(gr, ax=this_axes2)
             # meanpyrVnorm = meanpyrV * lfp.std()  + np.mean(lfp)
             # axes[key_idx].plot(t, meanpyrVnorm, label="soma V", color="red" )
             
-            axes[key_idx, 0].set_xlim(t[0], t[-1])
-            axes[key_idx, 1].set_xlim(t[0], t[-1])
+            this_axes1.set_xlim(t[0], t[-1])
+            this_axes2.set_xlim(t[0], t[-1])
 
             
-            axes[key_idx, 0].spines['right'].set_visible(False)
-            axes[key_idx, 0].spines['top'].set_visible(False)
+            this_axes1.spines['right'].set_visible(False)
+            this_axes1.spines['top'].set_visible(False)
 
-            axes[key_idx, 0].set_ylabel("mV")
-            axes[key_idx, 1].set_ylabel("Hz")
+            this_axes1.set_ylabel("mV")
+            this_axes2.set_ylabel("Hz")
 
 
             if key_idx == len(lfp_keys) - 1:
-                axes[key_idx, 0].set_xlabel("time, ms")
-                axes[key_idx, 1].set_xlabel("time, ms")
+                this_axes1.set_xlabel("time, ms")
+                this_axes2.set_xlabel("time, ms")
 
             else:
                 
                 # axes[key_idx].spines['left'].set_visible(False)
-                axes[key_idx, 0].spines['bottom'].set_visible(False)
-                axes[key_idx, 0].tick_params(labelbottom=False, bottom=False)
-                axes[key_idx, 1].spines['bottom'].set_visible(False)
-                axes[key_idx, 1].tick_params(labelbottom=False, bottom=False)
+                this_axes1.spines['bottom'].set_visible(False)
+                this_axes1.tick_params(labelbottom=False, bottom=False)
+                this_axes2.spines['bottom'].set_visible(False)
+                this_axes2.tick_params(labelbottom=False, bottom=False)
 
         plt.tight_layout(pad=0, w_pad=1, h_pad=0)
         plt.show()
@@ -214,7 +227,10 @@ def plot_phase_disrtibution(filepath):
         fig, axes = plt.subplots(nrows=9, ncols=3, figsize=(5, 10))
         for celltypes_idx, celltype in enumerate(plotting_param["neuron_order"]):
             for rhythm_idx, rhythm_name in enumerate(plotting_param["rhytms_order"]):
-                phase_distr = distr_group[celltype][rhythm_name][:]
+                try:
+                    phase_distr = distr_group[celltype][rhythm_name][:]
+                except KeyError:
+                    continue
                 phases = np.linspace(-np.pi, np.pi, phase_distr.size)
                 signal4phase = np.max(phase_distr) * 0.25 * (np.cos(phases) + 1)
                 axes[celltypes_idx, rhythm_idx].plot( phases, phase_distr, color=plotting_param["neuron_colors"][celltype] )
@@ -405,17 +421,17 @@ def main_plots(filepath):
     
     
 if __name__ == "__main__":
-    filepath = "/home/ivan/Data/CA1_simulation/theta_nice.hdf5"  # basic_params["file_results"]  #
+    filepath = "/home/ivan/Data/CA1_simulation/artificial_signals.hdf5"  # basic_params["file_results"]  #
     
     # main_plots(filepath)
     # plot_lfp(filepath)
     # plot_current_source_density(filepath, "theta")
     # plot_spike_raster(filepath)
-    # plot_modulation_index(filepath)
-    # plot_phase_by_amplitude_coupling(filepath)
-    # plot_nm_phase_phase_coupling(filepath)
+    plot_modulation_index(filepath)
+    plot_phase_by_amplitude_coupling(filepath)
+    plot_nm_phase_phase_coupling(filepath)
     # plot_phase_disrtibution(filepath)
-    plot_v_vs_pyr_lfp(filepath)
+    # plot_v_vs_pyr_lfp(filepath)
 
 
     # plot_v(filepath)

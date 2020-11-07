@@ -13,7 +13,7 @@ processing_param = {
     "freqs_step" : 10,      # количество частот, для которых вычисляется вейвлет за один цикл 
     "max_freq_lfp" : 500,   # Гц, анализируем только до этой частоты 
 
-    "number_pyr_layer" : 1, # number of chennel from pyramidal layer
+    "number_pyr_layer" : 1, # number of channel from pyramidal layer
 
     "butter_order" : 2,     # Порядок для фильтра Баттерворда
     "filt_bands" : {
@@ -21,7 +21,7 @@ processing_param = {
         "theta" : [4, 12], 
         "slow gamma" : [25, 50], 
         "fast gamma" : [50, 120], 
-        "slow ripples" : [80, 250], 
+        # "slow ripples" : [80, 250], 
         # "fast ripples" : [200, 500], 
    
     },
@@ -213,7 +213,7 @@ def processing_and_save(filepath):
 if __name__ == "__main__":
     from basic_parameters import basic_params
     
-    filepath =  "/home/ivan/Data/CA1_simulation/theta_nice.hdf5" # basic_params["file_results"] #
+    filepath =  "/home/ivan/Data/CA1_simulation/artificial_signals.hdf5" # basic_params["file_results"] #
     # print(filepath)
     processing_and_save(filepath)
 

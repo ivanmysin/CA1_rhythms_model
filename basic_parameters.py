@@ -1651,7 +1651,12 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
 
 
             gmax = 3.0 * 6.5 * dist_normalizer + gmax
-
+        elif conn_name == "mec2pyr":
+            pyr_idx = postsynaptic_cell_idx - gids_of_celltypes["pyr"][0]
+            mec_idx = presynaptic_cell_idx - gids_of_celltypes["mec"][0]
+            
+            
+            
         elif conn_name == "pyr2pyr":
             pyr_idx1 = postsynaptic_cell_idx - gids_of_celltypes["pyr"][0]
             pyr_idx2 = presynaptic_cell_idx - gids_of_celltypes["pyr"][0]

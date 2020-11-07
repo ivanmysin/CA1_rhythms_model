@@ -71,16 +71,16 @@ def cossfrequency_phase_phase_coupling(low_fr_signal, high_fr_signal, nmarray, t
             return coupling
 
     low_fr_angles = np.angle(low_fr_analitic_signal, deg=False)
-    high_fr_angles2 = np.angle(high_fr_analitic_signal, deg=False)
+    high_fr_angles = np.angle(high_fr_analitic_signal, deg=False)
 
     distrs = []
     bins = []
     for i in range(nmarray.size):
 
-        vects_angle = low_fr_angles * nmarray[i] - high_fr_angles2
+        vects_angle = low_fr_angles * nmarray[i] - high_fr_angles
         x_vect = np.cos(vects_angle)
         y_vect = np.sin(vects_angle)
-        mean_resultant_length = np.sqrt(np.sum(x_vect) ** 2 + np.sum(y_vect) ** 2) / vects_angle.size
+        mean_resultant_length = np.sqrt(np.sum(x_vect)**2 + np.sum(y_vect)**2) / vects_angle.size
         coupling[i] = mean_resultant_length
 
         if circ_distr:
@@ -94,10 +94,12 @@ def cossfrequency_phase_phase_coupling(low_fr_signal, high_fr_signal, nmarray, t
     return coupling, bins, distrs
 ###################################################################
 def phase_phase_coupling(low_fr_signal, high_fr_signal, bands4highfr, fd, nmarray, thresh_std=None, circ_distr=False, butter_order=2):
+    import matplotlib.pyplot as plt
     couplings = []
     distrss = []
     for band in bands4highfr:
         high_signal_band = sigp.butter(high_fr_signal, highpass_freq=band[0], lowpass_freq=band[1], order=butter_order, fs=fd )
+
         coupling, bins, distrs = cossfrequency_phase_phase_coupling(low_fr_signal, high_signal_band, nmarray, thresh_std=thresh_std, circ_distr=circ_distr)
 
         couplings.append(coupling)
