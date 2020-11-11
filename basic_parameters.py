@@ -1,6 +1,7 @@
 import numpy as np
 import presimulation_lib as prelib
 from copy import deepcopy
+
 """
 pyr - CA1 piramidal cells
 olm - Oriens-Lacunosum/Moleculare (OLM) Cells
@@ -12,8 +13,9 @@ bis - bistratifered cells
 aac - axo-axonal cells
 csa - Schaffer collateral-associated cells
 
+ca3_spatial - CA3 pyramidal cells with place cells dynamics
+ca3_non_spatial - CA3 pyramidal cells without place cells dynamics
 
-ca3 - CA3 pyramidal cells
 mec - stellate cells of the medial entorhinal cortex
 lec - FAN cells of the lateral entorhinal cortex
 
@@ -31,7 +33,7 @@ basic_params = {
     "PyrDencity" : 0.2, # pyramidal cells / micrometer^2
 
     "file_results":  "../../Data/CA1_simulation/test.hdf5", # None, #
-    "duration" : 1000, #  1400, # simulation time
+    "duration" : 1000, #  1400, # 10000 # 10 sec simulation time
     
     "del_start_time" : 0, # 400, # time after start for remove
     
@@ -49,17 +51,18 @@ basic_params = {
         "Nsca" :    40,
         
         
-        "Nca3" : 10000,
-        "Nmec" : 10000, 
-        "Nlec" : 10000,  
+        "Nca3_spatial" : 3500,
+        "Nca3_non_spatial" : 3500,
+        "Nmec" : 9000, 
+        "Nlec" : 9000,  
         "Nmsteevracells" : 200,
         "Nmskomalicells" : 200,
         "Nmsach"         : 50,
     },
     
     "CellNumbers" : {
-        "Npyr" :    500,
-        "Npvbas" :  0, # 100, # 100, # 100,
+        "Npyr" :    350,
+        "Npvbas" :  200, # 100,
         "Nolm" :    0, # 40,
         "Ncckbas" : 0, # 80
         "Nivy" :    0, # 130,
@@ -69,8 +72,9 @@ basic_params = {
         "Nsca" :    0, # 20,
         
         
-        "Nca3" : 0, # 500,
-        "Nmec" : 500,
+        "Nca3_spatial" : 350, # 3500,
+        "Nca3_non_spatial" : 350, # 3500,
+        "Nmec" : 350,
         "Nlec" : 0, # 500,
         "Nmsteevracells" : 0, # 200,
         "Nmskomalicells" : 0, # 200,
@@ -78,7 +82,7 @@ basic_params = {
     },
     
     "CellParameters" : {
-        "ca3" : {
+        "ca3_spatial" : {
             "cellclass" : "ArtifitialPlaceCell",
             "Rtheta" : 0.4,
             "low_mu" : 1.5,
@@ -86,15 +90,25 @@ basic_params = {
             "Rgamma" : 0.6,
             "high_mu" : 0.0,
 
-            "spike_rate" : 100000,# 100000.0,
+            "spike_rate" : 100000,   # 100000.0,
             "latency" : 10.0,
 
             "place_center_t" : 500,
-            "place_t_radius" : 1000, # 300,
-            
+            "place_t_radius" : 1500, # 300,
+        
             "low_freqs" : 5.0,
             "high_freqs" : 30.0,
 
+            "delta_t" : 0.2,
+        },
+        
+        "ca3_non_spatial" : {
+            "cellclass" : "ArtifitialCell",
+            "R" : 0.4,
+            "mu" : 1.5,
+            "freqs" : 5.0,
+            "spike_rate" : 10000.0,   # 100000.0,
+            "latency" : 10.0,
             "delta_t" : 0.2,
         },
         
@@ -118,11 +132,6 @@ basic_params = {
             "Rgrid" : 0.8,
             "grid_freqs" : 1.0,
             "grid_phase" : 0, 
-            # "R" : 0.4,
-            # "phase" : 0.0,
-            # "freqs" : 5.0,
-            # "latency" : 10.0,
-            # "spike_train_freq" : 5.0,
         },
         
         "lec" : {
@@ -131,7 +140,7 @@ basic_params = {
             "mu" : 0.0,
             "freqs" : 5.0,
             "latency" : 10.0,
-            "spike_rate" : 5.0,      
+            "spike_rate": 100000,    
         },
         
         "msteevracells" : {
@@ -140,7 +149,7 @@ basic_params = {
             "mu" : np.pi,
             "freqs" : 5.0,
             "latency" : 4.0,
-            "spike_rate" : 15.0,      
+            "spike_rate": 150000,     
         },
         
         "mskomalicells" : {
@@ -149,7 +158,7 @@ basic_params = {
             "mu" : 0.0,  # !!!!
             "freqs" : 5.0,
             "latency" : 4.0,
-            "spike_rate" : 15.0,      
+            "spike_rate": 150000,   
         },
         
         "msach" : {
@@ -158,7 +167,7 @@ basic_params = {
             "mu" : np.pi,  # !!!!
             "freqs" : 5.0,
             "latency" : 10.0,
-            "spike_rate" : 10.0,      
+            "spike_rate": 100000,       
         },
         
         "pyr" : {
@@ -236,8 +245,34 @@ basic_params = {
     "connections" : {
         
         # connection to pyramidal neurons
-        "ca32pyr": {
+        "ca3_spatial2pyr": {
             "gmax": 0.5, # 0.016,
+            "gmax_std" : 0.002,
+            
+            "Erev": 0,
+            "tau_rise": 0.5,
+            "tau_decay": 3,
+
+            "prob": 0.06,
+            
+            "delay": 1.5,
+            "delay_std" : 0.5,
+            
+
+            "sourse_compartment" : "acell",
+            "target_compartment" : "rad_list",
+
+            "NMDA" : {
+                "gNMDAmax" : 0.1, # mS
+                "gmax_std" : 0.001,
+                "tcon" : 2.3,   # ms
+                "tcoff" : 95.0, # ms
+                "enmda" : 0, 
+            },
+        },
+        
+        "ca3_non_spatial2pyr": {
+            "gmax": 0.016,
             "gmax_std" : 0.002,
             
             "Erev": 0,
@@ -465,7 +500,25 @@ basic_params = {
         # end connection to pyramids
         
         # connection to pvbas
-        "ca32pvbas": {
+        "ca3_spatial2pvbas": {
+            "gmax": 0.7, # 0.7,
+            "gmax_std" : 0.2,
+            
+            "Erev": 0,
+            "tau_rise": 2.0,
+            "tau_decay": 6.3,
+
+            "prob": 0.2, # 0.02,
+            
+            "delay": 1.5,
+            "delay_std" : 0.5,
+            
+
+            "sourse_compartment" : "acell",
+            "target_compartment" : "dendrite_list",
+        },
+        
+        "ca3_non_spatial2pvbas": {
             "gmax": 0.7, # 0.7,
             "gmax_std" : 0.2,
             
@@ -798,7 +851,24 @@ basic_params = {
             "target_compartment" : "dendrite_list",
         },
         
-        "ca32aac": {
+        "ca3_spatial2aac": {
+            "gmax": 0.7,
+            "gmax_std" : 0.2,
+            
+            "Erev": 0,
+            "tau_rise": 2,
+            "tau_decay": 6.3,
+
+            "prob": 0.01,
+            
+            "delay": 2.5,
+            "delay_std" : 0.5,
+            
+
+            "sourse_compartment" : "acell",
+            "target_compartment" : "dendrite_list",
+        },
+        "ca3_non_spatial2aac": {
             "gmax": 0.7,
             "gmax_std" : 0.2,
             
@@ -1229,7 +1299,25 @@ basic_params = {
         
        
         # connections to ngf
-        "ca32nfg": {
+        "ca3_spatial2nfg": {
+            "gmax": 1.42,
+            "gmax_std" : 0.6 ,
+            
+            "Erev": 0,
+            "tau_rise": 0.5,
+            "tau_decay": 3,
+
+            "prob": 0.05, #!! 0.1,
+            
+            "delay": 1.5,
+            "delay_std" : 0.5,
+            
+
+            "sourse_compartment" : "acell",
+            "target_compartment" : "dendrite_list",
+        },
+        
+        "ca3_non_spatial2nfg": {
             "gmax": 1.42,
             "gmax_std" : 0.6 ,
             
@@ -1362,7 +1450,25 @@ basic_params = {
         },
         
         # hypotetical connections
-        "ca32sca": {
+        "ca3_spatial2sca": {
+            "gmax": 0.05,
+            "gmax_std" : 0.02,
+            
+            "Erev": 0,
+            "tau_rise": 0.5,
+            "tau_decay": 4.0,
+
+            "prob": 0.09, 
+            
+            "delay": 1.2,
+            "delay_std" : 0.2,
+            
+
+            "sourse_compartment" : "acell",
+            "target_compartment" : "dendrite_list",
+        },
+        
+        "ca3_non_spatial2sca": {
             "gmax": 0.05,
             "gmax_std" : 0.02,
             
@@ -1472,9 +1578,6 @@ for celltype, numbers in sorted(basic_params["CellNumbers"].items()):
     end_idx = len(cell_types_in_model)
     gids_of_celltypes[celltype] = np.arange(start_idx, end_idx)
     
-
-
-
 basic_params["celltypes"] = cell_types_in_model
 
 
@@ -1504,7 +1607,7 @@ basic_params["save_soma_v"]["vect_idxes"] = save_soma_v_idx
 for celltypename, cellparam in basic_params["CellParameters"].items():
 
 
-    if celltypename == "ca3":
+    if cellparam["cellclass"] == "ArtifitialPlaceCell":
         Rtheta = cellparam["Rtheta"]
         Rgamma = cellparam["Rgamma"]
 
@@ -1517,7 +1620,7 @@ for celltypename, cellparam in basic_params["CellParameters"].items():
 
         cellparam["place_center_t"] = 500  # !!!!!
     
-    elif celltypename == "mec":
+    elif cellparam["cellclass"] == "ArtifitialGridCell":
         Rtheta = cellparam["Rtheta"]
         Rgamma = cellparam["Rgamma"]
         Rgrid = cellparam["Rgrid"]
@@ -1534,33 +1637,35 @@ for celltypename, cellparam in basic_params["CellParameters"].items():
         cellparam["grid_kappa"] = grid_kappa
         cellparam["grid_I0"] = grid_I0
 
+    elif cellparam["cellclass"] == "ArtifitialCell":
+        Rgen = cellparam["R"]
+        kappa, I0 = prelib.r2kappa(Rgen)
+        cellparam["kappa"] = kappa
+        cellparam["I0"] = I0
+    
     else:
-        try:
-            Rgen = cellparam["R"]
-            kappa, I0 = prelib.r2kappa(Rgen)
-            cellparam["kappa"] = kappa
-            cellparam["I0"] = I0
-        except KeyError:
-            continue
+        continue
 
 
-Npyr = basic_params["CellNumbers"]["Npyr"]  #  gids_of_celltypes["pyr"].size
+Npyr = basic_params["CellNumbers"]["Npyr"]  
 Npvbas = basic_params["CellNumbers"]["Npvbas"]
-Nca3 = basic_params["CellNumbers"]["Nca3"]
+Nca3 = basic_params["CellNumbers"]["Nca3_spatial"]
 Nmec = basic_params["CellNumbers"]["Nmec"]
 
 
-pyr_coord_x = np.cumsum( np.zeros(Npyr) + 10 ) # np.flip( ) # 
-pvbas_coord_x = np.cumsum( np.zeros(Npvbas) + 10) # np.flip( )
-ca3_coord_x =  np.cumsum( np.zeros(Nca3) + 5 ) # np.flip()
+pyr_coord_x = np.cumsum( np.zeros(Npyr) + 3 )
+pyr_coord_x[pyr_coord_x.size//2:] = np.nan
 
-mec_grid_phases =  np.linspace(-np.pi, np.pi, Nmec)  # rad # np.flip()
-mec_grid_freqs = np.zeros(Nmec) + 0.5    # Hz # np.flip()
+pvbas_coord_x = np.cumsum( np.zeros(Npvbas) + 50) 
+ca3_coord_x =  np.cumsum( np.zeros(Nca3) + 3 )
+
+mec_grid_phases =  np.linspace(-np.pi, np.pi, Nmec)  # rad  !!!!!!!!!!!
+mec_grid_freqs = np.zeros(Nmec) + 0.5    # Hz 
 
 
-
-
-
+ca3_coord_x_iter = iter(ca3_coord_x)
+mec_grid_phases_iter = iter(mec_grid_phases)
+mec_grid_freqs_iter = iter(mec_grid_freqs)
 neurons = []
 for cell_idx, celltype in enumerate(cell_types_in_model):
     cell_param = basic_params["CellParameters"][celltype]
@@ -1574,10 +1679,12 @@ for cell_idx, celltype in enumerate(cell_types_in_model):
 
         
     if cell_param["cellclass"] == "ArtifitialPlaceCell":
-        neuron["cellparams"]["place_center_t"] = 500 #  None
+        neuron["cellparams"]["place_center_t"] = next(ca3_coord_x_iter)
+
     elif cell_param["cellclass"] == "ArtifitialGridCell":
-        # neuron["cellparams"]["grid_freqs"] = None
-        neuron["cellparams"]["grid_phase"] = 0 # None
+        neuron["cellparams"]["grid_freqs"] = next(mec_grid_freqs_iter)
+        neuron["cellparams"]["grid_phase"] = next(mec_grid_phases_iter)
+        
     elif cell_param["cellclass"] == "ArtifitialCell":
         pass
     else:
@@ -1593,17 +1700,17 @@ for cell_idx, celltype in enumerate(cell_types_in_model):
         else:
             neuron["cellparams"]["iext"] = np.random.normal( neuron["cellparams"]["iext"], neuron["cellparams"]["iext_std"]   )
 
-
-
     neurons.append(neuron)
 
 basic_params["neurons"] = neurons
 
-var_conns = 8000
+
+var_conns_on_pyr = 100.0
+var_conns_on_pvbas = 3 * var_conns_on_pyr
 synapses = []
 
 
-tmp_cout = 1
+
 
 
 NNN = len( basic_params["celltypes"] )
@@ -1635,122 +1742,123 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
 
         gmax = conn_data["gmax"]
 
-        if conn_name == "ca32pyr":
+        if conn_name == "ca3_spatial2pyr":
             pyr_idx = postsynaptic_cell_idx - gids_of_celltypes["pyr"][0]
-            ca3_idx = presynaptic_cell_idx - gids_of_celltypes["ca3"][0]
-            dist = pyr_coord_x[pyr_idx] - ca3_coord_x[ca3_idx]
-            dist_normalizer = np.exp(-0.5 * dist**2 / var_conns )
-
+            pyr_coord = pyr_coord_x[pyr_idx]
             
-            # medium_pyr_idx = gids_of_celltypes["pyr"][gids_of_celltypes["pyr"].size // 2]
-            # dist_normalizer = np.exp(-0.5 * (postsynaptic_cell_idx - medium_pyr_idx) ** 2 / 50)
-
-            if dist_normalizer > 0.1:
-                tmp_cout += 1
-            #    number_connections += 1
-            #    gmax = 2.5
+            if not ( np.isnan(pyr_coord) ):
+                ca3_idx = presynaptic_cell_idx - gids_of_celltypes["ca3_spatial"][0]
+                dist = pyr_coord - ca3_coord_x[ca3_idx]
+                dist_normalizer = np.exp(-0.5 * dist**2 / var_conns_on_pyr ) / (np.sqrt(var_conns_on_pyr * 2 * np.pi ) )
 
 
-            gmax = 3.0 * 6.5 * dist_normalizer + gmax
-        elif conn_name == "mec2pyr":
-            mec_idx = presynaptic_cell_idx - gids_of_celltypes["mec"][0]
-            pyr_idx = postsynaptic_cell_idx - gids_of_celltypes["pyr"][0]
-            
-            grid_freq = mec_grid_freqs[mec_idx]
-            grid_phase = mec_grid_phases[mec_idx]
-            
-            grid_centers = 1000 * prelib.get_grid_centers(grid_freq, grid_phase, basic_params["duration"]*0.001)
-            for cent in grid_centers:
-                dist = pyr_coord_x[pyr_idx] - cent
-                dist_normalizer = np.exp(-0.5 * dist**2 / var_conns )
                 if dist_normalizer > 0.7:
                     number_connections += 1
-                    gmax = 1.0 * dist_normalizer
+
+                gmax = gmax * dist_normalizer
+           
+            else:
+                gmax = basic_params["connections"]["ca3_non_spatial2pyr"]["gmax"]
+            
+            
+        elif conn_name == "mec2pyr":
+            pyr_idx = postsynaptic_cell_idx - gids_of_celltypes["pyr"][0]
+            pyr_coord = pyr_coord_x[pyr_idx]
+            
+            if not ( np.isnan(pyr_coord) ):
+                mec_idx = presynaptic_cell_idx - gids_of_celltypes["mec"][0]
+                grid_freq = mec_grid_freqs[mec_idx]
+                grid_phase = mec_grid_phases[mec_idx]
+                
+                grid_centers = 1000 * prelib.get_grid_centers(grid_freq, grid_phase, basic_params["duration"]*0.001)
+                for cent in grid_centers:
+                    dist = pyr_coord - cent
+                    dist_normalizer = np.exp(-0.5 * dist**2 / var_conns_on_pyr ) / (np.sqrt(var_conns_on_pyr * 2 * np.pi ))
+                    if dist_normalizer > 0.7:
+                        number_connections += 1
+                        gmax = gmax * dist_normalizer
+            else:
+                gmax = 0.1 * gmax # !!!!!
 
             
         elif conn_name == "pyr2pyr":
             pyr_idx1 = postsynaptic_cell_idx - gids_of_celltypes["pyr"][0]
             pyr_idx2 = presynaptic_cell_idx - gids_of_celltypes["pyr"][0]
-            dist = pyr_coord_x[pyr_idx1] - pyr_coord_x[pyr_idx2]
-            dist_normalizer = np.exp(-0.5 * dist**2 / var_conns )
-
-
-            if dist_normalizer > 0.7:
-                number_connections += 1
-            #     gmax = 0.5
-            # else:
-            #     number_connections = 0
-            gmax = 1.0 * dist_normalizer
+            
+            pyr_coord1 = pyr_coord_x[pyr_idx1]
+            pyr_coord2 = pyr_coord_x[pyr_idx2]
+            
+            if not ( np.isnan(pyr_coord1) or  np.isnan(pyr_coord2) ):
+                dist = pyr_coord_x[pyr_idx1] - pyr_coord_x[pyr_idx2]
+                dist_normalizer = np.exp(-0.5 * dist**2 / var_conns_on_pyr ) / (np.sqrt(var_conns_on_pyr * 2 * np.pi ))
+                if dist_normalizer > 0.7:
+                    number_connections += 1
+                gmax = gmax * dist_normalizer
+            else:
+                gmax = gmax * 0.1 # !!!!!!!
 
         elif conn_name == "pvbas2pyr":
             pyr_idx = postsynaptic_cell_idx - gids_of_celltypes["pyr"][0]
-            pvbas_idx = presynaptic_cell_idx - gids_of_celltypes["pvbas"][0]
-            dist = pyr_coord_x[pyr_idx] - pvbas_coord_x[pvbas_idx]
-            dist_normalizer = np.exp(-0.5 * dist**2 / var_conns )
+            pyr_coord = pyr_coord_x[pyr_idx]
+            
+            if not ( np.isnan(pyr_coord) ):
+                
+                pvbas_idx = presynaptic_cell_idx - gids_of_celltypes["pvbas"][0]
+                dist = pyr_coord - pvbas_coord_x[pvbas_idx]
+                dist_normalizer = np.exp(-0.5 * dist**2 / var_conns_on_pyr ) / (np.sqrt(var_conns_on_pyr * 2 * np.pi ))
 
-            Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
+                Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
 
+                if dist_normalizer > 0.7:
+                    number_connections += 1
 
-            if dist_normalizer > 0.7:
-                number_connections += 1
-            #     gmax = 50
-            # else:
-            #     number_connections = 0
-            gmax = 50 * dist_normalizer
+                gmax = gmax * dist_normalizer
+            
+            else:
+                gmax = gmax * 0.1 # !!!!
 
         elif conn_name == "pyr2pvbas":
             pyr_idx = presynaptic_cell_idx - gids_of_celltypes["pyr"][0]
+            pyr_coord = pyr_coord_x[pyr_idx]
+            
+            if not ( np.isnan(pyr_coord) ):
+                pvbas_idx = postsynaptic_cell_idx - gids_of_celltypes["pvbas"][0]
+                dist = pyr_coord_x[pyr_idx] - pvbas_coord_x[pvbas_idx]
+                dist_normalizer = np.exp(-0.5 * dist**2 / var_conns_on_pvbas ) / (np.sqrt(var_conns_on_pvbas * 2 * np.pi ))
+
+                if dist_normalizer > 0.7:
+                    number_connections += 1
+
+                gmax = gmax * dist_normalizer
+            
+            else:
+                gmax = gmax * 0.1 # !!!!
+
+        elif conn_name == "ca3_spatial2pvbas":
             pvbas_idx = postsynaptic_cell_idx - gids_of_celltypes["pvbas"][0]
-            dist = pyr_coord_x[pyr_idx] - pvbas_coord_x[pvbas_idx]
-            dist_normalizer = np.exp(-0.5 * dist**2 / var_conns )
-
-            Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
-
-            # if dist_normalizer > 0.7:
-            #     number_connections += 1
-            #     gmax = 0.5
-            # else:
-            #     number_connections = 0
-            gmax = 5 * 0.5 * dist_normalizer
-
-
-        elif conn_name == "ca32pvbas":
-            # medium_pvbas_idx = gids_of_celltypes["pyr"][gids_of_celltypes["pyr"].size // 2]
-            # dist_normalizer_pvbas = np.exp(-0.5 * (postsynaptic_cell_idx - medium_pvbas_idx) ** 2 / 50)
-            pvbas_idx = postsynaptic_cell_idx - gids_of_celltypes["pvbas"][0]
-            ca3_idx = presynaptic_cell_idx - gids_of_celltypes["ca3"][0]
+            ca3_idx = presynaptic_cell_idx - gids_of_celltypes["ca3_spatial"][0]
 
             dist = pvbas_coord_x[pvbas_idx] - ca3_coord_x[ca3_idx]
-            dist_normalizer = np.exp(-0.5 * dist**2 / var_conns )
+            dist_normalizer = np.exp(-0.5 * dist**2 / var_conns_on_pvbas ) / (np.sqrt(var_conns_on_pvbas * 2 * np.pi ))
 
-            Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
             if dist_normalizer > 0.7:
                 number_connections += 1
-            #     gmax = 0.3
-            # else:
-            #     number_connections = 0
-            gmax = 15 * 0.3 * dist_normalizer
-            # print(gmax)
+            gmax = gmax * dist_normalizer
+
 
         elif conn_name == "pvbas2pvbas":
             pvbas_idx1 = postsynaptic_cell_idx - gids_of_celltypes["pvbas"][0]
             pvbas_idx2 = presynaptic_cell_idx - gids_of_celltypes["pvbas"][0]
             dist = pvbas_coord_x[pvbas_idx1] - pvbas_coord_x[pvbas_idx2]
+            dist_normalizer = np.exp(-0.5 * dist**2 / var_conns_on_pvbas ) / (np.sqrt(var_conns_on_pvbas * 2 * np.pi ))
 
-
-            dist_normalizer = np.exp(-0.5 * dist**2 / var_conns )
-
-            Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
             if dist_normalizer > 0.7:
                 number_connections += 1
-            #     gmax = 50.0 # 500
-            # else:
-            #     number_connections = 0
             gmax = 50.0 * dist_normalizer
 
 
         Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
-        if gmax < 0.000001:
+        if gmax < 1e-5:
             number_connections = 0
 
         for _ in range(number_connections):
