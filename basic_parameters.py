@@ -61,8 +61,8 @@ basic_params = {
     },
     
     "CellNumbers" : {
-        "Npyr" :    350,
-        "Npvbas" :  200, # 100,
+        "Npyr" :    700,
+        "Npvbas" :  0, # 100,
         "Nolm" :    0, # 40,
         "Ncckbas" : 0, # 80
         "Nivy" :    0, # 130,
@@ -74,9 +74,9 @@ basic_params = {
         
         "Nca3_spatial" : 350, # 3500,
         "Nca3_non_spatial" : 350, # 3500,
-        "Nmec" : 350,
+        "Nmec" : 0,
         "Nlec" : 0, # 500,
-        "Nmsteevracells" : 0, # 200,
+        "Nmsteevracells" : 3, # 200,
         "Nmskomalicells" : 0, # 200,
         "Nmsach"         : 0, # 150,
     },
@@ -110,6 +110,8 @@ basic_params = {
             "spike_rate" : 10000.0,   # 100000.0,
             "latency" : 10.0,
             "delta_t" : 0.2,
+            
+            
         },
         
         "mec" : {
@@ -140,7 +142,9 @@ basic_params = {
             "mu" : 0.0,
             "freqs" : 5.0,
             "latency" : 10.0,
-            "spike_rate": 100000,    
+            "spike_rate": 100000,  
+            
+            "delta_t" : 0.2,  
         },
         
         "msteevracells" : {
@@ -149,7 +153,9 @@ basic_params = {
             "mu" : np.pi,
             "freqs" : 5.0,
             "latency" : 4.0,
-            "spike_rate": 150000,     
+            "spike_rate": 150000,
+            
+            "delta_t" : 0.2,   
         },
         
         "mskomalicells" : {
@@ -158,7 +164,9 @@ basic_params = {
             "mu" : 0.0,  # !!!!
             "freqs" : 5.0,
             "latency" : 4.0,
-            "spike_rate": 150000,   
+            "spike_rate": 150000,  
+            
+            "delta_t" : 0.2, 
         },
         
         "msach" : {
@@ -167,7 +175,9 @@ basic_params = {
             "mu" : np.pi,  # !!!!
             "freqs" : 5.0,
             "latency" : 10.0,
-            "spike_rate": 100000,       
+            "spike_rate": 100000,
+            
+            "delta_t" : 0.2,     
         },
         
         "pyr" : {
@@ -227,8 +237,8 @@ basic_params = {
     },
     
     "save_soma_v" : {
-        "pyr" :  [0, 1, 2, 3, 4] , # [range(20, 30)],    # [0, ],
-        "pvbas" : [0, 1, 2, 3, 4, 5, 6, 7], # [range(20, 31)], #
+        "pyr" :  [0, ] , # [range(20, 30)],    # [0, ],
+        "pvbas" : [0, ], # [range(20, 31)], #
         "olm" : [0, ],
         "cckbas" : [0, ],
         "ivy" : [0, ],
@@ -1955,37 +1965,14 @@ for cell1_idx, celltype1 in enumerate(basic_params["celltypes"]):
         
         gap_juncs.append(gap)
         
-# gap_juncs = []
-
-# gap = {
-#     "gid1" : 5, # cell1_idx,
-#     "gid2" : 4, # cell2_idx,
-#     "r" : 100, #  np.random.normal(conn_data["r"], conn_data["r_std"], 1),
-#
-#     "compartment1" : "soma_list", # conn_data["compartment1"],
-#     "compartment2" : "soma_list", # conn_data["compartment2"],
-# }
-# gap_juncs.append(gap)
-
-# gap = {
-#     "gid1" : 0, # cell1_idx,
-#     "gid2" : 2, # cell2_idx,
-#     "r" : 10, #  np.random.normal(conn_data["r"], conn_data["r_std"], 1),
-#
-#     "compartment1" : "soma_list", # conn_data["compartment1"],
-#     "compartment2" : "soma_list", # conn_data["compartment2"],
-# }
-# gap_juncs.append(gap)
-
-
 basic_params["gap_junctions"] = gap_juncs
 
 
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
-plt.imshow(Wpyrbas)
-plt.show()
+# plt.imshow(Wpyrbas)
+# plt.show()
 
 
 

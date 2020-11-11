@@ -107,7 +107,7 @@ def run_simulation(params):
     
     for gid in gid_vect:
         
-        celltypename = params["neurons"][gid]["celltype"] #  params["celltypes"][gid]
+        celltypename = params["neurons"][gid]["celltype"] 
         cellclass = getattr(h, params["CellParameters"][celltypename]["cellclass"])
 
         cell = cellclass(gid, 0)
@@ -115,15 +115,14 @@ def run_simulation(params):
         pc.set_gid2node(gid, pc.id())
         
         if celltypename == "pyr":
-           
-            is_pyrs_thread = True
-            for sec in cell.all:
-                pyramidal_sec_list.append(sec)
-        
             pyr_coord_in_layer_x = radius_for_pyramids * 2 * (RNG.random() - 0.5) # density of the pyramidal cells
             pyr_coord_in_layer_y = radius_for_pyramids * 2 * (RNG.random() - 0.5) # density of the pyramidal cells
 
             cell.position(pyr_coord_in_layer_x, 0, pyr_coord_in_layer_y)
+            
+            for sec in cell.all:
+                pyramidal_sec_list.append(sec)
+            is_pyrs_thread = True
   
         
         
@@ -136,7 +135,6 @@ def run_simulation(params):
                 sec.myseed_IextNoise = RNG.integers(0, 1000000000000000, 1)
                 sec.sigma_IextNoise = 0.005
                 sec.mean_IextNoise = params["neurons"][gid]["cellparams"]["iext"]
-                # RNG.normal(params["CellParameters"][celltypename]["iext"], params["CellParameters"][celltypename]["iext_std"])
             
 
             firing = h.NetCon(cell.soma[0](0.5)._ref_v, None, sec=cell.soma[0])
@@ -149,6 +147,7 @@ def run_simulation(params):
             for p_name, p_val in params["neurons"][gid]["cellparams"].items():
                 if hasattr(cell.acell, p_name):
                     setattr(cell.acell, p_name, p_val)
+            setattr(cell.acell, "myseed", RNG.integers(0, 1000000000000000, 1) )
 
             firing = h.NetCon(cell.acell, None)
         
@@ -341,7 +340,9 @@ def run_simulation(params):
 
     pc.setup_transfer()
         
-
+    print("End of connection settings")
+    
+    
     el_x = params["elecs"]["el_x"]
     el_y = params["elecs"]["el_y"]
     el_z = params["elecs"]["el_z"]
@@ -382,10 +383,11 @@ def run_simulation(params):
     
     pc.set_maxstep(10 * ms)
 
-    print("Bye")
+    
+    pc.barrier()
     h.finitialize()
     print("Start simulation")
-    pc.barrier()
+    
 
     timer = time()
     pc.psolve(params["duration"] * ms)
