@@ -22,7 +22,7 @@ lec - FAN cells of the lateral entorhinal cortex
 
 """
 
-Nelecs = 1 # number of electrodes
+Nelecs = 0 # number of electrodes
 
 basic_params = {
     "elecs" : {
@@ -33,14 +33,14 @@ basic_params = {
     "PyrDencity" : 0.2, # pyramidal cells / micrometer^2
 
     "file_results":  "../../Data/CA1_simulation/test.hdf5", # None, #
-    "duration" : 1000, #  1400, # 10000 # 10 sec simulation time
+    "duration" : 2000, #  1400, # 10000 # 10 sec simulation time
     
     "del_start_time" : 0, # 400, # time after start for remove
     
     "celltypes" : [],
     
     "CellNumbersInFullModel" : {
-        "Npyr" :    9000,
+        "Npyr" :   9000,
         "Npvbas" : 200,
         "Nolm" :   80,
         "Ncckbas" : 160,
@@ -61,10 +61,10 @@ basic_params = {
     },
     
     "CellNumbers" : {
-        "Npyr" :    700,
-        "Npvbas" :  0, # 100,
+        "Npyr" :    1400,
+        "Npvbas" :  200, # 100,
         "Nolm" :    0, # 40,
-        "Ncckbas" : 0, # 80
+        "Ncckbas" : 80,
         "Nivy" :    0, # 130,
         "Nngf" :    0, # 65,
         "Nbis" :    0, # 35,
@@ -72,11 +72,11 @@ basic_params = {
         "Nsca" :    0, # 20,
         
         
-        "Nca3_spatial" : 350, # 3500,
-        "Nca3_non_spatial" : 350, # 3500,
+        "Nca3_spatial" : 700, # 3500,
+        "Nca3_non_spatial" : 700, # 3500,
         "Nmec" : 0,
         "Nlec" : 0, # 500,
-        "Nmsteevracells" : 3, # 200,
+        "Nmsteevracells" : 200,
         "Nmskomalicells" : 0, # 200,
         "Nmsach"         : 0, # 150,
     },
@@ -90,11 +90,11 @@ basic_params = {
             "Rgamma" : 0.6,
             "high_mu" : 0.0,
 
-            "spike_rate" : 100000,   # 100000.0,
+            "spike_rate" : 1000000.0,   # 100000.0,
             "latency" : 10.0,
 
             "place_center_t" : 500,
-            "place_t_radius" : 1500, # 300,
+            "place_t_radius" : 1500, # 
         
             "low_freqs" : 5.0,
             "high_freqs" : 30.0,
@@ -107,7 +107,7 @@ basic_params = {
             "R" : 0.4,
             "mu" : 1.5,
             "freqs" : 5.0,
-            "spike_rate" : 10000.0,   # 100000.0,
+            "spike_rate" : 5.0,   # 100000.0,
             "latency" : 10.0,
             "delta_t" : 0.2,
             
@@ -142,7 +142,7 @@ basic_params = {
             "mu" : 0.0,
             "freqs" : 5.0,
             "latency" : 10.0,
-            "spike_rate": 100000,  
+            "spike_rate": 5.0,  
             
             "delta_t" : 0.2,  
         },
@@ -153,7 +153,7 @@ basic_params = {
             "mu" : np.pi,
             "freqs" : 5.0,
             "latency" : 4.0,
-            "spike_rate": 150000,
+            "spike_rate": 15.0,
             
             "delta_t" : 0.2,   
         },
@@ -164,7 +164,7 @@ basic_params = {
             "mu" : 0.0,  # !!!!
             "freqs" : 5.0,
             "latency" : 4.0,
-            "spike_rate": 150000,  
+            "spike_rate": 15.0,  
             
             "delta_t" : 0.2, 
         },
@@ -175,7 +175,7 @@ basic_params = {
             "mu" : np.pi,  # !!!!
             "freqs" : 5.0,
             "latency" : 10.0,
-            "spike_rate": 100000,
+            "spike_rate": 3.0,
             
             "delta_t" : 0.2,     
         },
@@ -256,7 +256,7 @@ basic_params = {
         
         # connection to pyramidal neurons
         "ca3_spatial2pyr": {
-            "gmax": 0.5, # 0.016,
+            "gmax": 15.5, # 0.016,
             "gmax_std" : 0.002,
             
             "Erev": 0,
@@ -273,7 +273,7 @@ basic_params = {
             "target_compartment" : "rad_list",
 
             "NMDA" : {
-                "gNMDAmax" : 0.1, # mS
+                "gNMDAmax" : 0.05, # mS
                 "gmax_std" : 0.001,
                 "tcon" : 2.3,   # ms
                 "tcoff" : 95.0, # ms
@@ -282,7 +282,7 @@ basic_params = {
         },
         
         "ca3_non_spatial2pyr": {
-            "gmax": 0.016,
+            "gmax": 0.1, #  0.016,
             "gmax_std" : 0.002,
             
             "Erev": 0,
@@ -299,7 +299,7 @@ basic_params = {
             "target_compartment" : "rad_list",
 
             "NMDA" : {
-                "gNMDAmax" : 0.1, # mS
+                "gNMDAmax" : 0.05, # mS
                 "gmax_std" : 0.001,
                 "tcon" : 2.3,   # ms
                 "tcoff" : 95.0, # ms
@@ -345,7 +345,7 @@ basic_params = {
         
 
         "pyr2pyr": {
-            "gmax": 0.01,
+            "gmax": 5.0, # 0.01,
             "gmax_std" : 0.007,
 
             "Erev": 0.0,
@@ -360,6 +360,14 @@ basic_params = {
 
             "sourse_compartment" : "axon",
             "target_compartment" : "basal_list",
+            
+            "NMDA" : {
+                "gNMDAmax" : 0.05, # mS
+                "gmax_std" : 0.001,
+                "tcon" : 2.3,   # ms
+                "tcoff" : 95.0, # ms
+                "enmda" : 0, 
+            },
         },
         
         "cckbas2pyr": {
@@ -437,7 +445,7 @@ basic_params = {
         },
         
        "pvbas2pyr": {
-            "gmax": 0.05,
+            "gmax": 10.0, # 0.05,
             "gmax_std" : 0.025,
             
             "Erev": -75,
@@ -491,7 +499,7 @@ basic_params = {
         },
 
        "sca2pyr": {
-            "gmax": 0.098,
+            "gmax": 0.098, # 3 
             "gmax_std" : 0.05,
 
             "Erev": -75,
@@ -511,14 +519,14 @@ basic_params = {
         
         # connection to pvbas
         "ca3_spatial2pvbas": {
-            "gmax": 0.7, # 0.7,
+            "gmax": 15.0, # 0.7,
             "gmax_std" : 0.2,
             
             "Erev": 0,
             "tau_rise": 2.0,
             "tau_decay": 6.3,
 
-            "prob": 0.2, # 0.02,
+            "prob": 0.1, # 0.02
             
             "delay": 1.5,
             "delay_std" : 0.5,
@@ -526,17 +534,25 @@ basic_params = {
 
             "sourse_compartment" : "acell",
             "target_compartment" : "dendrite_list",
+            
+            "NMDA" : {
+                "gNMDAmax" : 0.01, # mS
+                "gmax_std" : 0.001,
+                "tcon" : 2.3,   # ms
+                "tcoff" : 95.0, # ms
+                "enmda" : 0, 
+            },
         },
         
         "ca3_non_spatial2pvbas": {
-            "gmax": 0.7, # 0.7,
-            "gmax_std" : 0.2,
+            "gmax": 0.7,
+            "gmax_std" : 0.1,
             
             "Erev": 0,
             "tau_rise": 2.0,
             "tau_decay": 6.3,
 
-            "prob": 0.2, # 0.02,
+            "prob": 0.1,
             
             "delay": 1.5,
             "delay_std" : 0.5,
@@ -544,17 +560,25 @@ basic_params = {
 
             "sourse_compartment" : "acell",
             "target_compartment" : "dendrite_list",
+            
+            "NMDA" : {
+                "gNMDAmax" : 0.01, # mS
+                "gmax_std" : 0.001,
+                "tcon" : 2.3,   # ms
+                "tcoff" : 95.0, # ms
+                "enmda" : 0, 
+            },
         },
         
         "pyr2pvbas": {
-            "gmax": 5, # !!!! 0.05,
+            "gmax": 1.5,  # !!! 0.05,
             "gmax_std" : 0.04,
             
             "Erev": 0,
             "tau_rise": 0.07,
             "tau_decay": 0.2,
 
-            "prob": 1, # 0.13,
+            "prob": 0.13,
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -562,6 +586,14 @@ basic_params = {
 
             "sourse_compartment" : "axon",
             "target_compartment" : "dendrite_list",
+            
+            "NMDA" : {
+                "gNMDAmax" : 0.05, # mS
+                "gmax_std" : 0.001,
+                "tcon" : 2.3,   # ms
+                "tcoff" : 95.0, # ms
+                "enmda" : 0, 
+            },
         },
         
         "pvbas2pvbas": {
@@ -579,7 +611,7 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "soma", # "dendrite_list",
+            "target_compartment" : "soma",
         },
         
         "cckbas2pvbas": {
@@ -1664,9 +1696,9 @@ Nmec = basic_params["CellNumbers"]["Nmec"]
 
 
 pyr_coord_x = np.cumsum( np.zeros(Npyr) + 3 )
-pyr_coord_x[pyr_coord_x.size//2:] = np.nan
+pyr_coord_x[:pyr_coord_x.size//2] = np.nan
 
-pvbas_coord_x = np.cumsum( np.zeros(Npvbas) + 50) 
+pvbas_coord_x = np.cumsum( np.zeros(Npvbas) + 50)  #  50
 ca3_coord_x =  np.cumsum( np.zeros(Nca3) + 3 )
 
 mec_grid_phases =  np.linspace(-np.pi, np.pi, Nmec)  # rad  !!!!!!!!!!!
@@ -1716,7 +1748,7 @@ basic_params["neurons"] = neurons
 
 
 var_conns_on_pyr = 100.0
-var_conns_on_pvbas = 3 * var_conns_on_pyr
+var_conns_on_pvbas =  var_conns_on_pyr * 3
 synapses = []
 
 
@@ -1851,8 +1883,8 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
             dist = pvbas_coord_x[pvbas_idx] - ca3_coord_x[ca3_idx]
             dist_normalizer = np.exp(-0.5 * dist**2 / var_conns_on_pvbas ) / (np.sqrt(var_conns_on_pvbas * 2 * np.pi ))
 
-            if dist_normalizer > 0.7:
-                number_connections += 1
+            #if dist_normalizer > 0.7:
+            #    number_connections += 1
             gmax = gmax * dist_normalizer
 
 
@@ -1965,7 +1997,7 @@ for cell1_idx, celltype1 in enumerate(basic_params["celltypes"]):
         
         gap_juncs.append(gap)
         
-basic_params["gap_junctions"] = gap_juncs
+basic_params["gap_junctions"] = [] # gap_juncs
 
 
 

@@ -18,7 +18,8 @@ plotting_param = {
         "aac": (1.0, 0.0, 0.5), #
         "sca": (0.0, 1.0, 0.5), #
 
-        "ca3": (0.5, 0.5, 0.0), #
+        "ca3_spatial": (0.5, 0.5, 0.0), #
+        "ca3_non_spatial": (0.5, 0.5, 0.0), #
         "mec": (0.5, 1.0, 0.0), #
         "lec": (0.9, 0.7, 0.0), #
         "msteevracells": (0.0, 0.8, 0.5), #
@@ -26,7 +27,7 @@ plotting_param = {
         "msach": (0.8, 0.2, 0.0), #
     },
 
-    "neuron_order" : ["pyr", "pvbas", "cckbas", "olm", "aac", "ivy", "bis", "sca", "ngf"],
+    "neuron_order" : ["pyr", "pvbas", "cckbas", "olm", "aac", "ivy", "bis", "sca", "ngf", "ca3_spatial", "ca3_non_spatial", "mec", "lec", "msteevracells", "mskomalicells", "msach"],
     "rhytms_order" : ["theta", "slow gamma", "fast gamma"],
 
     "number_pyr_layer" : 1,  # number of chennel from pyramidal layer
@@ -43,10 +44,11 @@ def plot_spike_raster(filepath):
         raster_group = h5file["extracellular/electrode_1/firing/origin_data"]
                 
         fig = plt.figure(figsize=(15, 10))
-        gs = gridspec.GridSpec(9, 1, height_ratios=[3, 1, 1, 1, 1, 1, 1, 1, 1])
+        
+        neurons_num = len(plotting_param["neuron_order"])
+        gs = gridspec.GridSpec(neurons_num, 1, height_ratios=[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
         for celltype_idx, celltype in enumerate(plotting_param["neuron_order"]):
-            
             try:
                 celltype_group = raster_group[celltype]
                 axes = plt.subplot(gs[celltype_idx])

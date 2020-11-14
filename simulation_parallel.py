@@ -289,12 +289,11 @@ def run_simulation(params):
 
             gap_junctions.append(gap)
 
+            
             pc.source_var(comp2(0.5)._ref_v, gap_params["gid2"], sec=comp2)
             gap = h.GAP(comp2(0.5), sec=comp2)
             gap.r = gap_params["r"]
             pc.target_var(gap._ref_vgap, gap_params["gid1"])
-
-
             gap_junctions.append(gap)
 
 
@@ -391,6 +390,7 @@ def run_simulation(params):
 
     timer = time()
     pc.psolve(params["duration"] * ms)
+    print("End of the simultion!")
     print("Time of simulation in sec ", time()-timer)
     pc.barrier()
     
@@ -479,7 +479,7 @@ def run_simulation(params):
  
     
         
-    print("End of the simultion!")
+    
     pc.done()
     h.quit()
     
