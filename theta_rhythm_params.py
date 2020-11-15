@@ -147,7 +147,7 @@ basic_params = {
         "cckbas" : {
             "cellclass" : "cckcell",
             "iext" : 0.002, #!!! 0.003,
-            "iext_std" : 0.003,
+            "iext_std" : 0.004,
         },
 
         "olm" : {

@@ -22,7 +22,7 @@ lec - FAN cells of the lateral entorhinal cortex
 
 """
 
-Nelecs = 0 # number of electrodes
+Nelecs = 1 # number of electrodes
 
 basic_params = {
     "elecs" : {
@@ -57,28 +57,28 @@ basic_params = {
         "Nlec" : 9000,  
         "Nmsteevracells" : 200,
         "Nmskomalicells" : 200,
-        "Nmsach"         : 50,
+        "Nmsach"         : 150,
     },
     
     "CellNumbers" : {
         "Npyr" :    1400,
         "Npvbas" :  200, # 100,
-        "Nolm" :    0, # 40,
-        "Ncckbas" : 80,
-        "Nivy" :    0, # 130,
-        "Nngf" :    0, # 65,
-        "Nbis" :    0, # 35,
-        "Naac" :    0, # 30,
-        "Nsca" :    0, # 20,
+        "Nolm" :    80,
+        "Ncckbas" : 160,
+        "Nivy" :    260, # 130,
+        "Nngf" :    130, # 65,
+        "Nbis" :    70, # 35,
+        "Naac" :    60, # 30,
+        "Nsca" :    40, # 20,
         
         
-        "Nca3_spatial" : 700, # 3500,
-        "Nca3_non_spatial" : 700, # 3500,
-        "Nmec" : 0,
+        "Nca3_spatial" : 1400, # 3500,
+        "Nca3_non_spatial" : 1400, # 3500,
+        "Nmec" : 3500,
         "Nlec" : 0, # 500,
         "Nmsteevracells" : 200,
         "Nmskomalicells" : 0, # 200,
-        "Nmsach"         : 0, # 150,
+        "Nmsach"         : 150,
     },
     
     "CellParameters" : {
@@ -212,13 +212,13 @@ basic_params = {
         
         "ngf" : {
             "cellclass" : "ngfcell",
-            "iext" : 0.001,
+            "iext" : 0.002,
             "iext_std" : 0.002,
         },
         
         "ivy" : {
             "cellclass" : "ivycell",
-            "iext" : 0.001,
+            "iext" : 0.002,
             "iext_std" : 0.002,
         },
     
@@ -526,7 +526,7 @@ basic_params = {
             "tau_rise": 2.0,
             "tau_decay": 6.3,
 
-            "prob": 0.1, # 0.02
+            "prob": 0.05, # 0.02
             
             "delay": 1.5,
             "delay_std" : 0.5,
@@ -536,7 +536,7 @@ basic_params = {
             "target_compartment" : "dendrite_list",
             
             "NMDA" : {
-                "gNMDAmax" : 0.01, # mS
+                "gNMDAmax" : 0.03, # mS
                 "gmax_std" : 0.001,
                 "tcon" : 2.3,   # ms
                 "tcoff" : 95.0, # ms
@@ -552,7 +552,7 @@ basic_params = {
             "tau_rise": 2.0,
             "tau_decay": 6.3,
 
-            "prob": 0.1,
+            "prob": 0.05,
             
             "delay": 1.5,
             "delay_std" : 0.5,
@@ -562,7 +562,7 @@ basic_params = {
             "target_compartment" : "dendrite_list",
             
             "NMDA" : {
-                "gNMDAmax" : 0.01, # mS
+                "gNMDAmax" : 0.03, # mS
                 "gmax_std" : 0.001,
                 "tcon" : 2.3,   # ms
                 "tcoff" : 95.0, # ms
@@ -588,7 +588,7 @@ basic_params = {
             "target_compartment" : "dendrite_list",
             
             "NMDA" : {
-                "gNMDAmax" : 0.05, # mS
+                "gNMDAmax" : 0.01, # mS
                 "gmax_std" : 0.001,
                 "tcon" : 2.3,   # ms
                 "tcoff" : 95.0, # ms
@@ -597,7 +597,7 @@ basic_params = {
         },
         
         "pvbas2pvbas": {
-            "gmax": 10, # 0.08, # 0.05 !!!! 0.023,
+            "gmax": 30, # 0.08, # 0.05 !!!! 0.023,
             "gmax_std" : 0.01, #  0.01,
             
             "Erev": -75,
@@ -938,7 +938,7 @@ basic_params = {
             "tau_rise": 2,
             "tau_decay": 6.3,
 
-            "prob": 0.06,
+            "prob": 0.04,
             
             "delay": 8.0,
             "delay_std" : 0.5,
@@ -1083,7 +1083,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 3,
             
-            "prob": 0.4,
+            "prob": 0.05,
             
             "delay": 10.5,
             "delay_std" : 0.5,
@@ -1108,7 +1108,7 @@ basic_params = {
             
 
             "sourse_compartment" : "axon",
-            "target_compartment" : "soma",
+            "target_compartment" : "dendrite_list",
         },
        
        
@@ -1121,7 +1121,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.2, 
+            "prob": 0.5, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -1309,7 +1309,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0, # !!!! 0.1, 
+            "prob": 0.1, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -1385,7 +1385,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 3,
 
-            "prob": 0.1, # ! need to optimize
+            "prob": 0.2, # ! need to optimize
             
             "delay": 1.2,
             "delay_std" : 0.2,
