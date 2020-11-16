@@ -149,7 +149,7 @@ basic_params = {
         
         "msteevracells" : {
             "cellclass" : "ArtifitialCell",
-            "R" : 0.8,
+            "R" : 0.6,
             "mu" : np.pi,
             "freqs" : 5.0,
             "latency" : 4.0,
@@ -160,7 +160,7 @@ basic_params = {
         
         "mskomalicells" : {
             "cellclass" : "ArtifitialCell",
-            "R" : 0.8,
+            "R" : 0.6,
             "mu" : 0.0,  # !!!!
             "freqs" : 5.0,
             "latency" : 4.0,
@@ -171,7 +171,7 @@ basic_params = {
         
         "msach" : {
             "cellclass" : "ArtifitialCell",
-            "R" : 0.6,
+            "R" : 0.4,
             "mu" : np.pi,  # !!!!
             "freqs" : 5.0,
             "latency" : 10.0,
@@ -195,7 +195,7 @@ basic_params = {
         "cckbas" : {
             "cellclass" : "cckcell",
             "iext" : 0.002, #!!! 0.003,
-            "iext_std" : 0.003,
+            "iext_std" : 0.004,
         },
 
         "olm" : {
@@ -308,7 +308,7 @@ basic_params = {
         },
         
        "mec2pyr": {
-            "gmax": 0.5, # !!!!  0.06,
+            "gmax": 0.06,
             "gmax_std" : 0.007,
             
             "Erev": 0,
@@ -597,7 +597,7 @@ basic_params = {
         },
         
         "pvbas2pvbas": {
-            "gmax": 30, # 0.08, # 0.05 !!!! 0.023,
+            "gmax": 10, # 0.08, # 0.05 # !!!! 0.023,
             "gmax_std" : 0.01, #  0.01,
             
             "Erev": -75,
@@ -615,7 +615,7 @@ basic_params = {
         },
         
         "cckbas2pvbas": {
-            "gmax": 5.5, #!!! 1.0,
+            "gmax": 1.0, #!!! 1.0,
             "gmax_std" : 0.2,
             
             "Erev": -75,
@@ -659,7 +659,7 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.2, 
+            "prob": 0.1, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
@@ -695,14 +695,14 @@ basic_params = {
             "tau_rise": 0.5,
             "tau_decay": 4.0,
 
-            "prob": 0.2, 
+            "prob": 0.1, 
             
             "delay": 1.2,
             "delay_std" : 0.2,
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "soma",
+            "target_compartment" : "dendrite_list",
         },
         
         # "sca2pvbas": {
@@ -727,8 +727,8 @@ basic_params = {
         
         # connections to cckbas
         "msteevracells2cckbas" : {
-            "gmax" : 1.5, # !!!! 
-            "gmax_std" : 0.7, # !!!!
+            "gmax" : 1.0, # !!!! 
+            "gmax_std" : 0.5, # !!!!
             "Erev": -75,
             "tau_rise": 0.5,
             "tau_decay": 5.0,
@@ -736,15 +736,15 @@ basic_params = {
             "prob": 0.5,
             
             "delay": 10.5,
-            "delay_std" : 0.5,
+            "delay_std" : 2.5,
             
 
             "sourse_compartment" : "acell",
-            "target_compartment" : "soma",
+            "target_compartment" : "dendrite_list",
         },
         
         "pvbas2cckbas": {
-            "gmax": 1.0,
+            "gmax": 1.5, #!!! 1.0
             "gmax_std" : 0.2,
             
             "Erev": -75,
@@ -758,13 +758,13 @@ basic_params = {
             
 
             "sourse_compartment" : "soma",
-            "target_compartment" : "dendrite_list",
+            "target_compartment" : "soma",
         },
         
        
        "cckbas2cckbas": {
-            "gmax": 1.0, #  1.0,
-            "gmax_std" : 0.2, # 0.2
+            "gmax": 0.5, #  0.2, # 
+            "gmax_std" : 0.2, 
             
             "Erev": -75,
             "tau_rise": 0.2,
@@ -782,41 +782,41 @@ basic_params = {
         
         
         # hypotetical connections
-        "olm2cckbas": {
-            "gmax": 1.5,
-            "gmax_std" : 0.7,
-            
-            "Erev": -75,
-            "tau_rise": 0.5,
-            "tau_decay": 4.0,
+        #"olm2cckbas": {
+        #    "gmax": 1.5,
+        #    "gmax_std" : 0.7,
+        #    
+        #    "Erev": -75,
+        #    "tau_rise": 0.5,
+        #    "tau_decay": 4.0,
 
-            "prob": 0.2, 
+        #   "prob": 0.2, 
             
-            "delay": 1.2,
-            "delay_std" : 0.2,
+        #    "delay": 1.2,
+        #    "delay_std" : 0.2,
             
 
-            "sourse_compartment" : "soma",
-            "target_compartment" : "dendrite_list",
-        },
+         #   "sourse_compartment" : "soma",
+         #   "target_compartment" : "dendrite_list",
+        #},
         
-        "bis2cckbas": {
-            "gmax": 1.5,
-            "gmax_std" : 0.7,
+        #"bis2cckbas": {
+        #     "gmax": 1.5,
+        #     "gmax_std" : 0.7,
             
-            "Erev": -75,
-            "tau_rise": 0.5,
-            "tau_decay": 4.0,
+        #    "Erev": -75,
+        #    "tau_rise": 0.5,
+        #    "tau_decay": 4.0,
 
-            "prob": 0.2, 
+        #   "prob": 0.2, 
             
-            "delay": 1.2,
-            "delay_std" : 0.2,
+        #    "delay": 1.2,
+        #    "delay_std" : 0.2,
             
 
-            "sourse_compartment" : "soma",
-            "target_compartment" : "dendrite_list",
-        },
+         #   "sourse_compartment" : "soma",
+         #   "target_compartment" : "dendrite_list",
+        #},
         
         # "ngf2cckbas": {
         #     "gmax": 1.5,
@@ -1730,13 +1730,6 @@ for cell_idx, celltype in enumerate(cell_types_in_model):
     elif cell_param["cellclass"] == "ArtifitialCell":
         pass
     else:
-        # if cell_idx == 0:
-        #     neuron["cellparams"]["iext"] = 0.008
-        # elif cell_idx == 5:
-        #     neuron["cellparams"]["iext"] = 0.008
-        # else:
-        #     neuron["cellparams"]["iext"] = 0.0
-
         if neuron["cellparams"]["iext"] > 0:
             neuron["cellparams"]["iext"] = np.random.lognormal( np.log(neuron["cellparams"]["iext"]), neuron["cellparams"]["iext_std"]   )
         else:
@@ -1749,6 +1742,7 @@ basic_params["neurons"] = neurons
 
 var_conns_on_pyr = 100.0
 var_conns_on_pvbas =  var_conns_on_pyr * 3
+var_conns_pvbas2pvbas = var_conns_on_pyr*50
 synapses = []
 
 
@@ -1820,7 +1814,7 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
                         number_connections += 1
                         gmax = gmax * dist_normalizer
             else:
-                gmax = 0.1 * gmax # !!!!!
+                gmax = 0.05 * gmax # !!!!!
 
             
         elif conn_name == "pyr2pyr":
@@ -1837,7 +1831,7 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
                     number_connections += 1
                 gmax = gmax * dist_normalizer
             else:
-                gmax = gmax * 0.1 # !!!!!!!
+                gmax = gmax * 0.05 # !!!!!!!
 
         elif conn_name == "pvbas2pyr":
             pyr_idx = postsynaptic_cell_idx - gids_of_celltypes["pyr"][0]
@@ -1857,7 +1851,7 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
                 gmax = gmax * dist_normalizer
             
             else:
-                gmax = gmax * 0.1 # !!!!
+                gmax = gmax * 0.05 # !!!!
 
         elif conn_name == "pyr2pvbas":
             pyr_idx = presynaptic_cell_idx - gids_of_celltypes["pyr"][0]
@@ -1874,7 +1868,7 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
                 gmax = gmax * dist_normalizer
             
             else:
-                gmax = gmax * 0.1 # !!!!
+                gmax = gmax * 0.01 # !!!!
 
         elif conn_name == "ca3_spatial2pvbas":
             pvbas_idx = postsynaptic_cell_idx - gids_of_celltypes["pvbas"][0]
@@ -1892,14 +1886,14 @@ for presynaptic_cell_idx, pre_celltype in enumerate(basic_params["celltypes"]):
             pvbas_idx1 = postsynaptic_cell_idx - gids_of_celltypes["pvbas"][0]
             pvbas_idx2 = presynaptic_cell_idx - gids_of_celltypes["pvbas"][0]
             dist = pvbas_coord_x[pvbas_idx1] - pvbas_coord_x[pvbas_idx2]
-            dist_normalizer = np.exp(-0.5 * dist**2 / var_conns_on_pvbas ) / (np.sqrt(var_conns_on_pvbas * 2 * np.pi ))
+            dist_normalizer = np.exp(-0.5 * dist**2 / var_conns_pvbas2pvbas ) / (np.sqrt(var_conns_pvbas2pvbas * 2 * np.pi ))
 
             if dist_normalizer > 0.7:
                 number_connections += 1
-            gmax = 50.0 * dist_normalizer
+            gmax = gmax #!!!!!* dist_normalizer
 
 
-        Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
+        # Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
         if gmax < 1e-5:
             number_connections = 0
 
