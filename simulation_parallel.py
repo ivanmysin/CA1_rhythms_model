@@ -243,16 +243,15 @@ def run_simulation(params):
 
     pc.barrier()
     gap_junctions = h.List()
+    
     for gap_params in params["gap_junctions"]:
-        
         
         idx1 = np.argwhere( gid_vect == gap_params["gid1"] ).ravel()
         idx2 = np.argwhere( gid_vect == gap_params["gid2"] ).ravel()
 
 
         if idx1.size != 0 and idx2.size != 0:
-
-
+            
             idx1 = idx1[0]
             idx2 = idx2[0]
             
@@ -281,24 +280,25 @@ def run_simulation(params):
             for idx_tmp, comp_tmp in enumerate(comp2_list):
                 if idx_tmp == idx2: comp2 = comp_tmp
 
-            pc.source_var(comp1(0.5)._ref_v, gap_params["gid1"], sec=comp1)
+            pc.source_var(comp1(0.5)._ref_v, gap_params["sgid_gap"], sec=comp1) # gap_params["gid1"]
 
             gap = h.GAP(comp1(0.5), sec=comp1)
             gap.r = gap_params["r"]
-            pc.target_var(gap._ref_vgap, gap_params["gid2"])
+            pc.target_var(gap._ref_vgap, gap_params["sgid_gap"] + 1) # gap_params["gid2"]
 
             gap_junctions.append(gap)
 
             
-            pc.source_var(comp2(0.5)._ref_v, gap_params["gid2"], sec=comp2)
+            pc.source_var(comp2(0.5)._ref_v, gap_params["sgid_gap"]+1, sec=comp2)  # gap_params["gid2"]
             gap = h.GAP(comp2(0.5), sec=comp2)
             gap.r = gap_params["r"]
-            pc.target_var(gap._ref_vgap, gap_params["gid1"])
+            pc.target_var(gap._ref_vgap, gap_params["sgid_gap"]) # gap_params["gid1"] 
             gap_junctions.append(gap)
 
 
 
         elif idx1.size != 0 or idx2.size != 0:
+            
             if idx1.size != 0 and idx2.size != 0: continue
 
             if idx1.size != 0:
@@ -306,11 +306,17 @@ def run_simulation(params):
                 this_gid = gap_params["gid1"]
                 out_gid = gap_params["gid2"]
                 comp_name = gap_params["compartment1"]
+                
+                sgid_gap_src = gap_params["sgid_gap"]
+                sgid_gap_trg = gap_params["sgid_gap"] + 1
             else:
                 this_idx = idx2[0]
                 this_gid = gap_params["gid2"]
                 out_gid = gap_params["gid1"]
                 comp_name = gap_params["compartment2"]
+                
+                sgid_gap_src = gap_params["sgid_gap"] + 1
+                sgid_gap_trg = gap_params["sgid_gap"]
             
             cell = all_cells[ this_idx ]
             comp_list = getattr(cell, comp_name)
@@ -321,16 +327,16 @@ def run_simulation(params):
                 if idx_tmp == 0: comp = comp_tmp
 
 
-            pc.source_var(comp(0.5)._ref_v, this_gid, sec=comp)
+            pc.source_var(comp(0.5)._ref_v, sgid_gap_src, sec=comp) #  this_gid
 
             gap = h.GAP(0.5, sec=comp)
             gap.r = gap_params["r"]
 
 
 
-            pc.target_var(gap._ref_vgap, out_gid)
+            pc.target_var(gap._ref_vgap, sgid_gap_trg) #  out_gid
 
-
+            
 
 
         else:

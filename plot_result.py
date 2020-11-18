@@ -202,7 +202,7 @@ def plot_v(filepath):
         raster_group = h5file["extracellular/electrode_1/firing/origin_data"]
         intracellular_group = h5file["intracellular/origin_data"]
 
-        intracell_keys = intracellular_group.keys()
+        intracell_keys = sorted(intracellular_group.keys(), key=lambda neur_num: int(neur_num.split("_")[-1]) )
 
         for idx, key in enumerate(intracell_keys):
             fig, axes = plt.subplots()
@@ -423,20 +423,20 @@ def main_plots(filepath):
     
     
 if __name__ == "__main__":
-    filepath = "/home/ivan/Data/CA1_simulation/artificial_signals.hdf5"  # basic_params["file_results"]  #
+    filepath = "/home/ivan/Data/CA1_simulation/test.hdf5"  # basic_params["file_results"]  # "/home/ivan/Data/CA1_simulation/artificial_signals.hdf5"
     
     # main_plots(filepath)
     # plot_lfp(filepath)
     # plot_current_source_density(filepath, "theta")
     # plot_spike_raster(filepath)
-    plot_modulation_index(filepath)
-    plot_phase_by_amplitude_coupling(filepath)
-    plot_nm_phase_phase_coupling(filepath)
+    # plot_modulation_index(filepath)
+    # plot_phase_by_amplitude_coupling(filepath)
+    # plot_nm_phase_phase_coupling(filepath)
     # plot_phase_disrtibution(filepath)
     # plot_v_vs_pyr_lfp(filepath)
 
 
-    # plot_v(filepath)
+    plot_v(filepath)
     # plot_pyr_layer_lfp_vs_raster(filepath)
     # plot_phase_precession(filepath)
 

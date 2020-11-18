@@ -22,7 +22,7 @@ lec - FAN cells of the lateral entorhinal cortex
 
 """
 
-Nelecs = 1 # number of electrodes
+Nelecs = 0 # number of electrodes
 
 basic_params = {
     "elecs" : {
@@ -33,7 +33,7 @@ basic_params = {
     "PyrDencity" : 0.2, # pyramidal cells / micrometer^2
 
     "file_results":  "../../Data/CA1_simulation/test.hdf5", # None, #
-    "duration" : 2000, #  1400, # 10000 # 10 sec simulation time
+    "duration" : 1000, #  2000, # 10000 # 10 sec simulation time
     
     "del_start_time" : 0, # 400, # time after start for remove
     
@@ -61,24 +61,24 @@ basic_params = {
     },
     
     "CellNumbers" : {
-        "Npyr" :    1400,
-        "Npvbas" :  200, # 100,
-        "Nolm" :    80,
-        "Ncckbas" : 160,
-        "Nivy" :    260, # 130,
-        "Nngf" :    130, # 65,
-        "Nbis" :    70, # 35,
-        "Naac" :    60, # 30,
-        "Nsca" :    40, # 20,
+        "Npyr" :    0, # 1400,
+        "Npvbas" :  10, # 200,
+        "Nolm" :    0, # 80,
+        "Ncckbas" : 0, # 160,
+        "Nivy" :    0, # 260, # 130,
+        "Nngf" :    0, # 130, # 65,
+        "Nbis" :    0, # 70, # 35,
+        "Naac" :    0, # 60, # 30,
+        "Nsca" :    0, # 40, # 20,
         
         
-        "Nca3_spatial" : 1400, # 3500,
-        "Nca3_non_spatial" : 1400, # 3500,
-        "Nmec" : 3500,
+        "Nca3_spatial" : 0, # 1400, # 3500,
+        "Nca3_non_spatial" : 0, # 1400, # 3500,
+        "Nmec" : 0, # 3500,
         "Nlec" : 0, # 500,
-        "Nmsteevracells" : 200,
+        "Nmsteevracells" : 0, # 200,
         "Nmskomalicells" : 0, # 200,
-        "Nmsach"         : 150,
+        "Nmsach"         : 0, # 150,
     },
     
     "CellParameters" : {
@@ -238,7 +238,7 @@ basic_params = {
     
     "save_soma_v" : {
         "pyr" :  [0, ] , # [range(20, 30)],    # [0, ],
-        "pvbas" : [0, ], # [range(20, 31)], #
+        "pvbas" : [range(10)], # [0, ], # 
         "olm" : [0, ],
         "cckbas" : [0, ],
         "ivy" : [0, ],
@@ -1963,6 +1963,7 @@ basic_params["synapses_params"] = synapses
 
 
 gap_juncs = []
+sgid_gap = 0
 
 for cell1_idx, celltype1 in enumerate(basic_params["celltypes"]):
     for cell2_idx, celltype2 in enumerate(basic_params["celltypes"]):
@@ -1987,11 +1988,15 @@ for cell1_idx, celltype1 in enumerate(basic_params["celltypes"]):
             
             "compartment1" : conn_data["compartment1"],
             "compartment2" : conn_data["compartment2"],
+            
+            "sgid_gap" : sgid_gap,
         }
         
         gap_juncs.append(gap)
-        
-basic_params["gap_junctions"] = [] # gap_juncs
+        sgid_gap += 2
+
+
+basic_params["gap_junctions"] = gap_juncs
 
 
 
