@@ -252,7 +252,7 @@ proc biophys() {
                 gskbar_gskch = 0.000002         // Ca2+-dependent K (SK) conductance
                 
                 insert cagk2
-                gkbar_cagk2 = 0.0002                    // Ca2+ and Voltage-dependent K+ (BK) conductance
+                gkbar_cagk2 = 0.0002            // Ca2+ and Voltage-dependent K+ (BK) conductance
 
                 Ra = 100                        
                 enat = 55
