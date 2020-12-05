@@ -32,9 +32,9 @@ rem_param = ["e_ch_Navaxonp", "point_processes", "node_index", "na_ion", "sec", 
 
 
 path2latextablefile = "/home/ivan/Документы/latex_supplement/" #pvbastable.tex"
-celltype = "sca"
+celltype = "pvbas"
 
-caption = "Sca cells parameters"
+caption = "PV cells parameters"
 label = "ca1_" + celltype + "_cell_parameters"
 # ca1_pyramidal_cell_parameters
 
