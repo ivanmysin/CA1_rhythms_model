@@ -12,10 +12,16 @@ load_mechanisms("../mods/")
 def f(number):
     if number == 0:
         return "0"
+    is_negative = False
     if number < 0:
-        return str(number)
+        is_negative = True
+        number = -number
     sigfig = 2
-    return ("%.15f" % (round(number, int(-1 * floor(log10(number)) + (sigfig - 1))))).rstrip("0").rstrip(".")
+    
+    str_number = ("%.15f" % (round(number, int(-1 * floor(log10(number)) + (sigfig - 1))))).rstrip("0").rstrip(".")
+    if is_negative:
+        str_number = "-" + str_number
+    return str_number
 
 for cellfile in os.listdir("../cells/"):
     _, ext = os.path.splitext(cellfile)
@@ -25,12 +31,15 @@ for cellfile in os.listdir("../cells/"):
 rem_param = ["e_ch_Navaxonp", "point_processes", "node_index", "na_ion", "sec", "v", "volume", "x", "ri", "k_ion", "ca_ion", "area", "ena", "ek"]
 
 
-path2latextablefile = "/home/ivan/Документы/latex_supplement/pvbastable.tex"
-celltype = "pvbas"
+path2latextablefile = "/home/ivan/Документы/latex_supplement/" #pvbastable.tex"
+celltype = "sca"
 
-caption = "PV basket cells parameters"
+caption = "Sca cells parameters"
 label = "ca1_" + celltype + "_cell_parameters"
 # ca1_pyramidal_cell_parameters
+
+
+path2latextablefile += celltype + "table.tex"
 
 cells_params = {
         "pyr" : {
@@ -142,8 +151,10 @@ for sec_idx, sec in enumerate(cell.all):
             
 
 pameters = sorted(list(set(pameters)))
-pameters.remove("e_ch_Navaxonp")
-
+try:
+    pameters.remove("e_ch_Navaxonp")
+except:
+    pass
 
 table = pd.DataFrame(np.nan, index=pameters, columns=names) 
 table.index.name = "Parameters"
@@ -167,9 +178,16 @@ for sec_idx, sec in enumerate(cell.all):
         
 # table = table.T.drop_duplicates(inplace=False).T
 print(table) # = table
+table.to_csv("this_cell.csv")
 
-funsc = [f for _ in range(len(table.index))]
-latex_lable = table.T.to_latex(na_rep=" --- ", longtable=True, caption=caption, label=label, formatters=funsc)
+
+
+# table.drop(index=["L", "diam"], inplace=True)
+
+funsc = [f for _ in range(len(table.columns))] # len(table.index)
+latex_lable = table.to_latex(columns=["soma", ], na_rep=" --- ", longtable=True, caption=caption, label=label, formatters=funsc)
+
+#  
 
 
 latex_lable = latex_lable.replace("Navaxonp", "Na")
@@ -182,12 +200,18 @@ latex_lable = latex_lable.replace("eleak", "$E_L, \linebreak mV$")
 latex_lable = latex_lable.replace("gmaxleak", "$g_L, \linebreak mS / cm^2$")
 latex_lable = latex_lable.replace("diam", "$D,\linebreak \\mu m$")
 latex_lable = latex_lable.replace("\\\\\nL", "\\\\\n$L,\linebreak \\mu m$")
-latex_lable = latex_lable.replace("Ra", "$Ra,\n ohm cm$")
+latex_lable = latex_lable.replace("Ra", "$Ra,\n ohm \\cdot cm$")
 latex_lable = latex_lable.replace("CavL", "CaL")
 latex_lable = latex_lable.replace("CavN", "CaN")
 latex_lable = latex_lable.replace("Nav", "Na")
 latex_lable = latex_lable.replace("KvA", "KA")
 latex_lable = latex_lable.replace("KvC", "KC")
+latex_lable = latex_lable.replace("KvG", "KG")
+latex_lable = latex_lable.replace("HCN", "H")
+latex_lable = latex_lable.replace("eH", "$E_{H}, mV$")
+latex_lable = latex_lable.replace("olm", "")
+latex_lable = latex_lable.replace("ngf", "")
+latex_lable = latex_lable.replace("cck", "")
 
 
 latex_lable = latex_lable.replace("fast", "")
@@ -202,11 +226,12 @@ for tmp_idx, tmp in enumerate (latex_lable.split("&")):
 latex_lable = latex_lable_tmp[:-1]
 
 
-old_str = "l" + "r" * len(table.index)
-new_str = "|p{1.5cm}" * (len(table.index) + 1)
+# old_str = "l" + "r" * len(table.index)
+# new_str = "|p{1.5cm}" * (len(table.index) + 1)
 # \begin{longtable}{lrrrrrrrrrrrrrr}
 
-latex_lable = latex_lable.replace(old_str, new_str)
+#latex_lable = latex_lable.replace(old_str, new_str)
+#latex_lable = latex_lable.replace("soma", "All compartments")
 
 
 with open(path2latextablefile, "w") as texfile:
