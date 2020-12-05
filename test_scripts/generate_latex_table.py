@@ -10,6 +10,8 @@ h.load_file("stdrun.hoc")
 load_mechanisms("../mods/")
 
 def f(number):
+    if np.isnan(number):
+        return " --- "
     if number == 0:
         return "0"
     is_negative = False
@@ -32,14 +34,25 @@ rem_param = ["e_ch_Navaxonp", "point_processes", "node_index", "na_ion", "sec", 
 
 
 path2latextablefile = "/home/ivan/Документы/latex_supplement/" #pvbastable.tex"
-celltype = "pvbas"
+celltype = "olm"
 
-caption = "PV cells parameters"
+caption = "OLM cells parameters"
 label = "ca1_" + celltype + "_cell_parameters"
 # ca1_pyramidal_cell_parameters
 
-
 path2latextablefile += celltype + "table.tex"
+
+dend_pairs = []
+dend_pairs.append(["dend 1", "dend 6", "dend 1"])
+dend_pairs.append(["dend 2", "dend 7", "dend 2"])
+dend_pairs.append(["dend 3", "dend 8", "dend 3"])
+dend_pairs.append(["dend 4", "dend 9", "dend 4"])
+dend_pairs.append(["dend 5", "dend 10", "dend 5"])
+dend_pairs.append(["dend 11", "dend 14", "dend 6"])
+dend_pairs.append(["dend 12", "dend 15", "dend 7"])
+dend_pairs.append(["dend 13", "dend 16", "dend 8"])
+
+
 
 cells_params = {
         "pyr" : {
@@ -169,11 +182,14 @@ for sec_idx, sec in enumerate(cell.all):
             if hasattr(sec, param):
                 val = getattr(sec, param)
                 if param.find("gmax") != -1:
-                    val *= 1000
+                    val = 1000 * val
+                table.loc[param, name] = val
             if hasattr(seg, param):
                 val = getattr(seg, param)
+                if param.find("gmax") != -1:
+                    val = 1000 * val
             
-            table.loc[param, name] = val
+                table.loc[param, name] = val
         
         
 # table = table.T.drop_duplicates(inplace=False).T
@@ -181,13 +197,14 @@ print(table) # = table
 table.to_csv("this_cell.csv")
 
 
-
-# table.drop(index=["L", "diam"], inplace=True)
+# for pair in dend_pairs:
+#     table.drop(columns=pair[1], inplace=True)
+#     table.rename(columns={ pair[0]: pair[2],}, inplace=True)
 
 funsc = [f for _ in range(len(table.columns))] # len(table.index)
-latex_lable = table.to_latex(columns=["soma", ], na_rep=" --- ", longtable=True, caption=caption, label=label, formatters=funsc)
+latex_lable = table.to_latex(na_rep=" --- ", longtable=True, caption=caption, label=label, formatters=funsc)
 
-#  
+#  columns=["soma", ],
 
 
 latex_lable = latex_lable.replace("Navaxonp", "Na")
@@ -195,11 +212,11 @@ latex_lable = latex_lable.replace("Navaxonp", "Na")
 
 
 latex_lable = latex_lable.replace(r"\_ch\_", "")
-latex_lable = latex_lable.replace("cm", "$C, \linebreak \\mu F / cm^2$")
-latex_lable = latex_lable.replace("eleak", "$E_L, \linebreak mV$")
-latex_lable = latex_lable.replace("gmaxleak", "$g_L, \linebreak mS / cm^2$")
-latex_lable = latex_lable.replace("diam", "$D,\linebreak \\mu m$")
-latex_lable = latex_lable.replace("\\\\\nL", "\\\\\n$L,\linebreak \\mu m$")
+latex_lable = latex_lable.replace("cm", "$C, \\mu F / cm^2$")
+latex_lable = latex_lable.replace("eleak", "$E_L,  mV$")
+latex_lable = latex_lable.replace("gmaxleak", "$g_L,  mS / cm^2$")
+latex_lable = latex_lable.replace("diam", "$D, \\mu m$")
+
 latex_lable = latex_lable.replace("Ra", "$Ra,\n ohm \\cdot cm$")
 latex_lable = latex_lable.replace("CavL", "CaL")
 latex_lable = latex_lable.replace("CavN", "CaN")
@@ -213,6 +230,8 @@ latex_lable = latex_lable.replace("olm", "")
 latex_lable = latex_lable.replace("ngf", "")
 latex_lable = latex_lable.replace("cck", "")
 
+latex_lable = latex_lable.replace("L               &", "$L, \\ \\mu m$ &")
+
 
 latex_lable = latex_lable.replace("fast", "")
 
@@ -220,17 +239,17 @@ latex_lable_tmp = ""
 for tmp_idx, tmp in enumerate (latex_lable.split("&")):
     if tmp.find("gmax") != -1:
         tmp = tmp.replace("gmax", "$g_{max, ")
-        tmp += "}\linebreak \\  mS / cm^2$"
+        tmp += "}\\  mS / cm^2$" # \linebreak
     latex_lable_tmp += tmp + "&" 
 
 latex_lable = latex_lable_tmp[:-1]
 
 
-# old_str = "l" + "r" * len(table.index)
-# new_str = "|p{1.5cm}" * (len(table.index) + 1)
+# old_str = "l" + "r" * len(table.columns)
+# new_str = "p{.10\textwidth}" * (len(table.columns) + 1)
 # \begin{longtable}{lrrrrrrrrrrrrrr}
 
-#latex_lable = latex_lable.replace(old_str, new_str)
+# latex_lable = latex_lable.replace(old_str, new_str)
 #latex_lable = latex_lable.replace("soma", "All compartments")
 
 
