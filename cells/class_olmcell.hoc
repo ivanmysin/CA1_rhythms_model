@@ -116,7 +116,7 @@ proc set_nseg() {
 
 proc mechinit() {	
 	// Temperature of simulation
-	celsius = 34.0  
+	celsius = 37.0  
 
 	Vrest = -67
 	

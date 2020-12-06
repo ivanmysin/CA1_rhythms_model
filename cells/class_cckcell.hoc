@@ -200,7 +200,7 @@ proc mechinit() {
     Vrest=-55
     
     // Temperature of simulation
-    celsius = 34.0  
+    celsius = 37.0  
 
     // Membrane resistance in ohm*cm2
     RmDend = 27000 // 60000
