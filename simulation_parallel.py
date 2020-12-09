@@ -86,7 +86,7 @@ def run_simulation(params):
             h.load_file(cell_path + file)
     
     
-    ncells = len(params["celltypes"])  # whole number of cells in the model
+    ncells = len(params["neurons"])  # whole number of cells in the model
     gid_vect = np.arange( pc.id(), ncells, pc.nhost(), dtype=np.int )
     
     
@@ -97,7 +97,7 @@ def run_simulation(params):
     
     pyramidal_sec_list = h.SectionList()
     is_pyrs_thread = False
-    radius_for_pyramids = np.sqrt( params["CellNumbers"]["Npyr"] / params["PyrDencity"] ) / np.pi 
+    radius_for_pyramids = params["common_params"]["radius4piramids"]
     
     spike_count_obj = []
     spike_times_vecs = []
@@ -108,7 +108,9 @@ def run_simulation(params):
     for gid in gid_vect:
         
         celltypename = params["neurons"][gid]["celltype"] 
-        cellclass = getattr(h, params["CellParameters"][celltypename]["cellclass"])
+        cellclass_name = params["neurons"][gid]["cellclass"] 
+
+        cellclass = getattr(h, cellclass_name)
 
         cell = cellclass(gid, 0)
 
@@ -160,7 +162,7 @@ def run_simulation(params):
         
         
         # check is need to save Vm of soma
-        if np.sum(params["save_soma_v"]["vect_idxes"] == gid) == 1:
+        if np.sum(params["save_soma_v"] == gid) == 1:
             soma_v = h.Vector()
             soma_v.record(cell.soma[0](0.5)._ref_v)
             soma_v_vecs.append(soma_v)
@@ -454,13 +456,13 @@ def run_simulation(params):
             
             firing_group = h5file.create_group("extracellular/electrode_1/firing/origin_data")
             
-            
-            for celltype in set(params["celltypes"]):
+            celltypes = [neuron["celltype"] for neuron in params["neurons"]]
+            for celltype in set(celltypes):
                 cell_friring_group = firing_group.create_group(celltype)
             
             
                 for cell_idx, sp_times in enumerate(spike_trains):
-                    if params["celltypes"][cell_idx] != celltype:
+                    if celltypes != celltype:
                         continue
                     
                     sp_times = sp_times[sp_times >= rem_time] - rem_time
@@ -472,7 +474,7 @@ def run_simulation(params):
             intracellular_group = h5file.create_group("intracellular")
             intracellular_group_origin = intracellular_group.create_group("origin_data")
             
-            for soma_v_idx in params["save_soma_v"]["vect_idxes"]: 
+            for soma_v_idx in params["save_soma_v"]: 
                 soma_v = soma_v_list[soma_v_idx]
                 
                 if soma_v.size == 0: continue

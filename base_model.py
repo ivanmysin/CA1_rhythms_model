@@ -8,7 +8,8 @@ rank = comm.Get_rank()
 from simulation_parallel import run_simulation
 
 if rank == 0:
-    from basic_parameters import basic_params
+    from basic_parameters import get_object_params
+    basic_params = get_object_params() 
 else:
     basic_params = None
 
