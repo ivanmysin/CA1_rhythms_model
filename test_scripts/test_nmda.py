@@ -7,7 +7,7 @@ from copy import deepcopy
 
 sys.path.append("../")
 import presimulation_lib as prelib
-from basic_parameters import basic_params
+# from basic_parameters import basic_params
 from time import time
 
 ###### parameters block ############
@@ -26,33 +26,33 @@ for cellfile in os.listdir("../cells/"):
     if ext != ".hoc": continue
     h.load_file("../cells/" + cellfile)
 
-pre_pyr = h.CA1PyramidalCell(0, 0)
+pre_pyr = h.cckcell(0, 0) # h.CA1PyramidalCell(0, 0)
 for sec in pre_pyr.all:
     sec.insert("IextNoise")
-    sec.mean_IextNoise = 0.009
-    sec.sigma_IextNoise = 0.001
+    sec.mean_IextNoise = 0.002
+    sec.sigma_IextNoise = 0.0001
 
-post_pyr = h.CA1PyramidalCell(0, 0)
+post_pyr = h.pvbasketcell(0, 0) #  h.CA1PyramidalCell(0, 0)
 
 syn_ampa = h.Exp2Syn(post_pyr.soma[0](0.5))
 syn_ampa.e = 0
 syn_ampa.tau1 = 0.5
-syn_ampa.tau2 = 3.0
+syn_ampa.tau2 = 1.5
 
 conn = h.NetCon(pre_pyr.soma[0](0.5)._ref_v, syn_ampa, sec=pre_pyr.soma[0])
 conn.delay = 0.5
-conn.weight[0] = 0.009
+conn.weight[0] = 0.09
 conn.threshold = -30
 
 
 syn_nmda = h.NMDA(post_pyr.soma[0](0.5), sec=post_pyr.soma[0])
 syn_nmda.tcon = 2.4
 syn_nmda.tcoff = 94.0
-syn_nmda.gNMDAmax = 1.0 # 0.05
+syn_nmda.gNMDAmax = 0.0 # 0.05
 
 conn2 = h.NetCon(pre_pyr.soma[0](0.5)._ref_v, syn_nmda, sec=pre_pyr.soma[0])
 conn2.delay = 0.5
-conn2.weight[0] = 0.005 # * 0.01
+conn2.weight[0] = 0.0 # * 0.01
 conn2.threshold = -30
 
 soma_v_pre = h.Vector()
