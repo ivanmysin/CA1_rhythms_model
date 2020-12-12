@@ -279,7 +279,7 @@ def get_basic_params():
                     "gmax_std" : 0.001,
                     "tcon" : 2.3,   # ms
                     "tcoff" : 95.0, # ms
-                    "enmda" : 0, 
+                    "enmda" : 0,
                 },
             },
             
