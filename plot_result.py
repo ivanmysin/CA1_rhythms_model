@@ -3,8 +3,10 @@ from scipy.signal import hilbert
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
 import h5py
-from basic_parameters import basic_params
+from basic_parameters import get_object_params
 import processingLib as proclib
+
+basic_params = get_object_params()
 
 plotting_param = {
     "neuron_colors" : {

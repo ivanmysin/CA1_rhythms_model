@@ -24,7 +24,7 @@ lec - FAN cells of the lateral entorhinal cortex
 
 def get_basic_params():
 
-    Nelecs = 0 # number of electrodes
+    Nelecs = 1 # number of electrodes
 
     basic_params = {
         "elecs" : {
@@ -240,7 +240,7 @@ def get_basic_params():
         
         "save_soma_v" : {
             "pyr" :  [0, ] , # [range(20, 30)],    # [0, ],
-            "pvbas" : [range(10)], # [0, ], # 
+            "pvbas" : [0, ], # [0, ], #
             "olm" : [0, ],
             "cckbas" : [0, ],
             "ivy" : [0, ],
@@ -1627,7 +1627,7 @@ def get_object_params():
         end_idx = len(cell_types_in_model)
         gids_of_celltypes[celltype] = np.arange(start_idx, end_idx)
         
-    # basic_params["celltypes"] = cell_types_in_model
+    basic_params["celltypes"] = cell_types_in_model
 
 
 
@@ -1650,7 +1650,7 @@ def get_object_params():
         save_soma_v_idx = np.append(save_soma_v_idx, indices[list_idx])
 
 
-
+    print(save_soma_v_idx)
     OBJECTS_PARAMS["save_soma_v"] = save_soma_v_idx # ["vect_idxes"]
 
     for celltypename, cellparam in basic_params["CellParameters"].items():
