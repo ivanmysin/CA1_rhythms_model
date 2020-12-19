@@ -1,7 +1,7 @@
 import numpy as np
 import presimulation_lib as prelib
 from copy import deepcopy
-
+import mpi4py
 """
 pyr - CA1 piramidal cells
 olm - Oriens-Lacunosum/Moleculare (OLM) Cells
@@ -1609,38 +1609,48 @@ def get_basic_params():
     
     return basic_params
 
-def get_object_params():
+def get_object_params(Nthreads=1):
     basic_params = get_basic_params()
-    OBJECTS_PARAMS = {}
-    
+
+    OBJECTS_PARAMS = []
+    for _ in range(Nthreads):
+        thread_param = {
+            "neurons" : [],
+            "save_soma_v" : None,
+            "gids_of_celltypes" : [],
+            "synapses_params" : [],
+            "gap_junctions" : [],
+            "common_params" : {},
+        }
+
+        OBJECTS_PARAMS.append(thread_param)
+
     cell_types_in_model = []
     gids_of_celltypes = {}
 
     for celltype, numbers in sorted(basic_params["CellNumbers"].items()):
-        
+
         celltype = celltype[1:]
-        
         start_idx = len(cell_types_in_model)
-        
         cell_types_in_model.extend( [celltype, ] * numbers )
-        
         end_idx = len(cell_types_in_model)
         gids_of_celltypes[celltype] = np.arange(start_idx, end_idx)
-        
-    basic_params["celltypes"] = cell_types_in_model
 
+    neurons_by_threads = np.tile(np.arange(np.ceil(len(cell_types_in_model)/Nthreads)), Nthreads)
+    neurons_by_threads = neurons_by_threads[:len(cell_types_in_model)]
+    # basic_params["celltypes"] = cell_types_in_model
+    # print(neurons_by_threads)
 
 
     save_soma_v_idx = np.empty(shape=0, dtype=np.int)
 
     for celltype, list_idx in basic_params["save_soma_v"].items():
 
-        
         if celltype == "vect_idxes": continue
 
         # list_idx = np.arange(basic_params["CellNumbers"]["N"+celltype] )
         
-        indices = [i for i, x in enumerate(basic_params["celltypes"]) if x == celltype]
+        indices = [i for i, x in enumerate(cell_types_in_model) if x == celltype]
         if len(indices) == 0:
             continue
 
@@ -1649,9 +1659,15 @@ def get_object_params():
         
         save_soma_v_idx = np.append(save_soma_v_idx, indices[list_idx])
 
+    for th_idx in range(Nthreads):
+        if th_idx == 0:
+            OBJECTS_PARAMS[th_idx]["save_soma_v"] = save_soma_v_idx
+        else:
+            save_soma_v_idx_tmp = save_soma_v_idx[neurons_by_threads[save_soma_v_idx] == th_idx]
+            OBJECTS_PARAMS[th_idx]["save_soma_v"] = save_soma_v_idx_tmp # !!!!!!!
 
-    print(save_soma_v_idx)
-    OBJECTS_PARAMS["save_soma_v"] = save_soma_v_idx # ["vect_idxes"]
+        OBJECTS_PARAMS[th_idx]["gids_of_celltypes"] = np.arange(len(cell_types_in_model))[neurons_by_threads == th_idx]
+    OBJECTS_PARAMS[0]["cell_types_in_model"] = cell_types_in_model
 
     for celltypename, cellparam in basic_params["CellParameters"].items():
 
@@ -1715,7 +1731,7 @@ def get_object_params():
     ca3_coord_x_iter = iter(ca3_coord_x)
     mec_grid_phases_iter = iter(mec_grid_phases)
     mec_grid_freqs_iter = iter(mec_grid_freqs)
-    neurons = []
+    # neurons = []
     for cell_idx, celltype in enumerate(cell_types_in_model):
         cell_param = basic_params["CellParameters"][celltype]
         
@@ -1723,6 +1739,7 @@ def get_object_params():
             "celltype" : celltype, 
             "cellclass" : cell_param["cellclass"],
             "cellparams" : {},
+            "gid" : cell_idx,
         }
         neuron["cellparams"] = deepcopy(cell_param)
 
@@ -1742,15 +1759,15 @@ def get_object_params():
             else:
                 neuron["cellparams"]["iext"] = np.random.normal( neuron["cellparams"]["iext"], neuron["cellparams"]["iext_std"]   )
 
-        neurons.append(neuron)
-
-    OBJECTS_PARAMS["neurons"] = neurons
+        #neurons.append(neuron)
+        th_idx = int(neurons_by_threads[cell_idx])
+        OBJECTS_PARAMS[th_idx]["neurons"].append(neuron)
 
 
     var_conns_on_pyr = 100.0
     var_conns_on_pvbas =  var_conns_on_pyr * 3
     var_conns_pvbas2pvbas = var_conns_on_pyr*50
-    synapses = []
+    # synapses = []
 
     # Ncells = len( basic_params["celltypes"] )
     # Wpyrbas = np.zeros( [Ncells, Ncells],  dtype=np.float)
@@ -1938,28 +1955,22 @@ def get_object_params():
                 except KeyError:
                     pass
 
-                synapses.append(connection)
+                connection["gmax"] *= 0.001  # recalulate nS to micromhos
+                connection["delay"] += 1.5  # add delay on spike generation
+                try:
+                    connection["NMDA"]["delay"] += 1.5
+                    connection["NMDA"]["gNMDAmax"] *= 0.001
+                except KeyError:
+                    pass
+                # synapses.append(connection)
 
-
-
-    for syn in synapses:
-        syn["gmax"] *= 0.001  # recalulate nS to micromhos
-        # conn_data["gmax_std"] *= 0.001
-        syn["delay"] += 1.5  # add delay on spike generation
-        
-        try: 
-            syn["NMDA"]["delay"] += 1.5
-            syn["NMDA"]["gNMDAmax"] *= 0.001
-
-        except KeyError:
-            pass
+                th_idx = int(neurons_by_threads[postsynaptic_cell_idx])
+                OBJECTS_PARAMS[th_idx]["synapses_params"].append(connection)
 
 
 
 
-
-    OBJECTS_PARAMS["gids_of_celltypes"] = gids_of_celltypes
-    OBJECTS_PARAMS["synapses_params"] = synapses
+    #OBJECTS_PARAMS["synapses_params"] = synapses
 
 
     gap_juncs = []
@@ -1995,15 +2006,20 @@ def get_object_params():
             gap_juncs.append(gap)
             sgid_gap += 2
 
+            th_idx = neurons_by_threads[cell1_idx]
+            OBJECTS_PARAMS[th_idx]["gap_junctions"].append(gap)
 
-    OBJECTS_PARAMS["gap_junctions"] = gap_juncs
-    OBJECTS_PARAMS["elecs"] = basic_params["elecs"]
-    OBJECTS_PARAMS["duration"] = basic_params["duration"]
-    OBJECTS_PARAMS["file_results"] = basic_params["file_results"]
-    OBJECTS_PARAMS["del_start_time"] = basic_params["del_start_time"]
-    
-    OBJECTS_PARAMS["common_params"] = {}
-    OBJECTS_PARAMS["common_params"]["radius4piramids"] = np.sqrt( basic_params["CellNumbers"]["Npyr"] / basic_params["PyrDencity"] ) / np.pi 
+            th_idx = neurons_by_threads[cell2_idx]
+            OBJECTS_PARAMS[th_idx]["gap_junctions"].append(gap)
+
+    for th_idx in range(Nthreads):
+        OBJECTS_PARAMS[th_idx]["elecs"] = basic_params["elecs"]
+        OBJECTS_PARAMS[th_idx]["duration"] = basic_params["duration"]
+        OBJECTS_PARAMS[th_idx]["file_results"] = basic_params["file_results"]
+        OBJECTS_PARAMS[th_idx]["del_start_time"] = basic_params["del_start_time"]
+
+        # OBJECTS_PARAMS["common_params"] = {}
+        OBJECTS_PARAMS[th_idx]["common_params"]["radius4piramids"] = np.sqrt( basic_params["CellNumbers"]["Npyr"] / basic_params["PyrDencity"] ) / np.pi
     
     return OBJECTS_PARAMS
 
