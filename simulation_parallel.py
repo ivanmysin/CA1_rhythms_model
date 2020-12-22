@@ -86,10 +86,12 @@ def run_simulation(params):
             h.load_file(cell_path + file)
     
     
-    ncells = len(params["neurons"])  # whole number of cells in the model
-    gid_vect = np.arange( pc.id(), ncells, pc.nhost(), dtype=np.int )
-    
-    
+    #  ncells = len(params["neurons"])  # whole number of cells in the model
+    # gid_vect = np.arange( pc.id(), ncells, pc.nhost(), dtype=np.int )
+    gid_vect = np.asarray( [neuron_param["gid"] for neuron_param in params["neurons"]] )
+
+
+
     all_cells = h.List()
     hh_cells = h.List()
     # artificial_cells = h.List()
@@ -105,10 +107,11 @@ def run_simulation(params):
     soma_v_vecs = []
     
     
-    for gid in gid_vect:
+    for neuron_param in params["neurons"]:
         
-        celltypename = params["neurons"][gid]["celltype"] 
-        cellclass_name = params["neurons"][gid]["cellclass"] 
+        celltypename = neuron_param["celltype"]
+        cellclass_name = neuron_param["cellclass"]
+        gid = neuron_param["gid"]
 
         cellclass = getattr(h, cellclass_name)
 
@@ -136,7 +139,7 @@ def run_simulation(params):
                 sec.insert("IextNoise")
                 sec.myseed_IextNoise = RNG.integers(0, 1000000000000000, 1)
                 sec.sigma_IextNoise = 0.005
-                sec.mean_IextNoise = params["neurons"][gid]["cellparams"]["iext"]
+                sec.mean_IextNoise = neuron_param["cellparams"]["iext"]
 
             mt = h.MechanismType(0)
             mt.select('IextNoise')
@@ -195,7 +198,7 @@ def run_simulation(params):
         
         post_idx = np.argwhere( gid_vect == syn_params["post_gid"] ).ravel()
         
-        if post_idx.size == 0: continue
+        # if post_idx.size == 0: continue
         post_idx = post_idx[0]
         
         postsynaptic_cell = all_cells[ post_idx ]
@@ -445,7 +448,7 @@ def run_simulation(params):
         rem_idx = int(rem_time / h.dt)
 
         with h5py.File(params["file_results"], 'w') as h5file:
-            celltypes = [neuron["celltype"] for neuron in params["neurons"]]
+            celltypes = params["cell_types_in_model"]
             t_sim = t_sim[rem_idx:] - rem_time
 
             h5file.create_dataset("time", data = t_sim)
