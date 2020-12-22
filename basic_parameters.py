@@ -63,9 +63,9 @@ def get_basic_params():
         },
         
         "CellNumbers" : {
-            "Npyr" :   4, # 1400,
-            "Npvbas" :  8, # 200,
-            "Nolm" :    3, # 80,
+            "Npyr" :   0, # 1400,
+            "Npvbas" :  5, # 200,
+            "Nolm" :    0, # 80,
             "Ncckbas" : 0, # 160,
             "Nivy" :    0, # 260, # 130,
             "Nngf" :    0, # 130, # 65,
