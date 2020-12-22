@@ -63,24 +63,24 @@ def get_basic_params():
         },
         
         "CellNumbers" : {
-            "Npyr" :   0, # 1400,
-            "Npvbas" :  5, # 200,
-            "Nolm" :    0, # 80,
-            "Ncckbas" : 0, # 160,
-            "Nivy" :    0, # 260, # 130,
-            "Nngf" :    0, # 130, # 65,
-            "Nbis" :    0, # 70, # 35,
-            "Naac" :    0, # 60, # 30,
-            "Nsca" :    0, # 40, # 20,
+            "Npyr" :   1400,
+            "Npvbas" :  200,
+            "Nolm" :    80,
+            "Ncckbas" : 160,
+            "Nivy" :    260, # 130,
+            "Nngf" :    130, # 65,
+            "Nbis" :    70, # 35,
+            "Naac" :    60, # 30,
+            "Nsca" :    40, # 20,
             
             
-            "Nca3_spatial" : 0, # 1400, # 3500,
-            "Nca3_non_spatial" : 0, # 1400, # 3500,
-            "Nmec" : 0, # 3500,
+            "Nca3_spatial" : 1400, # 3500,
+            "Nca3_non_spatial" : 1400, # 3500,
+            "Nmec" : 3500,
             "Nlec" : 0, ## 500,
-            "Nmsteevracells" : 0, # 200,
-            "Nmskomalicells" : 0, # 200,
-            "Nmsach"         : 0, # 150,
+            "Nmsteevracells" : 200,
+            "Nmskomalicells" : 200,
+            "Nmsach"         : 150,
         },
         
         "CellParameters" : {
@@ -240,7 +240,7 @@ def get_basic_params():
         
         "save_soma_v" : {
             "pyr" :  [0, ] , # [range(20, 30)],    # [0, ],
-            "pvbas" : [0, ], # [0, ], #
+            "pvbas" : [range(5)], # [0, ], #
             "olm" : [0, ],
             "cckbas" : [0, ],
             "ivy" : [0, ],
@@ -784,78 +784,74 @@ def get_basic_params():
             
             
             # hypotetical connections
-            #"olm2cckbas": {
-            #    "gmax": 1.5,
-            #    "gmax_std" : 0.7,
-            #    
-            #    "Erev": -75,
-            #    "tau_rise": 0.5,
-            #    "tau_decay": 4.0,
+            "olm2cckbas": {
+               "gmax": 1.5,
+               "gmax_std" : 0.7,
+               
+               "Erev": -75,
+               "tau_rise": 0.5,
+               "tau_decay": 4.0,
 
-            #   "prob": 0.2, 
+              "prob": 0.2, 
                 
-            #    "delay": 1.2,
-            #    "delay_std" : 0.2,
+               "delay": 1.2,
+               "delay_std" : 0.2,
                 
 
-             #   "sourse_compartment" : "soma",
-             #   "target_compartment" : "dendrite_list",
-            #},
+               "sourse_compartment" : "soma",
+               "target_compartment" : "dendrite_list",
+            },
             
-            #"bis2cckbas": {
-            #     "gmax": 1.5,
-            #     "gmax_std" : 0.7,
+            "bis2cckbas": {
+                "gmax": 1.5,
+                "gmax_std" : 0.7,
                 
-            #    "Erev": -75,
-            #    "tau_rise": 0.5,
-            #    "tau_decay": 4.0,
+               "Erev": -75,
+               "tau_rise": 0.5,
+               "tau_decay": 4.0,
 
-            #   "prob": 0.2, 
+              "prob": 0.2, 
                 
-            #    "delay": 1.2,
-            #    "delay_std" : 0.2,
+               "delay": 1.2,
+               "delay_std" : 0.2,
                 
 
-             #   "sourse_compartment" : "soma",
-             #   "target_compartment" : "dendrite_list",
-            #},
+               "sourse_compartment" : "soma",
+               "target_compartment" : "dendrite_list",
+            },
             
-            # "ngf2cckbas": {
-            #     "gmax": 1.5,
-            #     "gmax_std" : 0.7,
-            #
-            #     "Erev": -75,
-            #     "tau_rise": 0.5,
-            #     "tau_decay": 4.0,
-            #
-            #     "prob": 0.2,
-            #
-            #     "delay": 1.2,
-            #     "delay_std" : 0.2,
-            #
-            #
-            #     "sourse_compartment" : "soma",
-            #     "target_compartment" : "dendrite_list",
-            # },
+            "ngf2cckbas": {
+                "gmax": 1.5,
+                "gmax_std" : 0.7,
             
-            # "ivy2cckbas": {
-            #     "gmax": 0.5,
-            #     "gmax_std" : 0.2,
-            #
-            #     "Erev": -75,
-            #     "tau_rise": 0.5,
-            #     "tau_decay": 4.0,
-            #
-            #     "prob": 0.2,
-            #
-            #     "delay": 1.2,
-            #     "delay_std" : 0.2,
-            #
-            #
-            #     "sourse_compartment" : "soma",
-            #     "target_compartment" : "dendrite_list",
-            # },
-            #
+                "Erev": -75,
+                "tau_rise": 0.5,
+                "tau_decay": 4.0,
+            
+                "prob": 0.2,
+            
+                "delay": 1.2,
+                "delay_std" : 0.2,
+                "sourse_compartment" : "soma",
+                "target_compartment" : "dendrite_list",
+            },
+            
+            "ivy2cckbas": {
+                "gmax": 0.5,
+                "gmax_std" : 0.2,
+                "Erev": -75,
+                "tau_rise": 0.5,
+                "tau_decay": 4.0,
+
+                "prob": 0.2,
+
+                "delay": 1.2,
+                "delay_std" : 0.2,
+
+                "sourse_compartment" : "soma",
+                "target_compartment" : "dendrite_list",
+            },
+            
             # end connections to cckbas
             
             
@@ -1635,9 +1631,12 @@ def get_object_params(Nthreads=1):
         cell_types_in_model.extend( [celltype, ] * numbers )
         end_idx = len(cell_types_in_model)
         gids_of_celltypes[celltype] = np.arange(start_idx, end_idx)
-
-    neurons_by_threads = np.tile(np.arange(np.ceil(len(cell_types_in_model)/Nthreads)), Nthreads)
-    neurons_by_threads = neurons_by_threads[:len(cell_types_in_model)]
+    
+    Ncells = len(cell_types_in_model)
+    
+    
+    neurons_by_threads = np.tile(np.arange(Nthreads), int(np.ceil(Ncells/Nthreads)) )
+    neurons_by_threads = neurons_by_threads[:Ncells]
     # basic_params["celltypes"] = cell_types_in_model
     # print(neurons_by_threads)
 
@@ -1758,6 +1757,11 @@ def get_object_params(Nthreads=1):
                 neuron["cellparams"]["iext"] = np.random.lognormal( np.log(neuron["cellparams"]["iext"]), neuron["cellparams"]["iext_std"]   )
             else:
                 neuron["cellparams"]["iext"] = np.random.normal( neuron["cellparams"]["iext"], neuron["cellparams"]["iext_std"]   )
+            
+            # if cell_idx == 4:
+            #    neuron["cellparams"]["iext"] = 0.005
+
+
 
         #neurons.append(neuron)
         th_idx = int(neurons_by_threads[cell_idx])
@@ -2006,17 +2010,19 @@ def get_object_params(Nthreads=1):
             gap_juncs.append(gap)
             sgid_gap += 2
 
-            th_idx = neurons_by_threads[cell1_idx]
+            th_idx = int(neurons_by_threads[cell1_idx])
             OBJECTS_PARAMS[th_idx]["gap_junctions"].append(gap)
+            
+            th_idx2 = int(neurons_by_threads[cell2_idx])
+            if th_idx2 != th_idx:
+                OBJECTS_PARAMS[th_idx2]["gap_junctions"].append(gap)
 
-            th_idx = neurons_by_threads[cell2_idx]
-            OBJECTS_PARAMS[th_idx]["gap_junctions"].append(gap)
-
+    
     for th_idx in range(Nthreads):
-        OBJECTS_PARAMS[th_idx]["elecs"] = basic_params["elecs"]
-        OBJECTS_PARAMS[th_idx]["duration"] = basic_params["duration"]
-        OBJECTS_PARAMS[th_idx]["file_results"] = basic_params["file_results"]
-        OBJECTS_PARAMS[th_idx]["del_start_time"] = basic_params["del_start_time"]
+        OBJECTS_PARAMS[th_idx]["elecs"] = deepcopy(basic_params["elecs"])
+        OBJECTS_PARAMS[th_idx]["duration"] = deepcopy(basic_params["duration"])
+        OBJECTS_PARAMS[th_idx]["file_results"] = deepcopy(basic_params["file_results"])
+        OBJECTS_PARAMS[th_idx]["del_start_time"] = deepcopy(basic_params["del_start_time"])
 
         # OBJECTS_PARAMS["common_params"] = {}
         OBJECTS_PARAMS[th_idx]["common_params"]["radius4piramids"] = np.sqrt( basic_params["CellNumbers"]["Npyr"] / basic_params["PyrDencity"] ) / np.pi
