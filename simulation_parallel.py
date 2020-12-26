@@ -141,11 +141,15 @@ def run_simulation(params):
                 sec.sigma_IextNoise = 0.005
                 sec.mean_IextNoise = neuron_param["cellparams"]["iext"]
 
-            mt = h.MechanismType(0)
-            mt.select('IextNoise')
-            for sec in cell.axon_list:
-                 mt.remove(sec=sec)
-
+            if hasattr(cell, "axon_list"):
+                mt = h.MechanismType(0)
+                mt.select('IextNoise')
+                #print(cell.celltype)
+                for sec in cell.axon_list:
+                     mt.remove(sec=sec)
+            #else:
+                #print(cell.celltype)
+    
             firing = h.NetCon(cell.soma[0](0.5)._ref_v, None, sec=cell.soma[0])
             firing.threshold = -30 * mV
 
@@ -153,7 +157,7 @@ def run_simulation(params):
             # print("Hello from art neurons setting")
             cell.celltype = celltypename
             
-            for p_name, p_val in params["neurons"][gid]["cellparams"].items():
+            for p_name, p_val in neuron_param["cellparams"].items():
                 if hasattr(cell.acell, p_name):
                     setattr(cell.acell, p_name, p_val)
             setattr(cell.acell, "myseed", RNG.integers(0, 1000000000000000, 1) )
@@ -184,9 +188,10 @@ def run_simulation(params):
         
         all_cells.append(cell)
 
-
-    print("End of neurons settings")
     pc.barrier()
+    if pc.id() == 0:
+        print("End of neurons settings")
+    
     
     # set connection
     connections = h.List()
@@ -353,8 +358,9 @@ def run_simulation(params):
             pass
 
     pc.setup_transfer()
-        
-    print("End of connection settings")
+    pc.barrier()
+    if pc.id() == 0: 
+        print("End of connection settings")
     
     
     el_x = params["elecs"]["el_x"]
@@ -398,16 +404,20 @@ def run_simulation(params):
     pc.set_maxstep(5 * ms)
 
     
-    pc.barrier()
+    
     h.finitialize()
-    print("Start simulation")
+    pc.barrier()
+    if pc.id() == 0:
+        print("Start simulation")
     
 
     timer = time()
     pc.psolve(params["duration"] * ms)
-    print("End of the simulation!")
-    print("Time of simulation in sec ", time()-timer)
     pc.barrier()
+    if pc.id() == 0:
+        print("End of the simulation!")
+        print("Time of simulation in sec ", time()-timer)
+    
     
     # print(np.asarray(v_tmp))
     # if pc.id() == 0:
