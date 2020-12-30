@@ -283,7 +283,7 @@ def get_basic_params():
             },
             
             "ca3_non_spatial2pyr": {
-                "gmax": 0.8, #  0.016,
+                "gmax": 0.016,
                 "gmax_std" : 0.002,
                 
                 "Erev": 0,
@@ -1834,13 +1834,16 @@ def get_object_params(Nthreads=1):
                     grid_phase = mec_grid_phases[mec_idx]
                     
                     grid_centers = 1000 * prelib.get_grid_centers(grid_freq, grid_phase, basic_params["duration"]*0.001)
+                    
+                    gmax_tmp = gmax
                     for cent in grid_centers:
                         dist = pyr_coord - cent
                         dist_normalizer = np.exp(-0.5 * dist**2 / var_conns_on_pyr ) / (np.sqrt(var_conns_on_pyr * 2 * np.pi ))
                         if dist_normalizer > 0.01:
                             number_connections += 1
+                        gmax_tmp += gmax * dist_normalizer
                         
-                        gmax = gmax * dist_normalizer
+                    gmax = gmax_tmp
                 else:
                     gmax = 0.1 * gmax # !!!!!
 
