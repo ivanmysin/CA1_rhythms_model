@@ -62,24 +62,24 @@ def get_basic_params():
         },
         
         "CellNumbers" : {
-            "Npyr" : 1400,
-            "Npvbas" :  200,
-            "Nolm" : 80,
-            "Ncckbas" : 160,
-            "Nivy" : 260, # 130,
-            "Nngf" : 130, # 65,
-            "Nbis" : 70, # 35,
-            "Naac" : 60, # 30,
-            "Nsca" : 40, # 20,
+            "Npyr" : 4, # 1400,
+            "Npvbas" :  0, # 200,
+            "Nolm" : 0, # 80,
+            "Ncckbas" :  0, #160,
+            "Nivy" :  0, #260, # 130,
+            "Nngf" :  0, #130, # 65,
+            "Nbis" :  0, #70, # 35,
+            "Naac" :  0, #60, # 30,
+            "Nsca" :  0, #40, # 20,
             
             
-            "Nca3_spatial" : 3500,
-            "Nca3_non_spatial" : 3500,
-            "Nmec" : 500, # 3500
+            "Nca3_spatial" :  0, # 3500,
+            "Nca3_non_spatial" :  0, #3500,
+            "Nmec" : 3500, # 3500
             "Nlec" : 0, ## 500,
-            "Nmsteevracells" : 200,
+            "Nmsteevracells" :  0, #200,
             "Nmskomalicells" : 0, #200,
-            "Nmsach"         : 150,
+            "Nmsach"         :  0, #150,
         },
         
         "CellParameters" : {
@@ -133,7 +133,7 @@ def get_basic_params():
                 "high_freqs" : 110.0,
                 
                 "Rgrid" : 0.8,
-                "grid_freqs" : 1.0,
+                "grid_freqs" : 0.5,
                 "grid_phase" : 0, 
             },
             
@@ -309,7 +309,7 @@ def get_basic_params():
             },
             
            "mec2pyr": {
-                "gmax": 8, #0.1, # 0.06,
+                "gmax": 80, # 8, #0.1, # 0.06,
                 "gmax_std" : 0.007,
                 
                 "Erev": 0,
@@ -324,13 +324,13 @@ def get_basic_params():
 
                 "sourse_compartment" : "acell",
                 "target_compartment" : "lm_list",
-                "NMDA" : {
-                    "gNMDAmax" : 0.01, # mS
-                    "gmax_std" : 0.001,
-                    "tcon" : 2.3,   # ms
-                    "tcoff" : 95.0, # ms
-                    "enmda" : 0, 
-                },
+                # "NMDA" : {
+                #     "gNMDAmax" : 0.01, # mS
+                #     "gmax_std" : 0.001,
+                #     "tcon" : 2.3,   # ms
+                #     "tcoff" : 95.0, # ms
+                #     "enmda" : 0,
+                # },
             },
             
             "lec2pyr": {  # need to optimize
@@ -353,7 +353,7 @@ def get_basic_params():
             
 
             "pyr2pyr": {
-                "gmax": 5.0, # 0.01,
+                "gmax": 0, # 5.0, # 0.01,
                 "gmax_std" : 0.007,
 
                 "Erev": 0.0,
@@ -1723,20 +1723,21 @@ def get_object_params(Nthreads=1):
     Nmec = basic_params["CellNumbers"]["Nmec"]
 
 
-    pyr_coord_x = np.cumsum( np.zeros(Npyr) + 3 )
-    pyr_coord_x[pyr_coord_x.size//2:] = np.nan
+    pyr_coord_x =  np.zeros(Npyr) + 1500   # np.cumsum( np.zeros(Npyr) + 3 )
+    #pyr_coord_x[pyr_coord_x.size//2:] = np.nan
 
     pvbas_coord_x = np.cumsum( np.zeros(Npvbas) + 50)  #  50
     ca3_coord_x =  np.cumsum( np.zeros(Nca3) + 3 )
 
-    mec_grid_phases =  np.linspace(-np.pi, np.pi, Nmec)  # rad  !!!!!!!!!!!
-    mec_grid_freqs = np.zeros(Nmec) + 0.5    # Hz 
+    mec_grid_phases = np.linspace(1.4, 1.7, Nmec) # np.linspace(-np.pi, np.pi, Nmec)  # rad  !!!!!!!!!!!
+    mec_grid_freqs = np.zeros(Nmec) + 0.5    # Hz
 
 
     ca3_coord_x_iter = iter(ca3_coord_x)
     mec_grid_phases_iter = iter(mec_grid_phases)
     mec_grid_freqs_iter = iter(mec_grid_freqs)
-    # neurons = []
+
+    # neurons_tmp = []
     for cell_idx, celltype in enumerate(cell_types_in_model):
         cell_param = basic_params["CellParameters"][celltype]
         
@@ -1769,9 +1770,11 @@ def get_object_params(Nthreads=1):
 
 
 
-        #neurons.append(neuron)
+
         th_idx = int(neurons_by_threads[cell_idx])
         OBJECTS_PARAMS[th_idx]["neurons"].append(neuron)
+
+
 
 
     var_conns_on_pyr = 100.0
@@ -1832,18 +1835,20 @@ def get_object_params(Nthreads=1):
                     mec_idx = presynaptic_cell_idx - gids_of_celltypes["mec"][0]
                     grid_freq = mec_grid_freqs[mec_idx]
                     grid_phase = mec_grid_phases[mec_idx]
-                    
                     grid_centers = 1000 * prelib.get_grid_centers(grid_freq, grid_phase, basic_params["duration"]*0.001)
-                    
-                    gmax_tmp = gmax
+
+                    gmax_tmp = 0
                     for cent in grid_centers:
                         dist = pyr_coord - cent
+
                         dist_normalizer = np.exp(-0.5 * dist**2 / var_conns_on_pyr ) / (np.sqrt(var_conns_on_pyr * 2 * np.pi ))
                         if dist_normalizer > 0.01:
                             number_connections += 1
                         gmax_tmp += gmax * dist_normalizer
                         
                     gmax = gmax_tmp
+                    # if gmax > 0.5:
+                    #     print(grid_phase)
                 else:
                     gmax = 0.1 * gmax # !!!!!
 
@@ -1929,8 +1934,9 @@ def get_object_params(Nthreads=1):
             if gmax < 1e-5:
                 number_connections = 0
 
+
             for _ in range(number_connections):
-                
+
                 delay = np.random.lognormal(mean=np.log(conn_data["delay"]), sigma=conn_data["delay_std"]) 
                 if delay <= 0.5:
                     delay = 0.5
@@ -2040,6 +2046,38 @@ def get_object_params(Nthreads=1):
         OBJECTS_PARAMS[th_idx]["common_params"]["radius4piramids"] = np.sqrt( basic_params["CellNumbers"]["Npyr"] / basic_params["PyrDencity"] ) / np.pi
     
     return OBJECTS_PARAMS
+
+
+if __name__ == "__main__":
+    Nthreads = 4
+    objc_p = get_object_params(Nthreads=Nthreads)
+
+    # for ith in range(Nthreads):
+    #     neurons = objc_p[ith]["neurons"]
+    #     for neuron in neurons:
+    #         print(neuron["gid"], ith)
+
+
+
+    #     if neuron["celltype"] == "mec":
+    #         print(neuron["cellparams"]["grid_phase"])
+
+
+
+    for ith in range(Nthreads):
+        # neurons = objc_p[ith]["neurons"]
+        for syn in objc_p[ith]["synapses_params"]:
+            pre_gid = syn["pre_gid"]
+            pre_ith = int (pre_gid % Nthreads)
+            neuron_idx = int(pre_gid / Nthreads )
+            pre = objc_p[pre_ith]["neurons"][neuron_idx]
+
+            if pre["celltype"] == "mec":
+                if (syn["pre_gid"] != pre["gid"]):
+                    print("Hello")
+                ph = pre["cellparams"]["grid_phase"]
+                print(ph)
+
 
 
 # import matplotlib.pyplot as plt

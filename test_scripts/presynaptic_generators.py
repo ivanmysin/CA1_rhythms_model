@@ -2,6 +2,51 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.special import i0 as bessel
 
+# def get_grid_centers(grid_w, grid_phase, duration):
+#     n_max = int(grid_w * duration + grid_phase / (2 * np.pi)) + 1
+#
+#     n = np.arange(0, n_max)
+#     tgrid = (n - grid_phase / (2 * np.pi)) / grid_w
+#
+#     tgrid = tgrid[tgrid >= 0]
+#     tgrid = tgrid[tgrid <= duration]
+#
+#     return tgrid
+#
+# grid_phases = np.linspace(-np.pi, np.pi, 100)
+# gmax_arr = []
+# for gphase in grid_phases:
+#     grid_centers = 1000 * get_grid_centers(0.5, gphase, 3)
+#     number_connections = 0
+#     pyr_coord = 1500
+#     gmax_tmp = 0
+#     gmax = 1
+#     var_conns_on_pyr = 100
+#
+#
+#     for cent in grid_centers:
+#         dist = pyr_coord - cent
+#
+#         dist_normalizer = np.exp(-0.5 * dist ** 2 / var_conns_on_pyr) / (np.sqrt(var_conns_on_pyr * 2 * np.pi))
+#         if dist_normalizer > 0.01:
+#             number_connections += 1
+#         gmax_tmp += gmax * dist_normalizer
+#
+#     gmax = gmax_tmp
+#     gmax_arr.append(gmax)
+#
+# plt.plot(grid_phases, gmax_arr)
+# plt.show()
+#
+#
+t = np.linspace(0, 3, 5000)
+
+phis = 2*np.pi*0.5*t + 1.62
+s = np.cos(phis)
+plt.plot(t, s)
+plt.show()
+
+"""
 def my_vonmises(mu, kappa, size):
     
     I0 = bessel(kappa)
@@ -46,6 +91,12 @@ dfi = fi[1] - fi[0]
 pdf = np.exp(kappa * np.cos(fi - mu) ) / (2 * np.pi * I0) 
 
 print( np.sum(pdf) * dfi)
+"""
+
+
+
+
+
 
 """
 mu = -2.5

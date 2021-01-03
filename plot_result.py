@@ -6,7 +6,7 @@ import h5py
 from basic_parameters import get_object_params
 import processingLib as proclib
 
-basic_params = get_object_params()
+# basic_params = get_object_params()
 
 plotting_param = {
     "neuron_colors" : {
@@ -430,7 +430,7 @@ if __name__ == "__main__":
     # main_plots(filepath)
     # plot_lfp(filepath)
     # plot_current_source_density(filepath, "theta")
-    # plot_spike_raster(filepath)
+    plot_spike_raster(filepath)
     # plot_modulation_index(filepath)
     # plot_phase_by_amplitude_coupling(filepath)
     # plot_nm_phase_phase_coupling(filepath)
