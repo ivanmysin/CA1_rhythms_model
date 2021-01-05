@@ -93,14 +93,14 @@ def set_test_connections(h, conndata, pre_name, phase, cell, basic_params):
     
 
 def get_grid_centers(grid_w, grid_phase, duration):
-    n_max = int(grid_w * duration + grid_phase / (2 * np.pi)) + 1
 
+    n_max = int (2 * (grid_w * duration + grid_phase / (2 * np.pi) + 1) )
     n = np.arange(0, n_max)
-    tgrid = (n - grid_phase / (2 * np.pi)) / grid_w
-
-    tgrid = tgrid[tgrid >= 0]
-    tgrid = tgrid[tgrid <= duration]
-
+    tgrid = (n + grid_phase / (2 * np.pi)) / grid_w
+    
+    tgrid = tgrid[(tgrid >= 0)&(tgrid <= duration)]
+   
+ 
     return tgrid
     
     

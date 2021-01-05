@@ -7,18 +7,18 @@ from copy import deepcopy
 
 sys.path.append("../")
 import presimulation_lib as prelib
-from basic_parameters import basic_params
+#from basic_parameters import basic_params
 from time import time
 
 
 
 ###### parameters block ############
 dur = 5000
-Ngens = 500
+Ngens = 50
 Rtheta = 0.4
 Rgamma = 0.6
 
-Rgrid = 0.7
+Rgrid = 0.9
 #####################################
 
 RNG = np.random.default_rng()
@@ -26,7 +26,7 @@ h.load_file("stdgui.hoc")
 h.load_file("stdrun.hoc")
 
 load_mechanisms("../mods/")
-print("Hello")
+
 
 generators = []
 firings = []
@@ -44,16 +44,15 @@ for idx in range(Ngens):
 
     # gen = h.ArtificialRhytmicPlaceCell()
     gen = h.ArtificialRhytmicGridCell()
-    gen.delta_t = 0.5
+    gen.delta_t = 0.1
 
-    gen.spike_rate = 100000
+    gen.spike_rate = 1000000
     # gen.place_center_t = places[idx]
     # gen.place_t_radius = 300
-    gen.grid_freqs = 1.0
+    gen.grid_freqs = 1.5
     gen.grid_kappa = grid_kappa
     gen.grid_I0 = grid_i0
-    gen.grid_phase = grid_phases[idx]
-    
+    gen.grid_phase = 1.5 # grid_phases[idx]    
     
     
     gen.latency = 10
@@ -79,15 +78,40 @@ for idx in range(Ngens):
 h.tstop = dur
 h.run()
 
-fig, ax = plt.subplots()
+
+
+fig, ax = plt.subplots(nrows=2, sharex=True)
 for idx in range(Ngens):
     
     t = np.asarray( spike_times_vecs[idx] )
 
-    print(t.size)
+    #print(t.size)
 
     fir = np.zeros_like(t) + idx + 1
-    ax.scatter(t, fir, color="blue", s=0.5)
+    ax[1].scatter(t, fir, color="blue", s=0.5)
+    
+    phis = 2*np.pi*0.001*1.5*t
+    
+    a = np.cos(phis) + 1j*np.sin(phis)
 
-ax.set_ylim(0, Ngens)
+    angle = np.angle(np.sum(a))
+    #print(angle)
+
+
+tcentrs = 1000 * prelib.get_grid_centers(1.5, 1.5, dur*0.001)
+
+t = np.arange(0, dur, 0.2) # np.linspace(0, dur, 10000)
+phi = 2*np.pi * 1.5 * 0.001 * t - 1.5
+
+s = np.exp( np.cos(phi) ) #np.cos(2*np.pi*grid_w*tgrid + grid_phase) )
+
+
+
+ax[0].plot(t, s, color="blue")
+ax[0].plot(t, np.zeros_like(t), color="green")
+ax[0].scatter(tcentrs, np.zeros_like(tcentrs), color="red")
+
+
+
+ax[1].set_ylim(0, Ngens)
 plt.show()
