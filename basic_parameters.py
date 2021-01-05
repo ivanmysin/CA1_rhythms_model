@@ -1729,7 +1729,7 @@ def get_object_params(Nthreads=1):
     pvbas_coord_x = np.cumsum( np.zeros(Npvbas) + 50)  #  50
     ca3_coord_x =  np.cumsum( np.zeros(Nca3) + 3 )
 
-    mec_grid_phases = np.linspace(1.4, 1.7, Nmec) # np.linspace(-np.pi, np.pi, Nmec)  # rad  !!!!!!!!!!!
+    mec_grid_phases = np.linspace(-np.pi, np.pi, Nmec)  # rad  !!!!!!!!!!!
     mec_grid_freqs = np.zeros(Nmec) + 0.5    # Hz
 
 
