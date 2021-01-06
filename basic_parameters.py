@@ -62,24 +62,24 @@ def get_basic_params():
         },
         
         "CellNumbers" : {
-            "Npyr" : 4, # 1400,
-            "Npvbas" :  0, # 200,
-            "Nolm" : 0, # 80,
-            "Ncckbas" :  0, #160,
-            "Nivy" :  0, #260, # 130,
-            "Nngf" :  0, #130, # 65,
-            "Nbis" :  0, #70, # 35,
-            "Naac" :  0, #60, # 30,
-            "Nsca" :  0, #40, # 20,
+            "Npyr" : 1400,
+            "Npvbas" :  200,
+            "Nolm" : 80,
+            "Ncckbas" : 160,
+            "Nivy" :  260, # 130,
+            "Nngf" :  130, # 65,
+            "Nbis" :  70, # 35,
+            "Naac" :  60, # 30,
+            "Nsca" :  40, # 20,
             
             
-            "Nca3_spatial" :  0, # 3500,
-            "Nca3_non_spatial" :  0, #3500,
+            "Nca3_spatial" :  3500,
+            "Nca3_non_spatial" :  3500,
             "Nmec" : 3500, # 3500
             "Nlec" : 0, ## 500,
-            "Nmsteevracells" :  0, #200,
+            "Nmsteevracells" :  200,
             "Nmskomalicells" : 0, #200,
-            "Nmsach"         :  0, #150,
+            "Nmsach"         :  150,
         },
         
         "CellParameters" : {
@@ -353,7 +353,7 @@ def get_basic_params():
             
 
             "pyr2pyr": {
-                "gmax": 0, # 5.0, # 0.01,
+                "gmax": 5.0, # 0.01,
                 "gmax_std" : 0.007,
 
                 "Erev": 0.0,
@@ -1723,8 +1723,8 @@ def get_object_params(Nthreads=1):
     Nmec = basic_params["CellNumbers"]["Nmec"]
 
 
-    pyr_coord_x =  np.zeros(Npyr) + 1500   # np.cumsum( np.zeros(Npyr) + 3 )
-    #pyr_coord_x[pyr_coord_x.size//2:] = np.nan
+    pyr_coord_x = np.cumsum( np.zeros(Npyr) + 3 ) # np.zeros(Npyr) + 1500   # 
+    pyr_coord_x[pyr_coord_x.size//2:] = np.nan
 
     pvbas_coord_x = np.cumsum( np.zeros(Npvbas) + 50)  #  50
     ca3_coord_x =  np.cumsum( np.zeros(Nca3) + 3 )
@@ -1850,7 +1850,7 @@ def get_object_params(Nthreads=1):
                     # if gmax > 0.5:
                     #     print(grid_phase)
                 else:
-                    gmax = 0.1 * gmax # !!!!!
+                    gmax = 0.02 * gmax # !!!!!
 
                 
             elif conn_name == "pyr2pyr":
@@ -1867,7 +1867,7 @@ def get_object_params(Nthreads=1):
                         number_connections += 1
                     gmax = gmax * dist_normalizer
                 else:
-                    gmax = gmax * 0.1 # !!!!!!!
+                    gmax = gmax * 0.02 # !!!!!!!
 
             elif conn_name == "pvbas2pyr":
                 pyr_idx = postsynaptic_cell_idx - gids_of_celltypes["pyr"][0]
@@ -1887,7 +1887,7 @@ def get_object_params(Nthreads=1):
                     gmax = gmax * dist_normalizer
                 
                 else:
-                    gmax = gmax * 0.1 # !!!!
+                    gmax = gmax * 0.02 # !!!!
 
             elif conn_name == "pyr2pvbas":
                 pyr_idx = presynaptic_cell_idx - gids_of_celltypes["pyr"][0]
