@@ -297,7 +297,7 @@ def plot_phase_precession(filepath):
         theta_signal = h5file["extracellular/electrode_1/lfp/processing/bands/channel_1/theta"][:]
         theta_phases = np.angle( hilbert(theta_signal) )
 
-        firing_group =  h5file["extracellular/electrode_1/firing/origin_data/pyr"]
+        firing_group = h5file["extracellular/electrode_1/firing/origin_data/pyr"] # pyr !!!!
 
         sampling_rate *= 0.001
 
@@ -309,25 +309,31 @@ def plot_phase_precession(filepath):
         ax_out.set_title("Out")
 
         for firing in firing_group.values():
-            if firing.size < 10: continue
-            indexes = (firing * sampling_rate).astype(np.int)
+            if firing.size < 4: continue
+
+            indexes = (np.floor(firing * sampling_rate) - 1).astype(np.int)
 
             place_center = np.median(firing)
 
             firing_during_place = firing - place_center
 
-            is_inside = np.abs(firing_during_place) < 2000
+            #if np.std(firing_during_place) > 5000: continue
 
+            is_inside = np.abs(firing_during_place) < 2000
             phases_during_place = theta_phases[indexes]
 
-            firing_during_place = firing_during_place[is_inside]
-            phases_during_place = phases_during_place[is_inside]
+            firing_inside = firing_during_place[is_inside]
+            phases_inside = phases_during_place[is_inside]
+
+            ax_in.scatter(firing_inside, phases_inside, s=2)
+
+            is_outside = np.logical_not(is_inside)
+            firing_outside = firing_during_place[is_outside]
+            phases_outside = phases_during_place[is_outside]
+
+            ax_out.scatter(firing_outside, phases_outside, s=2)
 
 
-            if np.abs(place_center - 5000) < 100:
-                ax_in.scatter(firing_during_place, phases_during_place, s=2)
-            else:
-                ax_out.scatter(firing_during_place, phases_during_place, s=2)
     plt.show()
 
 ###################################################################################
@@ -430,7 +436,7 @@ if __name__ == "__main__":
     # main_plots(filepath)
     # plot_lfp(filepath)
     # plot_current_source_density(filepath, "theta")
-    plot_spike_raster(filepath)
+    # plot_spike_raster(filepath)
     # plot_modulation_index(filepath)
     # plot_phase_by_amplitude_coupling(filepath)
     # plot_nm_phase_phase_coupling(filepath)
@@ -438,9 +444,9 @@ if __name__ == "__main__":
     # plot_v_vs_pyr_lfp(filepath)
 
 
-    plot_v(filepath)
+    # plot_v(filepath)
     # plot_pyr_layer_lfp_vs_raster(filepath)
-    # plot_phase_precession(filepath)
+    plot_phase_precession(filepath)
 
 
 
