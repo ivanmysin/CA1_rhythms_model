@@ -29,15 +29,16 @@ def get_basic_params():
     basic_params = {
         "elecs" : {
             "el_x" : np.zeros(Nelecs),
-            "el_y" : np.zeros(Nelecs), # np.linspace(-200, 600, Nelecs),
+            "el_y" : np.zeros(Nelecs), # np.linspace(-200, 600, Nelecs), #
             "el_z" : np.zeros(Nelecs),
         },
         "PyrDencity" : 0.2, # pyramidal cells / micrometer^2
 
         "file_results":  "../../Data/CA1_simulation/test.hdf5", # None, #
         "duration" : 5000, # 10000 # 10 sec simulation time
+        "step_duration" : 500,
         
-        "del_start_time" : 0, # 400, # time after start for remove
+        "del_start_time" : 0, # time after start for remove
         
         
         "CellNumbersInFullModel" : {
@@ -62,24 +63,24 @@ def get_basic_params():
         },
         
         "CellNumbers" : {
-            "Npyr" : 1500, # 9000,
+            "Npyr" : 9000, # 1500, # 
             "Npvbas" :  200,
-            "Nolm" : 80,
-            "Ncckbas" : 160,
-            "Nivy" : 260, # 130,
-            "Nngf" : 130, # 65,
+            "Nolm" :  80,
+            "Ncckbas" :  160,
+            "Nivy" :  260, # 130,
+            "Nngf" :  130, # 65,
             "Nbis" : 70, # 35,
             "Naac" : 60, # 30,
             "Nsca" : 40, # 20,
             
             
             "Nca3_spatial" :  3500,
-            "Nca3_non_spatial" :  3500,
+            "Nca3_non_spatial" : 3500,
             "Nmec" : 3500, # 3500
             "Nlec" : 0, ## 500,
             "Nmsteevracells" :  200,
             "Nmskomalicells" : 0, #200,
-            "Nmsach"         : 150,
+            "Nmsach"         :  150,
         },
         
         "CellParameters" : {
@@ -183,7 +184,7 @@ def get_basic_params():
             
             "pyr" : {
                 "cellclass" : "CA1PyramidalCell", # "poolosyncell", # 
-                "iext" : -0.002,  #0.002,
+                "iext" : 0, #-0.008,  #0.002,
                 "iext_std" : 0.002,
             },
             
@@ -225,7 +226,7 @@ def get_basic_params():
         
             "bis" : {
                 "cellclass" : "CA1BistratifiedCell", # "bistratifiedcell",
-                "iext" : 0.005,
+                "iext" : 0.002,
                 "iext_std" : 0.002,
             },
             
@@ -257,7 +258,7 @@ def get_basic_params():
             
             # connection to pyramidal neurons
             "ca3_spatial2pyr": {
-                "gmax": 80, # 0.016,
+                "gmax": 50, # 0.016,
                 "gmax_std" : 0.002,
                 
                 "Erev": 0,
@@ -274,7 +275,7 @@ def get_basic_params():
                 "target_compartment" : "rad_list",
 
                 "NMDA" : {
-                    "gNMDAmax" : 0.05, # mS
+                    "gNMDAmax" : 0.02, # mS
                     "gmax_std" : 0.001,
                     "tcon" : 2.3,   # ms
                     "tcoff" : 95.0, # ms
@@ -300,7 +301,7 @@ def get_basic_params():
                 "target_compartment" : "rad_list",
 
                 "NMDA" : {
-                    "gNMDAmax" : 0.05, # mS
+                    "gNMDAmax" : 0.02, # mS
                     "gmax_std" : 0.001,
                     "tcon" : 2.3,   # ms
                     "tcoff" : 95.0, # ms
@@ -309,7 +310,7 @@ def get_basic_params():
             },
             
            "mec2pyr": {
-                "gmax": 20, #0.1, # 0.06,
+                "gmax": 50, # 20 #0.1, # 0.06,
                 "gmax_std" : 0.007,
                 
                 "Erev": 0,
@@ -325,7 +326,7 @@ def get_basic_params():
                 "sourse_compartment" : "acell",
                 "target_compartment" : "lm_list",
                 "NMDA" : {
-                     "gNMDAmax" : 0.01, # mS
+                     "gNMDAmax" : 0.02, # mS
                      "gmax_std" : 0.001,
                      "tcon" : 2.3,   # ms
                      "tcoff" : 95.0, # ms
@@ -370,7 +371,7 @@ def get_basic_params():
                 "target_compartment" : "basal_list",
                 
                 "NMDA" : {
-                    "gNMDAmax" : 0.05, # mS
+                    "gNMDAmax" : 0.02, # mS
                     "gmax_std" : 0.001,
                     "tcon" : 2.3,   # ms
                     "tcoff" : 95.0, # ms
@@ -398,7 +399,7 @@ def get_basic_params():
 
           
            "ivy2pyr": {
-                "gmax": 0.053,
+                "gmax": 0.1, # 0.053,
                 "gmax_std" : 0.02,
                 
                 "Erev": -75,
@@ -471,7 +472,7 @@ def get_basic_params():
             },
             
            "bis2pyr": {
-                "gmax": 0.009,
+                "gmax": 0.1, # 0.009,
                 "gmax_std" : 0.005,
 
                 "Erev": -75,
@@ -1724,7 +1725,7 @@ def get_object_params(Nthreads=1):
 
 
     pyr_coord_x = np.cumsum( np.zeros(Npyr) + 3 ) # np.zeros(Npyr) + 1500   # 
-    pyr_coord_x[pyr_coord_x.size//2:] = np.nan
+    pyr_coord_x[pyr_coord_x.size//2:] = np.nan 
 
     pvbas_coord_x = np.cumsum( np.zeros(Npvbas) + 50)  #  50
     ca3_coord_x =  np.cumsum( np.zeros(Nca3) + 3 )
@@ -1839,7 +1840,7 @@ def get_object_params(Nthreads=1):
 
                     gmax_tmp = 0
                     for cent in grid_centers:
-                        dist = pyr_coord - cent - 100
+                        dist = pyr_coord - cent - 500
 
                         dist_normalizer = np.exp(-0.5 * dist**2 / var_conns_on_pyr ) / (np.sqrt(var_conns_on_pyr * 2 * np.pi ))
                         if dist_normalizer > 0.01:
@@ -1850,7 +1851,7 @@ def get_object_params(Nthreads=1):
                     # if gmax > 0.5:
                     #     print(grid_phase)
                 else:
-                    gmax = 0.02 * gmax # !!!!!
+                    gmax = 0.01 * gmax # !!!!!
 
                 
             elif conn_name == "pyr2pyr":
@@ -2039,6 +2040,7 @@ def get_object_params(Nthreads=1):
     for th_idx in range(Nthreads):
         OBJECTS_PARAMS[th_idx]["elecs"] = deepcopy(basic_params["elecs"])
         OBJECTS_PARAMS[th_idx]["duration"] = deepcopy(basic_params["duration"])
+        OBJECTS_PARAMS[th_idx]["step_duration"] = deepcopy(basic_params["step_duration"])
         OBJECTS_PARAMS[th_idx]["file_results"] = deepcopy(basic_params["file_results"])
         OBJECTS_PARAMS[th_idx]["del_start_time"] = deepcopy(basic_params["del_start_time"])
 

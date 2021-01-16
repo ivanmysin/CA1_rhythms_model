@@ -410,8 +410,22 @@ def run_simulation(params):
     if pc.id() == 0:
         print("Start simulation")
     
-
+    
     timer = time()
+    
+    #ndurs = int(params["duration"] / params["step_duration"])
+    #last_dur = params["duration"] % params["step_duration"]
+    
+    #for idx_sim in range(ndurs):
+    #    pc.psolve(params["step_duration"] * ms)
+        
+    #    pc.barrier()
+    #    if pc.id() == 0:
+    #        print( (idx_sim + 1) * params["step_duration"] , " ms is simulated")
+    
+    #if last_dur > 0:
+    #    pc.psolve(last_dur * ms)
+    
     pc.psolve(params["duration"] * ms)
     pc.barrier()
     if pc.id() == 0:
