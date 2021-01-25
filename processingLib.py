@@ -174,7 +174,7 @@ def get_asymetry_index(lfp, orders = 25):
 
 def get_phase_disrtibution(train, lfp, fs):
     if train.size == 0:
-        return np.empty(0, dtype=np.float), np.empty(0, dtype=np.float)
+        return np.empty(0, dtype=np.float), np.empty(0, dtype=np.float), np.empty(0, dtype=np.float)
 
 
 

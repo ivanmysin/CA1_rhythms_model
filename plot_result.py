@@ -228,12 +228,14 @@ def plot_phase_disrtibution(filepath):
     with h5py.File(filepath, 'r') as h5file:
         distr_group = h5file["extracellular/electrode_1/firing/processing/phase_distrs"]
 
-        fig, axes = plt.subplots(nrows=9, ncols=3, figsize=(5, 10))
+        fig, axes = plt.subplots(nrows=len(plotting_param["neuron_order"]), ncols=3, figsize=(5, 10))
         for celltypes_idx, celltype in enumerate(plotting_param["neuron_order"]):
             for rhythm_idx, rhythm_name in enumerate(plotting_param["rhytms_order"]):
                 try:
                     phase_distr = distr_group[celltype][rhythm_name][:]
                 except KeyError:
+                    continue
+                if phase_distr.size == 0:
                     continue
                 phases = np.linspace(-np.pi, np.pi, phase_distr.size)
                 signal4phase = np.max(phase_distr) * 0.25 * (np.cos(phases) + 1)
