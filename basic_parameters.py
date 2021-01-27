@@ -98,8 +98,8 @@ def get_basic_params():
                 "place_center_t" : 500,
                 "place_t_radius" : 1500, # 
             
-                "low_freqs" : 8.0, #  5.0,
-                "high_freqs" : 30.0,
+                "low_freqs" : 6.0, #  5.0,
+                "high_freqs" : 45.0,  # 30.0,
 
                 "delta_t" : 0.2,
             },
@@ -107,8 +107,8 @@ def get_basic_params():
             "ca3_non_spatial" : {
                 "cellclass" : "ArtifitialCell",
                 "R" : 0.5,
-                "mu" : 1.74532925,
-                "freqs" : 8.0, # 5.0,
+                "mu" : 1.75,
+                "freqs" : 6.0, # 5.0,
                 "spike_rate" : 1.0,   # 100000.0,
                 "latency" : 10.0,
                 "delta_t" : 0.2,
@@ -130,8 +130,8 @@ def get_basic_params():
 
                 "delta_t" : 0.2,
                 
-                "low_freqs" : 8.0, #  5.0,
-                "high_freqs" : 80.0,
+                "low_freqs" : 6.0, #  5.0,
+                "high_freqs" : 60.0,
                 
                 "Rgrid" : 0.8,
                 "grid_freqs" : 0.5,
@@ -142,7 +142,7 @@ def get_basic_params():
                 "cellclass" : "ArtifitialCell",
                 "R" : 0.1,
                 "mu" : 0.0,
-                "freqs" : 8.0, # 5.0,
+                "freqs" : 6.0, # 5.0,
                 "latency" : 10.0,
                 "spike_rate": 5.0,  
                 
@@ -153,7 +153,7 @@ def get_basic_params():
                 "cellclass" : "ArtifitialCell",
                 "R" : 0.6,
                 "mu" : np.pi,
-                "freqs" : 8.0, # 5.0,
+                "freqs" : 6.0, # 5.0,
                 "latency" : 4.0,
                 "spike_rate": 15.0,
                 
@@ -164,7 +164,7 @@ def get_basic_params():
                 "cellclass" : "ArtifitialCell",
                 "R" : 0.6,
                 "mu" : 0.0,  # !!!!
-                "freqs" : 8.0, # 5.0,
+                "freqs" : 6.0, # 5.0,
                 "latency" : 4.0,
                 "spike_rate": 15.0,  
                 
@@ -175,7 +175,7 @@ def get_basic_params():
                 "cellclass" : "ArtifitialCell",
                 "R" : 0.4,
                 "mu" : np.pi,  # !!!!
-                "freqs" : 8.0, # 5.0,
+                "freqs" : 6.0, # 5.0,
                 "latency" : 10.0,
                 "spike_rate": 3.0,
                 
@@ -310,7 +310,7 @@ def get_basic_params():
             },
             
            "mec2pyr": {
-                "gmax": 156, # 50, # 20 #0.1, # 0.06,
+                "gmax": 90, #50, # 20 #0.1, # 0.06,
                 "gmax_std" : 0.007,
                 
                 "Erev": 0,
@@ -1347,8 +1347,8 @@ def get_basic_params():
             
            
             # connections to ngf
-            "ca3_spatial2nfg": {
-                "gmax": 3,  #1.42,
+            "ca3_spatial2ngf": {
+                "gmax": 1.42,
                 "gmax_std" : 0.6 ,
                 
                 "Erev": 0,
@@ -1365,8 +1365,8 @@ def get_basic_params():
                 "target_compartment" : "dendrite_list",
             },
             
-            "ca3_non_spatial2nfg": {
-                "gmax": 3,  # 1.42,
+            "ca3_non_spatial2ngf": {
+                "gmax": 1.42,
                 "gmax_std" : 0.6 ,
                 
                 "Erev": 0,
@@ -1457,7 +1457,7 @@ def get_basic_params():
      
             # hypotetical connections
             "ivy2ngf": {
-                "gmax": 0.9,
+                "gmax": 20, # 0.9,
                 "gmax_std" : 0.7,
                 
                 "Erev": -75,
