@@ -19,8 +19,9 @@ processing_param = {
     "filt_bands" : {
         "delta" : [1, 4], 
         "theta" : [4, 12], 
-        "slow gamma" : [25, 50], 
-        "fast gamma" : [50, 120], 
+        "slow gamma" : [25, 50],
+        "middle gamma" : [50, 80], 
+        "fast gamma" : [80, 120], 
         # "slow ripples" : [80, 250], 
         # "fast ripples" : [200, 500], 
    
