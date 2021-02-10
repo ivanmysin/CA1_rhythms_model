@@ -35,7 +35,7 @@ def get_basic_params():
         "PyrDencity" : 0.2, # pyramidal cells / micrometer^2
 
         "file_results":  "../../Data/CA1_simulation/test.hdf5", # None, #
-        "duration" : 2500, #  700, # , # 10000 # 10 sec simulation time
+        "duration" : 10200, # 700, # 2500, #, #  # 10 sec simulation time
         "step_duration" : 0,
         
         "del_start_time" : 200, # time after start for remove
@@ -63,13 +63,13 @@ def get_basic_params():
         },
         
         "CellNumbers" : {
-            "Npyr" : 1400, # 9000, #
+            "Npyr" : 9000, #
             "Npvbas" : 200,
             "Nolm" :  80,
             "Ncckbas" :  160,
             "Nivy" : 260, # 130,
             "Nngf" : 130, # 65,
-            "Nbis" : 0, # 70, # 35,
+            "Nbis" : 70, # 35,
             "Naac" : 60, # 30,
             "Nsca" : 40, # 20,
             
@@ -258,7 +258,7 @@ def get_basic_params():
             
             # connection to pyramidal neurons
             "ca3_spatial2pyr": {
-                "gmax": 90, # 160.0, # 0.016,
+                "gmax": 160.0, # 0.016,
                 "gmax_std" : 0.9, # 0.002,
                 
                 "Erev": 0,
@@ -284,7 +284,7 @@ def get_basic_params():
             },
             
             "ca3_non_spatial2pyr": {
-                "gmax":  0.016, # 0.8, # 
+                "gmax":  0.016, # 0.8, #
                 "gmax_std" : 0.002, # 0.5, #
                 
                 "Erev": 0,
@@ -310,7 +310,7 @@ def get_basic_params():
             },
             
            "mec2pyr": {
-                "gmax": 50, # 90.0, #50, # 20 #0.1, # 0.06,
+                "gmax": 50, # 20 #0.1, # 0.06,
                 "gmax_std" : 0.4, #  0.007,
                 
                 "Erev": 0,
@@ -354,14 +354,14 @@ def get_basic_params():
             
 
             "pyr2pyr": {
-                "gmax": -5.0, # 0.01,
+                "gmax": 50.0, # 0.01,
                 "gmax_std" : 4.0, # 0.007,
 
                 "Erev": 0.0,
                 "tau_rise": 0.1,
                 "tau_decay": 1.5,
 
-                "prob": 0, # 0.009,
+                "prob": 0.01,
 
                 "delay": 1.2,
                 "delay_std" : 0.2,
@@ -425,7 +425,7 @@ def get_basic_params():
                 "tau_rise": 0.28,
                 "tau_decay": 8.4,
 
-                "prob": 0, # 0.29,
+                "prob": 0.29,
 
                 "delay": 1.2,
                 "delay_std" : 0.2,
@@ -472,7 +472,7 @@ def get_basic_params():
             },
             
            "bis2pyr": {
-                "gmax": 0.1, # 0.009,
+                "gmax": 0.009,
                 "gmax_std" : 0.005,
 
                 "Erev": -75,
@@ -864,7 +864,7 @@ def get_basic_params():
             
             # connections to aac
             "msteevracells2aac" : {
-                "gmax" : 0.5, # !!!! 
+                "gmax" : 0.9, # !!!! 
                 "gmax_std" : 0.7, # !!!!
                 "Erev": -75,
                 "tau_rise": 0.5,
@@ -944,7 +944,7 @@ def get_basic_params():
                 "tau_rise": 2,
                 "tau_decay": 6.3,
 
-                "prob": 0.02,
+                "prob": 0.01,
                 
                 "delay": 10.0,
                 "delay_std" : 0.5,
@@ -1158,7 +1158,7 @@ def get_basic_params():
             
             # connections to bis
            "pyr2bis": {
-                "gmax": 0.8, # 0.14,
+                "gmax": 0.5, # 0.14,
                 "gmax_std" : 0.07,
                 
                 "Erev": 0,
@@ -1194,8 +1194,8 @@ def get_basic_params():
             },
             
             "cckbas2bis": {
-                "gmax": 0.5,
-                "gmax_std" : 0.2,
+                "gmax": 0.1,
+                "gmax_std" : 0.05,
                 
                 "Erev": -75,
                 "tau_rise": 0.5,
@@ -1212,8 +1212,8 @@ def get_basic_params():
             },
             
             "sca2bis": {
-                "gmax": 0.5,
-                "gmax_std" : 0.2,
+                "gmax": 0.1,
+                "gmax_std" : 0.05,
                 
                 "Erev": -75,
                 "tau_rise": 0.5,
@@ -1229,10 +1229,63 @@ def get_basic_params():
                 "target_compartment" : "dendrite_list",
             },
             
+
+            
             # hypotetical connetions to bis
+            "ca3_spatial2bis": {
+                "gmax": 0.02, # 0.14,
+                "gmax_std" : 0.01,
+                
+                "Erev": 0,
+                "tau_rise": 1.3,
+                "tau_decay": 8.0,
+
+                "prob": 0.02,
+                
+                "delay": 1.2,
+                "delay_std" : 0.2,
+                
+
+                "sourse_compartment" : "acell",
+                "target_compartment" : "dendrite_list",
+            },
             
+            "ca3_non_spatial2bis": {
+                "gmax": 0.02,
+                "gmax_std" : 0.01,
+                
+                "Erev": 0,
+                "tau_rise": 1.3,
+                "tau_decay": 8.0,
+
+                "prob": 0.02,
+                
+                "delay": 1.2,
+                "delay_std" : 0.2,
+                
+
+                "sourse_compartment" : "acell",
+                "target_compartment" : "dendrite_list",
+            },
             
-            # end connections to bis
+            "mec2bis": {
+                "gmax": 0.5,
+                "gmax_std" : 0.3,
+                
+                "Erev": 0,
+                "tau_rise": 1.3,
+                "tau_decay": 8.0,
+
+                "prob": 0.01,
+                
+                "delay": 10.2,
+                "delay_std" : 0.2,
+                
+
+                "sourse_compartment" : "acell",
+                "target_compartment" : "dendrite_list",
+            },
+            
             "bis2bis": {
                 "gmax": 0.5,
                 "gmax_std" : 0.2,
@@ -1241,7 +1294,7 @@ def get_basic_params():
                 "tau_rise": 0.5,
                 "tau_decay": 4.0,
 
-                "prob": 0.5, 
+                "prob": 0.2, 
                 
                 "delay": 1.2,
                 "delay_std" : 0.2,
@@ -1250,6 +1303,8 @@ def get_basic_params():
                 "sourse_compartment" : "soma",
                 "target_compartment" : "dendrite_list",
             },
+            
+            # end connections to bis
             
             # connections to ivy    
            "pyr2ivy": {
@@ -1355,7 +1410,7 @@ def get_basic_params():
                 "tau_rise": 0.5,
                 "tau_decay": 3,
 
-                "prob": 0.8,
+                "prob": 0.6,
                 
                 "delay": 1.5,
                 "delay_std" : 0.5,
@@ -1373,7 +1428,7 @@ def get_basic_params():
                 "tau_rise": 0.5,
                 "tau_decay": 3,
 
-                "prob": 0.8,
+                "prob": 0.6,
                 
                 "delay": 1.5,
                 "delay_std" : 0.5,
@@ -1391,7 +1446,7 @@ def get_basic_params():
                 "tau_rise": 0.5,
                 "tau_decay": 3,
 
-                "prob": 0.6, # ! need to optimize
+                "prob": 0.1, # ! need to optimize
                 
                 "delay": 10.2,
                 "delay_std" : 0.2,
@@ -1870,7 +1925,7 @@ def get_object_params(Nthreads=1):
                     # if gmax > 0.5:
                     #     print(grid_phase)
                 else:
-                    gmax = 0.01 * gmax # !!!!!
+                    gmax = 0.016 # 0.01 * gmax # !!!!!
 
                 
             elif conn_name == "pyr2pyr":
@@ -1880,7 +1935,7 @@ def get_object_params(Nthreads=1):
                 pyr_coord1 = pyr_coord_x[pyr_idx1]
                 pyr_coord2 = pyr_coord_x[pyr_idx2]
                 
-                if not ( np.isnan(pyr_coord1) or  np.isnan(pyr_coord2) ):
+                if not ( np.isnan(pyr_coord1) or np.isnan(pyr_coord2) ):
                     dist = pyr_coord_x[pyr_idx1] - pyr_coord_x[pyr_idx2]
                     dist_normalizer = np.exp(-0.5 * dist**2 / var_conns_on_pyr ) / (np.sqrt(var_conns_on_pyr * 2 * np.pi ))
                     if dist_normalizer > 0.01:
