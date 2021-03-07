@@ -29,7 +29,7 @@ plotting_param = {
         "msach": (0.8, 0.2, 0.0), #
     },
 
-    "neuron_order" : ["pyr", "pvbas", "cckbas", "olm", "aac", "ivy", "bis", "sca", "ngf", "ca3_spatial", "ca3_non_spatial", "mec", "lec", "msteevracells", "mskomalicells", "msach"],
+    "neuron_order" : ["pyr", "pvbas", "cckbas", "olm", "aac", "ivy", "bis", "sca", "ngf", "ca3_spatial", "ca3_non_spatial", "mec",  "msteevracells", "msach"], # "mskomalicells","lec",
     "rhytms_order" : ["theta", "slow gamma", "fast gamma"],
 
     "number_pyr_layer" : 1,  # number of chennel from pyramidal layer
@@ -55,9 +55,10 @@ def plot_spike_raster(filepath):
                 celltype_group = raster_group[celltype]
                 axes = plt.subplot(gs[celltype_idx])
            
-                for sp_idx, (cell_key, firing) in enumerate(celltype_group.items()):
-                    sp_idx += 1
-                    axes.scatter(firing,  np.zeros(firing.size) + sp_idx, color=plotting_param["neuron_colors"][celltype], s=0.2 )
+                for sp_idx, (cell_key, firing) in enumerate(sorted(celltype_group.items(), key=lambda x: int(x[0].split("_")[-1]),)):
+                    # sp_idx += 1
+                    # cell_key = int(cell_key.split("_")[-1])
+                    axes.scatter(firing,  np.zeros(firing.size)+sp_idx+1, color=plotting_param["neuron_colors"][celltype], s=0.2 )
 
                 axes.set_ylim(1, sp_idx)
                 axes.set_xlim(t0, t1)
@@ -436,7 +437,7 @@ if __name__ == "__main__":
     # main_plots(filepath)
     # plot_lfp(filepath)
     # plot_current_source_density(filepath, "theta")
-    # plot_spike_raster(filepath)
+    plot_spike_raster(filepath)
     # plot_modulation_index(filepath)
     # plot_phase_by_amplitude_coupling(filepath)
     # plot_nm_phase_phase_coupling(filepath)
@@ -446,7 +447,7 @@ if __name__ == "__main__":
 
     # plot_v(filepath)
     # plot_pyr_layer_lfp_vs_raster(filepath)
-    plot_phase_precession(filepath)
+    # plot_phase_precession(filepath)
 
 
 

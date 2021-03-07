@@ -2,10 +2,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.signal as sig
 
-N = 50
+N = 80
 animal_velocity = 20 # cm / sec
 track_len = 200 # cm
 neurons_indexes = np.arange(1, N+1)
+
+Nmodelrunned = 1
 
 def run_model(phi0):
 
@@ -15,7 +17,7 @@ def run_model(phi0):
     t = np.arange(0, duration, 0.001*dt)
     place_ca3 = 110 / animal_velocity
     place_mec = 100 / animal_velocity
-    w = 5
+    w = 7
 
     # print(duration)
     # print(place_ca3)
@@ -23,8 +25,8 @@ def run_model(phi0):
 
 
 
-    fi_ca3 = np.deg2rad(260) + phi0
-    fi_mec = np.deg2rad(100) + phi0
+    fi_ca3 = np.deg2rad(65) + phi0 # 260
+    fi_mec = np.deg2rad(330) + phi0 # 100
     sigma = 21.2 / animal_velocity
     sigma_inv = -0.5 / sigma**2
     ca3_weight = 1.0
@@ -33,7 +35,7 @@ def run_model(phi0):
     theta_phases = 2*np.pi*t*w + phi0
     theta_phases = theta_phases % (2*np.pi)
     # theta_phases[theta_phases >= np.pi] -= 2*np.pi
-
+    theta_signal = 10 * 0.5 * (2 - np.cos(theta_phases))
 
 
 
@@ -42,12 +44,12 @@ def run_model(phi0):
     # after_place_ca3[t > place_ca3] = np.exp( 5.0 * (place_ca3-t[t > place_ca3]) )
     # after_place_mec[t > place_mec] = np.exp( 5.0 * (place_mec-t[t > place_mec]) )
 
-    ca3 = np.exp( sigma_inv*(t - place_ca3)**2 ) * (np.cos(2*np.pi*t*(w+0.0) + fi_ca3) + 1)*after_place_ca3
+    ca3 = np.exp( sigma_inv*(t - place_ca3)**2 ) * (np.cos(2*np.pi*t*(w+0.5) + fi_ca3) + 1)*after_place_ca3
     mec = np.exp( sigma_inv*(t - place_mec)**2 ) * (np.cos(2*np.pi*t*(w+0.0) + fi_mec) + 1)*after_place_mec
 
     tot_input = (ca3_weight * ca3 + mec_weight * mec)
     tot_input = 21 * tot_input / np.max(tot_input) # np.zeros_like(tot_input) + 11 #
-
+    tot_input += theta_signal
 
 
 
@@ -87,7 +89,7 @@ firing_indexs = np.empty(0, dtype=np.float)
 firing_timess = np.empty(0, dtype=np.float)
 firing_phasess = np.empty(0, dtype=np.float)
 
-for idx in range (30):
+for idx in range (Nmodelrunned):
     phi0 = np.random.rand() * 2 * np.pi - np.pi
 
     firing_index, firing_times, firing_phases, Vhist, tot_input, t, theta_phases = run_model(phi0)
@@ -111,7 +113,7 @@ position = firing_timess * animal_velocity
 
 # print(firing_timess.shape)
 # print(firing_phasess.shape)
-for idx in range (30 * N):
+for idx in range (Nmodelrunned * N):
 
     neur = (firing_indexs == idx)
     print(idx)

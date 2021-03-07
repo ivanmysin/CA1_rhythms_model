@@ -417,7 +417,16 @@ def run_simulation(params):
     if pc.id() == 0:
         print("End of the simulation!")
         print("Time of simulation in sec ", time()-timer)
-    
+
+    fig, ax = plt.subplots(nrows=1, sharex=True)
+    for idx in range(len(spike_times_vecs)):
+        t_sp = np.asarray(spike_times_vecs[idx])
+        fir = np.zeros_like(t_sp) + idx + 1
+        ax.scatter(t_sp, fir, color="blue", s=0.5)
+
+
+    ax.set_ylim(0, len(spike_times_vecs))
+    plt.show()
     
     # print(np.asarray(v_tmp))
     # if pc.id() == 0:

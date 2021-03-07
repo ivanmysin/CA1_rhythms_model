@@ -23,12 +23,13 @@ for cellfile in os.listdir("../cells/"):
     if ext != ".hoc": continue
     h.load_file("../cells/" + cellfile)
 ###### parameters block ############
-dur = 10000
+dur = 3000
 Nca3 = 50
 Nmec = 50
+Npyr = 20
 
-Rtheta = 0.4
-Rgamma = 0.6
+Rtheta = 0.2
+Rgamma = 0.4
 
 theta_kappa, theta_I0 = prelib.r2kappa(Rtheta)
 gamma_kappa, gamma_I0 = prelib.r2kappa(Rgamma)
@@ -41,14 +42,16 @@ spike_times_vecs = []
 connections = []
 synapses = []
 
-cell = h.CA1PyramidalCell(0, 0)
+for pyr_idx in range(Npyr):
 
-for sec in cell.all:
-    sec.insert("IextNoise")
-    sec.mean_IextNoise = 0
-    sec.sigma_IextNoise = 0.002
+    cell = h.CA1PyramidalCell(0, 0)
 
-cells.append(cell)
+    for sec in cell.all:
+        sec.insert("IextNoise")
+        sec.mean_IextNoise = 0
+        sec.sigma_IextNoise = 0.002
+
+    cells.append(cell)
 
 firing = h.NetCon(cell.soma[0](0.5)._ref_v, None, sec=cell.soma[0])
 firing.threshold = -5 * mV
@@ -64,7 +67,7 @@ for idx in range(Nca3 + Nmec):
     if idx >= Nca3:
         # mec
         cell.acell.low_mu = np.deg2rad(100)
-        cell.acell.place_center_t = 4500
+        cell.acell.place_center_t = 1000
         gmax = 0.005
         
         post_comp_name = "lm_list"
@@ -72,7 +75,7 @@ for idx in range(Nca3 + Nmec):
     else:
         # ca3
         cell.acell.low_mu = np.deg2rad(260)
-        cell.acell.place_center_t = 5500
+        cell.acell.place_center_t = 1300
         gmax = 0.005
         
         post_comp_name = "rad_list"
@@ -89,7 +92,7 @@ for idx in range(Nca3 + Nmec):
         if idx_tmp == post_idx: post_comp = post_comp_tmp
     
     cell.acell.high_mu = 0
-    cell.acell.place_t_radius = 1000
+    cell.acell.place_t_radius = 500
 
     cell.acell.low_kappa = theta_kappa
     cell.acell.low_I0 = theta_I0
@@ -145,14 +148,15 @@ for neuron_index, sp_train in enumerate(spike_times_vecs):
         ax[1].scatter(sp_train, indexes, s=0.5, color="blue")
 
 
-sp_train = spike_times_vecs[0]
-sp_train = np.asarray(sp_train)
-
-theta_phases = 2*np.pi*sp_train*0.005
-theta_phases = theta_phases % (2*np.pi)
-theta_phases[theta_phases > np.pi] = theta_phases[theta_phases > np.pi] - 2*np.pi
-
 fig, ax = plt.subplots(nrows=1)
-ax.scatter(sp_train, theta_phases, s=2, color="green")
+for pyr_idx in range(Npyr):
+
+    sp_train = spike_times_vecs[pyr_idx]
+    sp_train = np.asarray(sp_train)
+
+    theta_phases = 2*np.pi*sp_train*0.005
+    theta_phases = theta_phases % (2*np.pi)
+    theta_phases[theta_phases > np.pi] = theta_phases[theta_phases > np.pi] - 2*np.pi
+    ax.scatter(sp_train, theta_phases, s=2, color="green")
 
 plt.show()
