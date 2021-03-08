@@ -30,7 +30,7 @@ plotting_param = {
     },
 
     "neuron_order" : ["pyr", "pvbas", "cckbas", "olm", "aac", "ivy", "bis", "sca", "ngf", "ca3_spatial", "ca3_non_spatial", "mec",  "msteevracells", "msach"], # "mskomalicells","lec",
-    "rhytms_order" : ["theta", "slow gamma", "fast gamma"],
+    "rhytms_order" : ["theta", "slow gamma", "middle gamma", "fast gamma"],
 
     "number_pyr_layer" : 1,  # number of chennel from pyramidal layer
 
