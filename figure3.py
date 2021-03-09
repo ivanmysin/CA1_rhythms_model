@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.signal import hilbert
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
 import h5py

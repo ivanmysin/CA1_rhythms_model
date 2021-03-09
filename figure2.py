@@ -1,10 +1,7 @@
 import numpy as np
-from scipy.signal import hilbert
 import matplotlib.pyplot as plt
-from matplotlib import gridspec
 import h5py
-from basic_parameters import get_object_params
-import processingLib as proclib
+
 from plot_result import plotting_param
 filepath = "/home/ivan/Data/CA1_simulation/theta_nice.hdf5"
 figfilepath = "/home/ivan/Data/CA1_simulation/figure_2.png"
