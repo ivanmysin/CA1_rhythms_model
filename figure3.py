@@ -25,7 +25,7 @@ for ax in axes[:, 0]:
 
 with h5py.File(filepath, 'r') as h5file:
 
-    """
+
     
     distr_group = h5file["extracellular/electrode_1/firing/processing/phase_distrs"]
 
@@ -62,7 +62,7 @@ with h5py.File(filepath, 'r') as h5file:
                 axes[celltypes_idx, rhythm_idx].tick_params(labelbottom=False, bottom=False)
 
             axes[celltypes_idx, 0].text(0, 0.5, celltype)
-    """
+
     gs = axes[-1, 0].get_gridspec()
     for ax in axes[0:5, -1]:
         ax.remove()
@@ -74,25 +74,26 @@ with h5py.File(filepath, 'r') as h5file:
     gamma_freqs = coup_group["gamma_freqs"][:]
     theta_phase = coup_group["theta_phase"][:]
 
-    theta_signal = np.cos(theta_phase)
+    theta_signal = 5 * np.cos(theta_phase) + gamma_freqs[0] + 5
 
-    axbig.plot(theta_phase, theta_signal, color="black")
-    axbig.set_xlim(-np.pi, np.pi)
-    axbig.spines['right'].set_visible(False)
-    axbig.spines['top'].set_visible(False)
-    axbig.spines['left'].set_visible(False)
-    axbig.spines['bottom'].set_visible(False)
-    axbig.tick_params(labelbottom=False, bottom=False, labelleft=False, left=False)
+    axbig.plot(theta_phase, theta_signal, color="black", linestyle="dotted")
+
+    # axbig.spines['right'].set_visible(False)
+    # axbig.spines['top'].set_visible(False)
+    # axbig.spines['left'].set_visible(False)
+    # axbig.spines['bottom'].set_visible(False)
+    # axbig.tick_params(labelbottom=False, bottom=False, labelleft=False, left=False)
 
 
     gr = axbig.pcolormesh(theta_phase, gamma_freqs, coupling, cmap="rainbow", shading='auto')
     axbig.set_xlim(-np.pi, np.pi)
+    axbig.set_ylim(gamma_freqs[0], gamma_freqs[-1])
     axbig.set_ylabel("gamma frequency, Hz")
     axbig.set_xlabel("theta phase, rad")
 
-    cbar = plt.colorbar(gr, ax=axbig)
+    cbar = fig.colorbar(gr, ax=axbig)
 
-    gs = axes[-1, 5].get_gridspec()
+    gs = axes[-1, 2].get_gridspec()
     for ax in axes[5:9, -1]:
         ax.remove()
     axbig2 = fig.add_subplot(gs[5:9, -1])
@@ -107,11 +108,28 @@ with h5py.File(filepath, 'r') as h5file:
 
         diap = splited_key[-1] + " Hz"
         axbig2.plot(nmarray, val[:], label=diap)
-    axbig2.legend()
+    axbig2.set_ylim(0, 1.2)
+    axbig2.legend(loc='upper right')
     axbig2.set_xlabel("n * theta phase")
     axbig2.set_ylabel("R of (n * theta phase - gamma phase) disrtibution")
 
 
+    gs = axes[-1, 3].get_gridspec()
+    for ax in axes[9:, -1]:
+        ax.remove()
+    axbig3 = fig.add_subplot(gs[9:, -1])
+
+    mi_group = h5file["extracellular/electrode_1/lfp/processing/modulation_index/channel_" + str(plotting_param["number_pyr_layer"])]
+    mi = mi_group["modulation_index"][:]
+    freqs4ampl = mi_group["freqs4ampl"][:]
+    freqs4phase = mi_group["freqs4phase"][:]
+
+    gr = axbig3.pcolormesh(freqs4phase, freqs4ampl, mi, cmap="rainbow", shading='auto')
+    axbig3.set_title("Modulation index")
+    axbig3.set_xlim(4, None)
+    axbig3.set_ylabel("frequencies for amplitude, Hz")
+    axbig3.set_xlabel("frequencies for phase, Hz")
+    cbar = fig.colorbar(gr, ax=axbig3)
 
 fig.savefig(figfilepath)
 # plt.show()
