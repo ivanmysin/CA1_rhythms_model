@@ -160,6 +160,10 @@ def run_simulation(params):
             for p_name, p_val in neuron_param["cellparams"].items():
                 if hasattr(cell.acell, p_name):
                     setattr(cell.acell, p_name, p_val)
+                
+            setattr(cell.acell, "delta_t", h.dt)
+                    
+                    
             setattr(cell.acell, "myseed", RNG.integers(0, 1000000000000000, 1) )
 
             firing = h.NetCon(cell.acell, None)

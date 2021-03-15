@@ -22,7 +22,7 @@ processing_param = {
         "slow gamma" : [25, 50],
         "middle gamma" : [50, 80], 
         "fast gamma" : [80, 120], 
-        # "slow ripples" : [80, 250], 
+        "slow ripples" : [80, 250], 
         # "fast ripples" : [200, 500], 
    
     },

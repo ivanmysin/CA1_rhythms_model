@@ -30,7 +30,7 @@ plotting_param = {
     },
 
     "neuron_order" : ["pyr", "pvbas", "cckbas", "olm", "aac", "ivy", "bis", "sca", "ngf", "ca3_spatial", "ca3_non_spatial", "mec", "lec", "msteevracells", "mskomalicells", "msach"],
-    "rhytms_order" : ["theta", "slow gamma", "fast gamma"],
+    "rhytms_order" : ["theta", "slow gamma", "middle gamma" , "fast gamma"],
 
     "number_pyr_layer" : 1,  # number of chennel from pyramidal layer
 
@@ -55,7 +55,7 @@ def plot_spike_raster(filepath):
                 celltype_group = raster_group[celltype]
                 axes = plt.subplot(gs[celltype_idx])
            
-                for sp_idx, (cell_key, firing) in enumerate(celltype_group.items()):
+                for sp_idx, (cell_key, firing) in enumerate(sorted(celltype_group.items(), key=lambda x: int(x[0].split("_")[-1]),)):
                     sp_idx += 1
                     axes.scatter(firing,  np.zeros(firing.size) + sp_idx, color=plotting_param["neuron_colors"][celltype], s=0.2 )
 
@@ -188,6 +188,7 @@ def plot_phase_by_amplitude_coupling(filepath):
         axes = plt.subplot(gs[1, 0])
         gr = axes.pcolormesh(theta_phase, gamma_freqs, coupling, cmap="rainbow", shading='auto')
         axes.set_xlim(-np.pi, np.pi)
+        axes.set_ylim(30, 120)
         axes.set_ylabel("gamma frequency, Hz")
         axes.set_xlabel("theta phase, rad")
 
@@ -228,7 +229,7 @@ def plot_phase_disrtibution(filepath):
     with h5py.File(filepath, 'r') as h5file:
         distr_group = h5file["extracellular/electrode_1/firing/processing/phase_distrs"]
 
-        fig, axes = plt.subplots(nrows=len(plotting_param["neuron_order"]), ncols=3, figsize=(5, 10))
+        fig, axes = plt.subplots(nrows=len(plotting_param["neuron_order"]), ncols=len(plotting_param["rhytms_order"]), figsize=(5, 10))
         for celltypes_idx, celltype in enumerate(plotting_param["neuron_order"]):
             for rhythm_idx, rhythm_name in enumerate(plotting_param["rhytms_order"]):
                 try:
@@ -397,7 +398,7 @@ def plot_v_vs_pyr_lfp(filepath):
         axes[0].plot(t[:lfp.size], lfp, color="black")
         for celltype_idx, celltype in enumerate(plotting_param["neuron_order"]):
             for key in intracell_keys:
-                if  intracellular_group[key].attrs["celltype"] != celltype: continue
+                if  intracellular_group[key].attrs["celltype"] != "ngf": continue # celltype
 
                 celltype_idx += 1
                 v = intracellular_group[key][:]
@@ -415,7 +416,7 @@ def plot_v_vs_pyr_lfp(filepath):
                     axes[celltype_idx].tick_params(labelbottom=False, bottom=True)
                 axes[celltype_idx].set_ylabel("mV")
 
-
+                # break
 
         plt.show()
 
