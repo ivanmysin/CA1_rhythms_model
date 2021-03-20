@@ -432,12 +432,12 @@ def main_plots(filepath):
     
     
 if __name__ == "__main__":
-    filepath = "/home/ivan/Data/CA1_simulation/test.hdf5"  # basic_params["file_results"]  # "/home/ivan/Data/CA1_simulation/artificial_signals.hdf5"
+    filepath = "/home/ivan/Data/CA1_simulation/theta_state_full_cells.hdf5"  # basic_params["file_results"]  # "/home/ivan/Data/CA1_simulation/artificial_signals.hdf5"
     
     # main_plots(filepath)
     # plot_lfp(filepath)
-    # plot_current_source_density(filepath, "theta")
-    plot_spike_raster(filepath)
+    plot_current_source_density(filepath, "theta")
+    # plot_spike_raster(filepath)
     # plot_modulation_index(filepath)
     # plot_phase_by_amplitude_coupling(filepath)
     # plot_nm_phase_phase_coupling(filepath)

@@ -9,8 +9,8 @@ from scipy.ndimage import zoom
 processing_param = {
 
 
-    "morlet_w0" : 12.0,      # центральная частота для вейвлета Морле
-    "freqs_step" : 10,      # количество частот, для которых вычисляется вейвлет за один цикл 
+    "morlet_w0" : 8.0,      # центральная частота для вейвлета Морле
+    "freqs_step" : 10,      # количество частот, для которых вычисляется вейвлет за один цикл
     "max_freq_lfp" : 500,   # Гц, анализируем только до этой частоты 
 
     "number_pyr_layer" : 1, # number of channel from pyramidal layer
@@ -20,9 +20,9 @@ processing_param = {
         "delta" : [1, 4], 
         "theta" : [4, 12], 
         "slow gamma" : [25, 50],
-        "middle gamma" : [55, 70],
-        "fast gamma" : [90, 150],
-        # "slow ripples" : [80, 250], 
+        "middle gamma" : [50, 80], 
+        "fast gamma" : [80, 120], 
+        "slow ripples" : [80, 250], 
         # "fast ripples" : [200, 500], 
    
     },
@@ -50,11 +50,12 @@ def processing_and_save(filepath):
         lfp_group = h5file["extracellular/electrode_1/lfp"]
         lfp_group_origin = lfp_group["origin_data"]
 
+        # process_group = lfp_group["processing"]
         try:
-            process_group = lfp_group.create_group("processing")
+             process_group = lfp_group.create_group("processing")
         except ValueError:
-            del h5file["extracellular/electrode_1/lfp/processing"]
-            process_group = lfp_group.create_group("processing")
+             del h5file["extracellular/electrode_1/lfp/processing"]
+             process_group = lfp_group.create_group("processing")
 
         wavelet_group = process_group.create_group("wavelet")
         bands_group = process_group.create_group("bands")
@@ -71,9 +72,9 @@ def processing_and_save(filepath):
             key = "channel_" + str(key_idx + 1)
             lfp = lfp_group_origin[key][:]
 
-            freqs = np.fft.rfftfreq(lfp.size, d=1/fd)
-            freqs = freqs[1:]  # remove 0 frequency
-            freqs = freqs[freqs <= processing_param["max_freq_lfp"] ]  # remove frequencies below 500 Hz
+            freqs = np.linspace(2, 200, 198)  # np.fft.rfftfreq(lfp.size, d=1/fd)
+            # freqs = freqs[1:]  # remove 0 frequency
+            # freqs = freqs[freqs <= processing_param["max_freq_lfp"] ]  # remove frequencies below 500 Hz
 
 
             channel_wavelet_group = wavelet_group.create_group(key)
@@ -136,17 +137,17 @@ def processing_and_save(filepath):
             ####################################################################################
             # phase amplidute modulation index
             channel_modulation_index_group = modulation_index_group.create_group(key)
-            
-            freqs = channel_wavelet_group["frequecies"][:] 
+
+            freqs = channel_wavelet_group["frequecies"][:]
             freqs4phase_sl = plib.slice_by_bound_values(freqs, processing_param["modulation_index"]["freqs4phase"][0], processing_param["modulation_index"]["freqs4phase"][1])
             freqs4ampl_sl = plib.slice_by_bound_values(freqs, processing_param["modulation_index"]["freqs4amplitude"][0], processing_param["modulation_index"]["freqs4amplitude"][1])
-                        
-            
+
+
             W4phase = channel_wavelet_group["wavelet_coeff"][freqs4phase_sl, :]
             W4ampls = channel_wavelet_group["wavelet_coeff"][freqs4ampl_sl, :]
-            
+
             mi = plib.get_modulation_index(W4phase, W4ampls, nbins=20)
-            
+
             channel_modulation_index_group.create_dataset("freqs4phase", data=freqs[freqs4phase_sl])
             channel_modulation_index_group.create_dataset("freqs4ampl", data=freqs[freqs4ampl_sl])
             channel_modulation_index_group.create_dataset("modulation_index", data=mi)
@@ -212,10 +213,9 @@ def processing_and_save(filepath):
         
         
 if __name__ == "__main__":
-    #from basic_parameters import basic_params
+    # from basic_parameters import basic_params
     
-    filepath =  "/home/ivan/Data/CA1_simulation/theta_nice.hdf5"
-                #"test_fast_gamma_at_theta_state.hdf5" # basic_params["file_results"] #
+    filepath =  "/home/ivan/Data/CA1_simulation/theta_state_full_cells.hdf5" #_full_time basic_params["file_results"] #
     # print(filepath)
     processing_and_save(filepath)
 

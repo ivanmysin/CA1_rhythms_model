@@ -22,12 +22,15 @@ for cellfile in os.listdir("../cells/"):
 # cell = h.ngfcell(0, 0)
 # cell = h.olmcell(0, 0)
 # cell = h.CA1BistratifiedCell(0, 0)
-cell = h.scacell(0, 0)
+# cell = h.scacell(0, 0)
 
 
 
-# cell1 = h.CA1PyramidalCell(1, 1)
-# cell1.position(-200, 0, 0)
+cell1 = h.CA1PyramidalCell(1, 1)
+cell1.position(-200, 0, 0)
+
+for sec in cell1.all:
+    sec.v = -50
 
 # cell2 = h.CA1PyramidalCell(0, 0)
 # cell2.position(200, 0, 0)
@@ -49,17 +52,30 @@ el_z = np.zeros(10)
 # for sec in sl:
     # sec.v = 0
 
-fig = plt.figure()
+fig = plt.figure(figsize=(5, 5))
 # ax = fig.add_subplot(111, projection='3d')
 
 
 ps = h.PlotShape(False) # cell.all, 
-ps.scale(-80, 40)
-ps.variable('v')
-ax_ps = ps.plot(fig, cmap=cm.jet) #  
-
+ps.scale(-70, -40)
+#ps.variable('v')
+ax_ps = ps.plot(fig, cmap=cm.Reds) #  cm.jet
 
 # print(len(fig.axes))
-fig.axes[0].scatter(el_x, el_y, el_z, color="red", s = 10)
-fig.axes[0].view_init(-90, 90)
+fig.axes[0].scatter(el_x, el_y, el_z, color="blue", s = 10)
+
+fig.axes[0].set_xlabel(r"$\mu m$")
+fig.axes[0].set_ylabel(r"$\mu m$")
+fig.axes[0].set_zlabel(r"$\mu m$")
+
+fig.axes[0].view_init(-70, 90) # -90
+
+fig.axes[0].grid(False)
+# fig.axes[0].set_xticks([])
+# fig.axes[0].set_yticks([])
+# fig.axes[0].set_zticks([])
+
+#
+
 plt.show()
+fig.savefig("pyr.png")

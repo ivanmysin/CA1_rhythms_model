@@ -3,8 +3,8 @@ import numpy as np
 from neuron import h, load_mechanisms
 import os
 
-h.nrnmpi_init()
-pc = h.ParallelContext()
+# h.nrnmpi_init()
+# pc = h.ParallelContext()
 
 h.load_file("stdgui.hoc")
 h.load_file("stdrun.hoc")
@@ -21,8 +21,9 @@ for cellfile in os.listdir("../cells/"):
 
  
 # cell = h.poolosyncell(0, 0) 
-cell = h.pvbasketcell(0, 0) 
-# cell = h.scacell(0, 0) 
+# cell = h.pvbasketcell(0, 0)
+cell = h.ngfcell(0, 0)
+# cell = h.scacell(0, 0)
 # cell = h.CA1BistratifiedCell(0, 0)
 
 
@@ -54,15 +55,15 @@ stim.delay = 10
 stim_current = h.Vector()
 stim_current.record(stim._ref_i)
 
-syn = h.Exp2Syn(dend(0.9)) # h.epsp(dend(0.9))
-syn.tau1 = 0.5    # syn.tau0  = 0.5
-syn.tau2 = 5.0    # syn.tau1 = 5
-syn.e = 0         # syn.onset = stim.delay + 5
+syn = h.epsp(dend(0.9)) # h.Exp2Syn(dend(0.9)) #
+syn.tau0  = 0.5 # syn.tau1 = 0.5    #
+syn.tau1 = 5 # syn.tau2 = 5.0    #
+syn.onset = stim.delay + 5 # syn.e = 0         #
 syn_current = h.Vector()
 syn_current.record(syn._ref_i)
 
 
-
+"""
 
 
 
@@ -93,7 +94,7 @@ conn.weight[0] = 0.05   # RNG.lognormal(gmax_mean, gmax_sigma)
 tvec_recored = h.Vector()
 conn.record(tvec_recored)
 
-
+"""
 ##==================== recording settings ==========================
 t = h.Vector()
 t.record(h._ref_t)
@@ -120,7 +121,7 @@ def plot_result(t, soma_v, nexus_v, stim_current, syn_current, show_from = 4400)
     stim_current = np.array(stim_current)[show_from:]
     syn_current = np.array(syn_current)[show_from:]
     f, (ax0, ax1, ax2) = plt.subplots(3,1, figsize  = (6.5,3),gridspec_kw = {'height_ratios':[4, 1,1]})
-    f.suptitle( pc.id() )
+    # f.suptitle( pc.id() )
     ax0.plot(t,soma_v, label = 'soma')
     ax0.plot(t,nexus_v, label = 'apic[36]')
     ax0.set_ylabel('Voltage (mV)')
@@ -152,17 +153,17 @@ def plot_result(t, soma_v, nexus_v, stim_current, syn_current, show_from = 4400)
 #============================= simulation ================================
 
 
-# syn.imax = 0 # 0.5 
-stim.amp = 0 # 1.9
-# h.run()
+syn.imax = 0 # 0.5
+stim.amp = 1.9
+h.run()
 #Run
-pc.set_maxstep(10.)
-h.finitialize()
-pc.psolve(1500)
+# pc.set_maxstep(10.)
+# h.finitialize()
+# pc.psolve(1500)
 
 # print( np.asarray(tvec_recored) )
 
-print(pc.id())
+# print(pc.id())
 
 plot_result(t, soma_v, nexus_v, stim_current, syn_current, show_from=0)
 

@@ -5,7 +5,7 @@ import h5py
 from basic_parameters import get_object_params
 import processingLib as proclib
 from plot_result import plotting_param
-filepath = "/home/ivan/Data/CA1_simulation/theta_nice.hdf5"
+filepath = "/home/ivan/Data/CA1_simulation/theta_state_full_cells.hdf5"
 figfilepath = "/home/ivan/Data/CA1_simulation/figure_3.png"
 
 
@@ -31,12 +31,12 @@ with h5py.File(filepath, 'r') as h5file:
     for celltypes_idx, celltype in enumerate(plotting_param["neuron_order"]):
         for rhythm_idx, rhythm_name in enumerate(plotting_param["rhytms_order"]):
 
-            if celltype.find("ca3") != -1:
-                celltype_ = "ca3"
-            else:
-                celltype_ = celltype
+            # if celltype.find("ca3") != -1:
+            #     celltype_ = "ca3"
+            # else:
+            #     celltype_ = celltype
             try:
-                phase_distr = distr_group[celltype_][rhythm_name][:]
+                phase_distr = distr_group[celltype][rhythm_name][:]
             except KeyError:
                 continue
 

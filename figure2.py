@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import h5py
 
 from plot_result import plotting_param
-filepath = "/home/ivan/Data/CA1_simulation/theta_nice.hdf5"
+filepath = "/home/ivan/Data/CA1_simulation/theta_state_full_cells.hdf5"
 figfilepath = "/home/ivan/Data/CA1_simulation/figure_2.png"
 
 
@@ -22,7 +22,7 @@ for ax in axes[:, 1]:
 
 
 tmin = 0
-tmax = 600
+tmax = 3000
 
 with h5py.File(filepath, 'r') as h5file:
     t = h5file["time"][:]
@@ -71,12 +71,12 @@ with h5py.File(filepath, 'r') as h5file:
 
 
 
-        if celltype.find("ca3") != -1:
-            celltype_ = "ca3"
-        else:
-            celltype_ = celltype
+        # if celltype.find("ca3") != -1:
+        #     celltype_ = "ca3"
+        # else:
+        #     celltype_ = celltype
 
-        celltype_firings = raster_group[celltype_]
+        celltype_firings = raster_group[celltype]
 
         firings_x = np.empty(0, dtype=np.float)
         firings_y = np.empty(0, dtype=np.float)
