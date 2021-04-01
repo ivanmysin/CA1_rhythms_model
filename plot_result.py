@@ -10,23 +10,23 @@ import processingLib as proclib
 
 plotting_param = {
     "neuron_colors" : {
-        "pyr" : (1.0, 0.0, 0.0), # red
-        "pvbas": (0.0, 0.0, 1.0), # blue
-        "olm": (0.0, 0.0, 0.5), #
-        "cckbas": (0.0, 1.0, 0.0), # green
-        "ivy": (0.0, 0.5, 0.5), #
-        "ngf": (0.5, 0.5, 0.5), #
-        "bis": (0.1, 0.0, 0.5), #
-        "aac": (1.0, 0.0, 0.5), #
-        "sca": (0.0, 1.0, 0.5), #
+        "pyr" : "#ED2024",  # (1.0, 0.0, 0.0), # red
+        "pvbas": "#DCA448", # (0.0, 0.0, 1.0), # blue
+        "olm": "#9D248F", # (0.0, 0.0, 0.5), #
+        "cckbas": "#4CB748", # (0.0, 1.0, 0.0), # green
+        "ivy": "#B4A1CD", #(0.0, 0.5, 0.5), #
+        "ngf": "#04F9D3", #(0.5, 0.5, 0.5), #
+        "bis": "#3953A4", #(0.1, 0.0, 0.5), #
+        "aac": "#82D3EC", #(1.0, 0.0, 0.5), #
+        "sca": "#BFBFBF", #(0.0, 1.0, 0.5), #
 
-        "ca3_spatial": (0.5, 0.5, 0.0), #
-        "ca3_non_spatial": (0.5, 0.5, 0.0), #
-        "mec": (0.5, 1.0, 0.0), #
+        "ca3_spatial": "#FF8686", #(0.5, 0.5, 0.0), #
+        "ca3_non_spatial": "#FF8686", #(0.5, 0.5, 0.0), #
+        "mec": "#FFCAF6", #(0.5, 1.0, 0.0), #
         "lec": (0.9, 0.7, 0.0), #
-        "msteevracells": (0.0, 0.8, 0.5), #
+        "msteevracells": "#2596FF", #(0.0, 0.8, 0.5), #
         "mskomalicells": (0.0, 0.5, 0.9), #
-        "msach": (0.8, 0.2, 0.0), #
+        "msach": "#FDBC58", #(0.8, 0.2, 0.0), #
     },
 
     "neuron_order" : ["pyr", "pvbas", "cckbas", "olm", "aac", "ivy", "bis", "sca", "ngf", "ca3_spatial", "ca3_non_spatial", "mec", "lec", "msteevracells", "mskomalicells", "msach"],
@@ -69,6 +69,7 @@ def plot_spike_raster(filepath):
                     axes.tick_params(labelbottom=False, bottom=False)
             except KeyError:
                 continue
+            
         fig.tight_layout()
         plt.show()
 
@@ -398,7 +399,7 @@ def plot_v_vs_pyr_lfp(filepath):
         axes[0].plot(t[:lfp.size], lfp, color="black")
         for celltype_idx, celltype in enumerate(plotting_param["neuron_order"]):
             for key in intracell_keys:
-                if  intracellular_group[key].attrs["celltype"] != "ngf": continue # celltype
+                if  intracellular_group[key].attrs["celltype"] != celltype: continue # 
 
                 celltype_idx += 1
                 v = intracellular_group[key][:]
@@ -416,7 +417,7 @@ def plot_v_vs_pyr_lfp(filepath):
                     axes[celltype_idx].tick_params(labelbottom=False, bottom=True)
                 axes[celltype_idx].set_ylabel("mV")
 
-                # break
+                break
 
         plt.show()
 

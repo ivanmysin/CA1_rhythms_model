@@ -26,7 +26,7 @@ SIMULATE_NON_THETA_STATE = False
 
 def get_basic_params():
     
-    Npyr = 2400
+    Npyr = 9000 # 
     Npvbas = 200
     Nca3_spatial = 3500
     Nelecs = 10 # number of electrodes
@@ -40,7 +40,7 @@ def get_basic_params():
     pyr_dx = 3
     pvbas_dx = 50
     
-    pyr_coords = np.cumsum( np.zeros(Npyr) + pyr_dx )
+    pyr_coords = np.cumsum( np.zeros(Npyr) + pyr_dx ) 
     pyr_coords[pyr_coords.size//2:] = np.nan 
     
     basic_params = {
@@ -52,7 +52,7 @@ def get_basic_params():
         "PyrDencity" : 0.2, # pyramidal cells / micrometer^2
 
         "file_results":  "../../Data/CA1_simulation/test.hdf5", # None, #
-        "duration" : 3200, # 700, # 2500, #, #  # 10 sec simulation time
+        "duration" : 2200, # 2500, # 700, # 2500, #, #  # 10 sec simulation time
         "step_duration" : 0,
         
         "del_start_time" : 200, # time after start for remove
@@ -60,7 +60,7 @@ def get_basic_params():
         "pyr_coodinates" : pyr_coords,
         "ca3_coodinates" : np.cumsum( np.zeros(Nca3_spatial) + pyr_dx ),
         "pvbas_coodinates" : np.cumsum( np.zeros(Npvbas) + pvbas_dx ),
-        "var_conns_on_pyr" : 500,
+        "var_conns_on_pyr" : 9000, #  25000, # 500,
         
         
         "CellNumbersInFullModel" : {
@@ -91,7 +91,7 @@ def get_basic_params():
             "Ncckbas" : 160,
             "Nivy" : 260, # 130,
             "Nngf" : 130, # 65,
-            "Nbis" :70, # 35,
+            "Nbis" : 70, # 35,
             "Naac" : 60, # 30,
             "Nsca" : 40, # 20,
             
@@ -142,12 +142,12 @@ def get_basic_params():
                 "cellclass" : "ArtifitialGridCell",  # "ArtifitialPlaceCell", #  
 
                 "Rtheta": 0.3,
-                "low_mu": 5.24, # -0.5, # -0.8, # -1.75, # 0, # 
+                "low_mu": -1.04, # 5.24, # -0.5, # -0.8, # -1.75, # 0, # 
 
                 "Rgamma": 0.4,
                 "high_mu": 0.0,
 
-                "spike_rate": 10000000.0,  # 100000.0,
+                "spike_rate": 10e7, # 10000000.0,  # 100000.0,
                 "latency": 10.0,
 
                 "delta_t" : 0.1,
@@ -155,8 +155,8 @@ def get_basic_params():
                 "low_freqs" : 7.0, #  5.0,
                 "high_freqs" : 63.0,
             
-                "Rgrid" : 0.4, # 0.8,
-                "grid_freqs" : 0.5, # 0.33
+                "Rgrid" : 0.6, # 0.4,
+                "grid_freqs" : 0.1, # 0.5, # 
                 "grid_phase" : 0, 
             },
             
@@ -254,20 +254,20 @@ def get_basic_params():
             
             "sca" : {
                 "cellclass" : "scacell",
-                "iext" : 0.001,
-                "iext_std" : 0.002,
+                "iext" : 0.0,
+                "iext_std" : 0.001,
             },
         
         },
         
         "save_soma_v" : {
-            "pyr" :   [range(200, 300)],    # [range(1400)]
-            "pvbas" : [range(30, 80)], #
-            "olm" : [range(10)], # [0, 1, 3],
-            "cckbas" : [range(10)], #[0, ],
-            "ivy" : [range(10)], #[0, ],
-            "ngf" : [range(10)], #[0, ],
-            "bis" : [range(10)], #[0, ],
+            "pyr" :  [range(200, 300)],    # [0, ], #  [range(1400)]
+            "pvbas" : [range(30, 80)], # [0, ], #
+            "olm" :   [range(10)], # [0, ], # [0, 1, 3],
+            "cckbas" : [range(10)], # #[0, ],
+            "ivy" : [range(10)], # [0, ], #[0, ],
+            "ngf" : [range(10)], #[0, ], # [0, ],
+            "bis" : [range(10)], # [0, ], # [0, ],
             "aac" : [range(10)], #[0, ],
             "sca" : [range(10)], #[0, ],
         
@@ -280,7 +280,7 @@ def get_basic_params():
             
             # connection to pyramidal neurons
             "ca3_spatial2pyr": {
-                "gmax": 200 * pyr_dx,  # 16000.0, # 0.016,
+                "gmax": 1000 * pyr_dx, #200* 1000 * pyr_dx,  # 16000.0, # 0.016,
                 "gmax_std" : 0.9, # 0.002,
                 
                 "Erev": 0,
@@ -306,7 +306,7 @@ def get_basic_params():
             },
             
             "ca3_non_spatial2pyr": {
-                "gmax": 0.016, # 0.8, #
+                "gmax": 0.016, #
                 "gmax_std" : 0.002, # 0.5, #
                 
                 "Erev": 0,
@@ -332,7 +332,7 @@ def get_basic_params():
             },
             
            "mec2pyr": {
-                "gmax": 2000 * pyr_dx, # 20 #0.1, # 0.06,
+                "gmax": 500 * pyr_dx, # 1000 * pyr_dx, # 20 #0.1, # 0.06,
                 "gmax_std" : 0.4, #  0.007,
                 
                 "Erev": 0,
@@ -477,14 +477,14 @@ def get_basic_params():
             },
             
            "pvbas2pyr": {
-                "gmax": 10 * pvbas_dx, # 20 * pvbas_dx, # 20.0, # 0.5, # 2.0, # 0.05,
+                "gmax": 10 * pvbas_dx, #10*  20.0, # 0.5, # 2.0, # 0.05,
                 "gmax_std" : 0.9, #  0.025,
                 
                 "Erev": -75,
                 "tau_rise": 0.3,
                 "tau_decay": 6.2,
 
-                "prob": 0.8, # 0.29,
+                "prob": 0.8, # 0.29, #
                 
                 "delay": 1.2,
                 "delay_std" : 0.2,
@@ -1472,7 +1472,7 @@ def get_basic_params():
                 "tau_rise": 0.5,
                 "tau_decay": 3,
 
-                "prob": 0.2, # ! need to optimize
+                "prob": 0.3, # ! need to optimize
                 
                 "delay": 10.2,
                 "delay_std" : 0.2,
@@ -1958,6 +1958,9 @@ def get_object_params(Nthreads=1):
                     #     print(grid_phase)
                 else:
                     gmax = 0.016 # 0.01 * gmax # !!!!!
+                    if (np.random.rand() > 0.1 ):
+                        number_connections = 0
+                
 
                 
             elif conn_name == "pyr2pyr_!":
@@ -1981,7 +1984,7 @@ def get_object_params(Nthreads=1):
                 pyr_coord = pyr_coord_x[pyr_idx]
                 
                 if np.isnan(pyr_coord):
-                    pyr_coord = -10000
+                    pyr_coord = -10000000
                     
                 pvbas_idx = presynaptic_cell_idx - gids_of_celltypes["pvbas"][0]
                 dist = pyr_coord - pvbas_coord_x[pvbas_idx]
