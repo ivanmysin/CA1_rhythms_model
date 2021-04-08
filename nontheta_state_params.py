@@ -45,7 +45,7 @@ def theta_state2non_theta_state_params(basic_params):
     
            # np.cumsum( np.zeros(Nca3_spatial) + 0.075) + 300
     basic_params["pvbas_coodinates"]  = np.cumsum( np.zeros(Npvbas) + 3.75)
-    basic_params["var_conns_on_pyr"] = basic_params["var_conns_on_pyr"] / 40 
+    basic_params["var_conns_on_pyr"] = basic_params["var_conns_on_pyr"] / 16000 
 
     basic_params["file_results"] = basic_params["file_results"].split(".hdf5")[0] + "_ripples.hdf5"
     

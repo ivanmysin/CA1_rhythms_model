@@ -21,7 +21,7 @@ mec - stellate cells of the medial entorhinal cortex
 lec - FAN cells of the lateral entorhinal cortex
 """
 
-SIMULATE_NON_THETA_STATE = False
+SIMULATE_NON_THETA_STATE = True
 
 
 def get_basic_params():
@@ -52,7 +52,7 @@ def get_basic_params():
         "PyrDencity" : 0.2, # pyramidal cells / micrometer^2
 
         "file_results":  "../../Data/CA1_simulation/test.hdf5", # None, #
-        "duration" : 2200, # 2500, # 700, # 2500, #, #  # 10 sec simulation time
+        "duration" : 5200, # 10200, # 2500, # 700, # 2500, #, #  # 10 sec simulation time
         "step_duration" : 0,
         
         "del_start_time" : 200, # time after start for remove
@@ -60,7 +60,7 @@ def get_basic_params():
         "pyr_coodinates" : pyr_coords,
         "ca3_coodinates" : np.cumsum( np.zeros(Nca3_spatial) + pyr_dx ),
         "pvbas_coodinates" : np.cumsum( np.zeros(Npvbas) + pvbas_dx ),
-        "var_conns_on_pyr" : 9000, #  25000, # 500,
+        "var_conns_on_pyr" : 9000, # 500, # 25000, # 
         
         
         "CellNumbersInFullModel" : {
@@ -155,7 +155,7 @@ def get_basic_params():
                 "low_freqs" : 7.0, #  5.0,
                 "high_freqs" : 63.0,
             
-                "Rgrid" : 0.6, # 0.4,
+                "Rgrid" : 0.9, # 0.4,
                 "grid_freqs" : 0.1, # 0.5, # 
                 "grid_phase" : 0, 
             },
@@ -313,7 +313,7 @@ def get_basic_params():
                 "tau_rise": 0.5,
                 "tau_decay": 3,
 
-                "prob": 0.3, 
+                "prob": 0.4, # 0.3, 
                 
                 "delay": 1.5,
                 "delay_std" : 0.5,
@@ -332,7 +332,7 @@ def get_basic_params():
             },
             
            "mec2pyr": {
-                "gmax": 500 * pyr_dx, # 1000 * pyr_dx, # 20 #0.1, # 0.06,
+                "gmax": 500 * pyr_dx, #1000* 20 #0.1, # 0.06,
                 "gmax_std" : 0.4, #  0.007,
                 
                 "Erev": 0,
@@ -1958,7 +1958,7 @@ def get_object_params(Nthreads=1):
                     #     print(grid_phase)
                 else:
                     gmax = 0.016 # 0.01 * gmax # !!!!!
-                    if (np.random.rand() > 0.1 ):
+                    if np.random.rand() > 0.4: # 0.1
                         number_connections = 0
                 
 

@@ -5,7 +5,7 @@ import h5py
 import processingLib as plib
 from scipy.stats import zscore
 from scipy.ndimage import zoom
-
+from scipy.signal import decimate
 processing_param = {
 
 
@@ -63,14 +63,17 @@ def processing_and_save(filepath):
         theta_gamma_phase_phase_coupling_group = process_group.create_group("theta_gamma_phase_phase_coupling")
         modulation_index_group = process_group.create_group("modulation_index")
 
-        fd = lfp_group_origin.attrs["SamplingRate"]
-
+        fd = 0.1 * lfp_group_origin.attrs["SamplingRate"]
+        
         lfp_keys = lfp_group_origin.keys()
 
         for key_idx in range(len(lfp_keys)):
             key = "channel_" + str(key_idx + 1)
             lfp = lfp_group_origin[key][:]
 
+            
+            lfp = decimate(lfp, 10)
+            
             freqs = np.fft.rfftfreq(lfp.size, d=1/fd)
             freqs = freqs[1:]  # remove 0 frequency
             freqs = freqs[freqs <= processing_param["max_freq_lfp"] ]  # remove frequencies below 500 Hz
