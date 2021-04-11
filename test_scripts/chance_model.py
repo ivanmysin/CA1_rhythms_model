@@ -17,7 +17,7 @@ def run_model(phi0):
     t = np.arange(0, duration, 0.001*dt)
     place_ca3 = 110 / animal_velocity
     place_mec = 100 / animal_velocity
-    w = 7
+    w = 7.0
 
     # print(duration)
     # print(place_ca3)
@@ -44,10 +44,11 @@ def run_model(phi0):
     # after_place_ca3[t > place_ca3] = np.exp( 5.0 * (place_ca3-t[t > place_ca3]) )
     # after_place_mec[t > place_mec] = np.exp( 5.0 * (place_mec-t[t > place_mec]) )
 
-    ca3 = np.exp( sigma_inv*(t - place_ca3)**2 ) * (np.cos(2*np.pi*t*(w+0.5) + fi_ca3) + 1)*after_place_ca3
+    ca3 = np.exp( sigma_inv*(t - place_ca3)**2 ) * (np.cos(2*np.pi*t*(w+0.0) + fi_ca3) + 1)*after_place_ca3
     mec = np.exp( sigma_inv*(t - place_mec)**2 ) * (np.cos(2*np.pi*t*(w+0.0) + fi_mec) + 1)*after_place_mec
 
     tot_input = (ca3_weight * ca3 + mec_weight * mec)
+
     tot_input = 21 * tot_input / np.max(tot_input) # np.zeros_like(tot_input) + 11 #
     tot_input += theta_signal
 

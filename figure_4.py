@@ -5,8 +5,8 @@ import h5py
 from basic_parameters import get_object_params
 import processingLib as proclib
 from plot_result import plotting_param
-filepath = "/home/ivan/Data/CA1_simulation/theta_state_full_cells.hdf5"
-figfilepath = "/home/ivan/Data/CA1_simulation/figure_3.png"
+filepath = "/home/ivan/Data/CA1_simulation/test_!!!.hdf5"   # theta_state_full_cells
+figfilepath = "/home/ivan/Data/CA1_simulation/figure_4.png"
 
 
 

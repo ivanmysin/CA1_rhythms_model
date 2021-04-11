@@ -13,7 +13,7 @@ processing_param = {
     "freqs_step" : 10,      # количество частот, для которых вычисляется вейвлет за один цикл
     "max_freq_lfp" : 500,   # Гц, анализируем только до этой частоты 
 
-    "number_pyr_layer" : 1, # number of channel from pyramidal layer
+    "number_pyr_layer" : 3, # number of channel from pyramidal layer
 
     "butter_order" : 2,     # Порядок для фильтра Баттерворда
     "filt_bands" : {
@@ -215,7 +215,7 @@ def processing_and_save(filepath):
 if __name__ == "__main__":
     # from basic_parameters import basic_params
     
-    filepath =  "/home/ivan/Data/CA1_simulation/theta_state_full_cells.hdf5" #_full_time basic_params["file_results"] #
+    filepath =  "/home/ivan/Data/CA1_simulation/test_!!!.hdf5" #theta_state_full_cells   _full_time basic_params["file_results"] #
     # print(filepath)
     processing_and_save(filepath)
 

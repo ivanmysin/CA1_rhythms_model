@@ -16,7 +16,7 @@ tau_m = 20
 
 Rtheta_ca3 = 0.3
 Rtheta_mec = 0.3
-Rgrid_mec = 0.4
+Rgrid_mec = 0.9
 
 t = np.arange(0, dur, dt)
 theta_freq = 7.0 # Hz
@@ -29,7 +29,7 @@ ca3_phase = 1.75
 mec_phase = -1.75
 
 place_t_radius = 500
-var_conns_on_pyr = 1000
+var_conns_on_pyr = 9000
 
 ca3_coord_x = np.cumsum( np.zeros(Nca3) + 200 ) # 200
 mec_grid_phases = np.linspace(-np.pi, np.pi, Nmec)  # rad  !!!!!!!!!!!
@@ -57,8 +57,8 @@ for ca3_idx in range(Nca3):
     # gen_prob = gen_prob * np.exp(np.minimum(0, ca3_place-t ) / 300 )
     dist = ca3_place - pyr_center
     weight_dist = np.exp( -0.5 * dist**2 / var_conns_on_pyr  ) / (np.sqrt(var_conns_on_pyr * 2 * np.pi ) )
-    if dist > -200:
-        weight_dist = weight_dist * 0.2
+    # if dist > -200:
+    #     weight_dist = weight_dist * 0.2
 
     pyr_dynamics += weight_dist * gen_prob # np.convolve(gen_prob, pyr_leak, mode="same")
     # ca3_gen_prob.append(gen_prob)
@@ -70,7 +70,7 @@ pyr_dynamics = pyr_dynamics / np.max(pyr_dynamics)
 
 plt.plot(t, pyr_dynamics)
 
-"""
+
 
 plt.show()
 
@@ -100,11 +100,11 @@ for mec_idx in range(Nmec):
 
     weight_dist = 0
     for cent in grid_centers:
-        dist = cent - 200 - pyr_center
+        dist = cent - 500 - pyr_center
         dist_normalizer = np.exp(-0.5 * dist**2 / var_conns_on_pyr) / (np.sqrt(var_conns_on_pyr * 2 * np.pi))
 
-        if dist > 0:
-            dist_normalizer = 0 #dist_normalizer * 0.2
+        # if dist > 0:
+        #     dist_normalizer = 0 #dist_normalizer * 0.2
         weight_dist += dist_normalizer
 
     pyr_dynamics += np.convolve(weight_dist * gen_prob, pyr_leak, mode="same") # weight_dist * gen_prob  #
@@ -112,9 +112,9 @@ for mec_idx in range(Nmec):
 pyr_dynamics = pyr_dynamics / np.max(pyr_dynamics)
 pyr_dynamics_mec = np.convolve(pyr_dynamics, pyr_leak, mode="same")
 
-#pyr_dynamics = pyr_dynamics_ca3 + pyr_dynamics_mec
+pyr_dynamics = pyr_dynamics_ca3 + pyr_dynamics_mec
 
-#pyr_arg_peaks = argrelextrema(pyr_dynamics, np.greater)[0].astype(np.int)
+pyr_arg_peaks = argrelextrema(pyr_dynamics, np.greater)[0].astype(np.int)
 
 # theta_phases
 plt.figure()
@@ -131,7 +131,7 @@ plt.scatter(t[pyr_arg_peaks], pyr_dynamics[pyr_arg_peaks], color="red")
 plt.figure()
 plt.scatter(t[pyr_arg_peaks], theta_phases[pyr_arg_peaks])
 plt.ylim(-np.pi, np.pi)
-"""
+
 
 plt.show()
 

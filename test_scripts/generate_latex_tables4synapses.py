@@ -1,8 +1,8 @@
 import pandas as pd
 
-import sys
-sys.path.append("../")
-from basic_parameters import get_basic_params
+# import sys
+# sys.path.append("../")
+from basic_parameters_nice import get_basic_params
 
 PATH4TABLES = "/home/ivan/Документы/latex_supplement/"
 
@@ -180,9 +180,9 @@ def gap_junctions_table(params):
 
 params = get_basic_params()
 
-#code4insertion = synapsic_tables(params)
+code4insertion = synapsic_tables(params)
 #code4insertion = nmda_table(params)
-code4insertion = gap_junctions_table(params)
+# code4insertion = gap_junctions_table(params)
 # synapse_params = [p for p in params["gap_junctions_params"]["pvbas2pvbas"].keys()]
 
 

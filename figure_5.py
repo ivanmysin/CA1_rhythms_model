@@ -1,11 +1,20 @@
 import numpy as np
 from scipy.signal import hilbert
 import matplotlib.pyplot as plt
-from matplotlib import gridspec
+params = {'legend.fontsize': 'xx-large',
+          'figure.figsize': (15, 5),
+         'axes.labelsize': 'xx-large',
+         'axes.titlesize':'xx-large',
+         'xtick.labelsize':'xx-large',
+         'ytick.labelsize':'xx-large'}
+plt.rcParams.update(params)
+
+
+# from matplotlib import gridspec
 import h5py
 from plot_result import plotting_param
-filepath = "/home/ivan/Data/CA1_simulation/theta_state_full_cells_full_time.hdf5"
-figfilepath = "/home/ivan/Data/CA1_simulation/figure_4.png"
+filepath = "/home/ivan/Data/CA1_simulation/test_!!!.hdf5"   # theta_state_full_cells
+figfilepath = "/home/ivan/Data/CA1_simulation/figure_5.png"
 
 firing4plot = ["pyr", "pvbas", "ca3_spatial", "mec"]
 simtime = 10000
@@ -16,7 +25,7 @@ gridspec_kw = {
 }
 # fig, axes = plt.subplots(nrows=14, ncols=6, gridspec_kw=gridspec_kw, constrained_layout=True)
 
-fig = plt.figure(constrained_layout=True, figsize=(10, 10))
+fig = plt.figure(constrained_layout=True, figsize=(15, 15))
 
 indicesofpyr = []
 pyrfirsize = []
@@ -57,7 +66,7 @@ with h5py.File(filepath, 'r') as h5file:
         ax1.set_xlim(0, simtime)
         ax1.set_ylim(0, cell_idx+1)
 
-        ax0.text(0, 0.5, celltype)
+        ax0.text(0, 0.5, celltype, fontsize="xx-large")
 
         if fir_idx == 0:
             ax1.set_title("Raster of spikes")
@@ -78,13 +87,14 @@ with h5py.File(filepath, 'r') as h5file:
         fir_phases = theta_phases[np.floor(fir*0.001*sampling_rate).astype(np.int)]
         fir_phases[fir_phases < 0] += 2 * np.pi
 
-
+        fir_during_place = 0.001 * fir_during_place
         ax1.scatter(fir_during_place, fir_phases, s=2, color=plotting_param["neuron_colors"]["pyr"])
 
-        ax1.set_xlim(-1500, 1500)
+        ax1.set_xlim(-1.5, 1.5)
+        # ax1.set_xticklabels(ax1.get_xticks(), rotation = -45)
         ax1.set_ylim(0, 2*np.pi)
         ax1.set_ylabel("theta phase")
-        ax1.set_xlabel("time, ms")
+        ax1.set_xlabel("time, sec")
 
         # ax2 = fig.add_subplot(gs1[len(firing4plot)+1, pyr_idx + 1])
         #

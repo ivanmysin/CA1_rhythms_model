@@ -1,8 +1,8 @@
 import pandas as pd
 
-import sys
-sys.path.append("../")
-from basic_parameters import get_basic_params
+# import sys
+# sys.path.append("../")
+from basic_parameters_nice import get_basic_params
 
 PATH4TABLES = "/home/ivan/Документы/latex_supplement/"
 
@@ -63,10 +63,10 @@ def get_tables_of_parameters(params, gentype):
     return code4insertion
 
 params = get_basic_params()
-# gentype = "ArtifitialCell"
-# code4insertion = get_tables_of_parameters(params, gentype)
-# gentype = "ArtifitialGridCell"
-# code4insertion = get_tables_of_parameters(params, gentype)
+gentype = "ArtifitialCell"
+code4insertion = get_tables_of_parameters(params, gentype)
+gentype = "ArtifitialGridCell"
+code4insertion = get_tables_of_parameters(params, gentype)
 
 gentype = "ArtifitialPlaceCell"
 code4insertion = get_tables_of_parameters(params, gentype)

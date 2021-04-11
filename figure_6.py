@@ -4,8 +4,14 @@ import h5py
 
 from plot_result import plotting_param
 filepath = "/home/ivan/Data/CA1_simulation/theta_nice.hdf5" # "_ripples.hdf5"
-figfilepath = "/home/ivan/Data/CA1_simulation/figure_5.png"
-
+figfilepath = "/home/ivan/Data/CA1_simulation/figure_6.png"
+params = {'legend.fontsize': 'xx-large',
+          'figure.figsize': (15, 5),
+         'axes.labelsize': 'xx-large',
+         'axes.titlesize':'xx-large',
+         'xtick.labelsize':'xx-large',
+         'ytick.labelsize':'xx-large'}
+plt.rcParams.update(params)
 
 
 gridspec_kw = {

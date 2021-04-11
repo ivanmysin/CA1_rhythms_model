@@ -2,12 +2,12 @@ import numpy as np
 from neuron import h, load_mechanisms
 import matplotlib.pyplot as plt
 import os
-import sys
+# import sys
 from copy import deepcopy
 
-sys.path.append("../")
+# sys.path.append("../")
 import presimulation_lib as prelib
-from basic_parameters import get_object_params
+from basic_parameters_nice import get_object_params
 from time import time
 RNG = np.random.default_rng()
 h.load_file("stdgui.hoc")
@@ -21,7 +21,7 @@ for cellfile in os.listdir("../cells/"):
     h.load_file("../cells/" + cellfile)
 
 
-nthreads = 4
+nthreads = 1
 
 basic_params = get_object_params(nthreads)
 
@@ -35,7 +35,7 @@ Rgamma = 0.4
 Rgrid = 0.9
 #####################################
 
-
+print(Ngens)
 
 
 generators = []
@@ -64,6 +64,10 @@ for idx, neuron_param in enumerate(params["neurons"]):
     #gen.grid_I0 = grid_i0
     #gen.grid_phase = 1.5 # grid_phases[idx]
     celltypename = neuron_param["celltype"]
+
+    if celltypename != "mec":
+        continue
+
     cellclass_name = neuron_param["cellclass"]
     gid = neuron_param["gid"]
 

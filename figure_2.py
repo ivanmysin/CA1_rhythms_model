@@ -1,11 +1,19 @@
 import numpy as np
 import h5py
 import matplotlib.pyplot as plt
+params = {'legend.fontsize': 'x-large',
+          'figure.figsize': (15, 5),
+         'axes.labelsize': 'xx-large',
+         'axes.titlesize':'xx-large',
+         'xtick.labelsize':'xx-large',
+         'ytick.labelsize':'xx-large'}
+plt.rcParams.update(params)
 
-filepath = "/home/ivan/Data/CA1_simulation/theta_state_full_cells.hdf5"
-figfilepath = "/home/ivan/Data/CA1_simulation/figure_2_.png"
 
-fig, axes = plt.subplots(nrows=10, ncols=4, figsize=(10, 10))
+filepath = "/home/ivan/Data/CA1_simulation/test_!!!.hdf5"   # theta_state_full_cells
+figfilepath = "/home/ivan/Data/CA1_simulation/figure_2.png"
+
+fig, axes = plt.subplots(nrows=10, ncols=4, figsize=(20, 15), constrained_layout=True)
 
 t0 = 0
 t1 = 1000
@@ -28,13 +36,21 @@ with h5py.File(filepath, 'r') as h5file:
         ax[1].plot(t[:raw_lfp.size], theta_band)
         ax[1].plot(t[:raw_lfp.size], slow_gamma_band)
 
+
         ax[2].plot(t[:raw_lfp.size], theta_band)
         ax[2].plot(t[:raw_lfp.size], middle_gamma_band)
+
 
         ax[3].plot(t[:raw_lfp.size], theta_band)
         ax[3].plot(t[:raw_lfp.size], fast_gamma_band)
 
 
+
+        if chan_idx == 9:
+            ax[0].set_title("Raw LFP")
+            ax[1].set_title("Slow gamma")
+            ax[2].set_title("Middle gamma")
+            ax[3].set_title("Fast gamma")
 
 
         for a in ax:
@@ -51,5 +67,5 @@ with h5py.File(filepath, 'r') as h5file:
 
 
 
-# fig.savefig("pyr.png")
+fig.savefig(figfilepath)
 plt.show()
