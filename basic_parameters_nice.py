@@ -21,7 +21,7 @@ mec - stellate cells of the medial entorhinal cortex
 lec - FAN cells of the lateral entorhinal cortex
 """
 
-SIMULATE_NON_THETA_STATE = True
+SIMULATE_NON_THETA_STATE = False
 
 
 def get_basic_params():
@@ -477,7 +477,7 @@ def get_basic_params():
             },
             
            "pvbas2pyr": {
-                "gmax": 10 * pvbas_dx, #10*  20.0, # 0.5, # 2.0, # 0.05,
+                "gmax": 30 * pvbas_dx, #10*  20.0, # 0.5, # 2.0, # 0.05,
                 "gmax_std" : 0.9, #  0.025,
                 
                 "Erev": -75,
@@ -932,7 +932,7 @@ def get_basic_params():
                 "tau_rise": 2,
                 "tau_decay": 6.3,
 
-                "prob": 0.03,
+                "prob": 0.02,
                 
                 "delay": 2.5,
                 "delay_std" : 0.5,
@@ -950,7 +950,7 @@ def get_basic_params():
                 "tau_rise": 2,
                 "tau_decay": 6.3,
 
-                "prob": 0.03,
+                "prob": 0.02,
                 
                 "delay": 2.5,
                 "delay_std" : 0.5,
@@ -1184,7 +1184,7 @@ def get_basic_params():
             
             # connections to bis
            "pyr2bis": {
-                "gmax": 0.5, # 0.14,
+                "gmax": 0.3, # 0.14,
                 "gmax_std" : 0.07,
                 
                 "Erev": 0,
@@ -1472,7 +1472,7 @@ def get_basic_params():
                 "tau_rise": 0.5,
                 "tau_decay": 3,
 
-                "prob": 0.3, # ! need to optimize
+                "prob": 0.1, # ! need to optimize
                 
                 "delay": 10.2,
                 "delay_std" : 0.2,
@@ -1946,7 +1946,7 @@ def get_object_params(Nthreads=1):
 
                     gmax_tmp = 0
                     for cent in grid_centers:
-                        dist = cent - 500 - pyr_coord
+                        dist = cent + 500 - pyr_coord
 
                         dist_normalizer = np.exp(-0.5 * dist**2 / var_conns_on_pyr ) / (np.sqrt(var_conns_on_pyr * 2 * np.pi ))
                         #if dist_normalizer > 0.001:
@@ -1958,7 +1958,7 @@ def get_object_params(Nthreads=1):
                     #     print(grid_phase)
                 else:
                     gmax = 0.016 # 0.01 * gmax # !!!!!
-                    if np.random.rand() > 0.4: # 0.1
+                    if np.random.rand() > 0.3: # 0.1
                         number_connections = 0
                 
 

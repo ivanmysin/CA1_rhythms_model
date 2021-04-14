@@ -65,7 +65,7 @@ def join_vect_lists(comm, vect_list, gid_vect):
 def run_simulation(params):
     pc = h.ParallelContext()
     
-    pc.timeout(20)
+    pc.timeout(1200)
     h.load_file("stdgui.hoc")
     h.load_file("stdrun.hoc")
     h.load_file("import3d.hoc")
