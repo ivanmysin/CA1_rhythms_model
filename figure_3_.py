@@ -12,7 +12,7 @@ plt.rcParams.update(params)
 
 from plot_result import plotting_param
 
-filepath = "/home/ivan/Data/CA1_simulation/test_!!!.hdf5"  # theta_state_full_cells
+filepath = "/home/ivan/Data/CA1_simulation/test_10000.hdf5"  # theta_state_full_cells
 figfilepath = "/home/ivan/Data/CA1_simulation/figure_3_.png"
 
 gridspec_kw = {

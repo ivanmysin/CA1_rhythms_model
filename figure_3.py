@@ -11,7 +11,7 @@ plt.rcParams.update(params)
 
 
 from plot_result import plotting_param
-filepath = "/home/ivan/Data/CA1_simulation/test_!!!.hdf5"   # theta_state_full_cells
+filepath = "/home/ivan/Data/CA1_simulation/test_10000.hdf5"   #test_!!! theta_state_full_cells
 figfilepath = "/home/ivan/Data/CA1_simulation/figure_3.png"
 
 
@@ -19,7 +19,7 @@ figfilepath = "/home/ivan/Data/CA1_simulation/figure_3.png"
 gridspec_kw = {
     "width_ratios" : [1, 0.2],
 }
-fig, axes = plt.subplots(nrows=15, ncols=2, gridspec_kw=gridspec_kw, constrained_layout=True, figsize=(30, 15))
+fig, axes = plt.subplots(nrows=15, ncols=2, gridspec_kw=gridspec_kw, constrained_layout=True, figsize=(20, 15))
 
 for ax in axes[:, 1]:
     ax.set_xlim(0, 1)
@@ -35,11 +35,12 @@ tmax = 3000
 with h5py.File(filepath, 'r') as h5file:
     t = h5file["time"][:]
 
-    raw_lfp = h5file["extracellular/electrode_1/lfp/origin_data/channel_{}".format(plotting_param["number_pyr_layer"])][:]
+    raw_lfp = h5file["extracellular/electrode_1/lfp/origin_data/channel_{}".format(plotting_param["number_pyr_layer"])][
+              :]
 
     axes[0, 0].plot(t[:raw_lfp.size], raw_lfp, label="raw lfp")
     axes[0, 0].set_ylabel("mV")
-    axes[0, 1].text(0, 0.5, "Raw LFP")
+    axes[0, 1].text(0, 0.5, "Raw LFP", fontsize="xx-large")
 
     # theta_lfp = h5file["extracellular/electrode_1/lfp/processing/bands/channel_{}/theta".format(plotting_param["number_pyr_layer"])][:]
     # axes[1, 0].plot(t[:raw_lfp.size], theta_lfp, label="theta band")
@@ -93,8 +94,8 @@ with h5py.File(filepath, 'r') as h5file:
             firings_x = np.append(firings_x, celltype_firings[cell_number][:])
             firings_y = np.append(firings_y, np.zeros(celltype_firings[cell_number].size)+cell_idx)
             
-        axes[celltype_idx+1, 0].scatter(firings_x, firings_y, s=2, color=plotting_param["neuron_colors"][celltype],  label=celltype)
-        axes[celltype_idx+1, 1].text(0, 0.5, celltype)
+        axes[celltype_idx+1, 0].scatter(firings_x, firings_y, s=0.5, color=plotting_param["neuron_colors"][celltype],  label=celltype)
+        axes[celltype_idx+1, 1].text(0, 0.5, celltype, fontsize="xx-large")
         # celltype_idx+14
 
     #axes[14, 0].set_title("Raster of spikes")
@@ -102,6 +103,7 @@ with h5py.File(filepath, 'r') as h5file:
 
 for ax in axes[:, 0]:
     ax.set_xlim(tmin, tmax)
+
 
 axes[-1, 0].set_xlabel("time, ms")
 

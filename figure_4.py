@@ -5,7 +5,7 @@ import h5py
 from basic_parameters import get_object_params
 import processingLib as proclib
 from plot_result import plotting_param
-filepath = "/home/ivan/Data/CA1_simulation/test_!!!.hdf5"   # theta_state_full_cells
+filepath = "/home/ivan/Data/CA1_simulation/test_10000.hdf5"   # theta_state_full_cells
 figfilepath = "/home/ivan/Data/CA1_simulation/figure_4.png"
 
 
@@ -52,6 +52,7 @@ with h5py.File(filepath, 'r') as h5file:
             if celltypes_idx == 0:
                 axes[celltypes_idx, rhythm_idx].set_title(rhythm_name)
 
+
             if rhythm_idx == 0:
                 axes[celltypes_idx, rhythm_idx].set_ylabel(celltype, rotation="horizontal", labelpad=20)
 
@@ -61,6 +62,9 @@ with h5py.File(filepath, 'r') as h5file:
                 axes[celltypes_idx, rhythm_idx].tick_params(labelbottom=False, bottom=False)
 
             axes[celltypes_idx, 0].text(0, 0.5, celltype)
+
+    axes[0, 1].text(-6, 4, "A", size=20, weight='bold')
+
 
     gs = axes[-1, 0].get_gridspec()
     for ax in axes[0:5, -1]:
@@ -90,6 +94,8 @@ with h5py.File(filepath, 'r') as h5file:
     axbig.set_ylabel("gamma frequency, Hz")
     axbig.set_xlabel("theta phase, rad")
 
+    axbig.text(-4, 160, "B", size=20, weight='bold')
+
     cbar = fig.colorbar(gr, ax=axbig)
 
     gs = axes[-1, 2].get_gridspec()
@@ -112,6 +118,7 @@ with h5py.File(filepath, 'r') as h5file:
     axbig2.set_xlabel("n * theta phase")
     axbig2.set_ylabel("R of (n * theta phase - gamma phase) disrtibution")
 
+    axbig2.text(-1, 1.5, "C", size=20, weight='bold')
 
     gs = axes[-1, 3].get_gridspec()
     for ax in axes[9:, -1]:
@@ -128,6 +135,9 @@ with h5py.File(filepath, 'r') as h5file:
     axbig3.set_xlim(4, None)
     axbig3.set_ylabel("frequencies for amplitude, Hz")
     axbig3.set_xlabel("frequencies for phase, Hz")
+
+    axbig3.text(2, 160, "D", size=20, weight='bold')
+
     cbar = fig.colorbar(gr, ax=axbig3)
 
 fig.savefig(figfilepath)
