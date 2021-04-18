@@ -13,6 +13,41 @@ plt.rcParams.update(params)
 # from matplotlib import gridspec
 import h5py
 from plot_result import plotting_param
+
+def plot_2pyr_connections(axes):
+
+    from presimulation_lib import r2kappa
+    x_pyr = 5000
+    ca3_x = np.arange(0, 10000, 3)
+    mec_x = np.arange(0, 10000, 3)  # = np.linspace(-np.pi, np.pi, 3500)
+    pvbas_x = np.arange(0, 10000, 50)
+    var_conns_on_pyr = 9000
+
+    # print(ca3_x)
+
+    ca32pyr = np.exp(-0.5 * (x_pyr - ca3_x) ** 2 / var_conns_on_pyr) / (np.sqrt(var_conns_on_pyr * 2 * np.pi))
+    pvbas2pyr = np.exp(-0.5 * ((x_pyr - pvbas_x + 0.000001) ** -2) / var_conns_on_pyr) / (
+        np.sqrt(var_conns_on_pyr * 2 * np.pi))
+
+    kappa, i0 = r2kappa(0.9)
+    mec2pyr = np.exp(kappa * np.cos(2 * np.pi * 0.1 * 0.001 * (x_pyr - mec_x - 500)))
+
+    mec2pyr = 0.5 * mec2pyr / np.max(mec2pyr)
+    ca32pyr = ca32pyr / np.max(ca32pyr)
+    pvbas2pyr = 0.1 * pvbas2pyr / np.max(pvbas2pyr)
+
+    axes.plot(0.001*ca3_x, ca32pyr, color=plotting_param["neuron_colors"]["ca3_spatial"], label="ca3")
+    axes.plot(0.001*mec_x, mec2pyr, color=plotting_param["neuron_colors"]["mec"], label="mec")
+    axes.plot(0.001*pvbas_x, pvbas2pyr, color=plotting_param["neuron_colors"]["pvbas"], label="pvbas")
+    axes.set_xlim(0, 10)
+    axes.set_ylim(0, 1.2)
+    axes.set_ylabel("Weight")
+    axes.set_xlabel("time coordinates, sec")
+    axes.legend()
+
+
+
+
 filepath = "/home/ivan/Data/CA1_simulation/test_10000.hdf5"   # theta_state_full_cells
 figfilepath = "/home/ivan/Data/CA1_simulation/figure_5.png"
 
@@ -72,16 +107,18 @@ with h5py.File(filepath, 'r') as h5file:
         ax0.axis('off')
 
         ax1 = fig.add_subplot(gs1[fir_idx, 1:])
-        ax1.scatter(firings_x, firings_y, s=0.2, color=plotting_param["neuron_colors"][celltype])
-        ax1.set_xlim(0, simtime)
+        ax1.scatter(0.001*firings_x, firings_y, s=0.2, color=plotting_param["neuron_colors"][celltype])
+        ax1.set_xlim(0, 0.001*simtime)
         ax1.set_ylim(0, cell_idx+1)
 
         ax0.text(0.5, 0.5, celltype, fontsize="xx-large")
 
         if fir_idx == 0:
             ax1.set_title("Raster of spikes")
+            ax1.text(-1, 10000, "A", fontsize=20, weight="bold")
+
         if fir_idx == len(firing4plot)-1:
-            ax1.set_xlabel("time, ms")
+            ax1.set_xlabel("time, sec")
 
     pyrfirsort = np.argsort(-1*np.asarray(pyrfirsize) )
 
@@ -118,20 +155,26 @@ with h5py.File(filepath, 'r') as h5file:
     ax1.set_ylabel("theta phase, rad")
     ax1.set_xlabel("time, sec")
 
-    ax2 = fig.add_subplot(gs1[len(firing4plot), 2])
+    ax1.text(-2, 3.14, "B", fontsize=20, weight="bold")
 
-    print(intracell_center)
-    Vm = intracellular_group[intracell_pyr_neuron][:] # np.random.rand(t.size) # indicesofpyr[ pyrfirsort[0] ]
-    t = h5file["time"][:]
+    ax2 = fig.add_subplot(gs1[len(firing4plot), 2:])
 
-    intracell_center = intracell_center + 200
-    Vm_pl = Vm[ np.abs(t - intracell_center) < 2000]
-    t_pl = t[ np.abs(t - intracell_center) < 2000] - intracell_center
+    # print(intracell_center)
+    # Vm = intracellular_group[intracell_pyr_neuron][:] # np.random.rand(t.size) # indicesofpyr[ pyrfirsort[0] ]
+    # t = h5file["time"][:]
+    #
+    # intracell_center = intracell_center + 200
+    # Vm_pl = Vm[ np.abs(t - intracell_center) < 2000]
+    # t_pl = t[ np.abs(t - intracell_center) < 2000] - intracell_center
+    #
+    # t_pl = 0.001 * t_pl
+    # ax2.plot(t_pl, Vm_pl, color="red")
+    # ax2.set_ylabel("mV")
+    # ax2.set_xlabel("time, sec")
 
-    t_pl = 0.001 * t_pl
-    ax2.plot(t_pl, Vm_pl, color="red")
-    ax2.set_ylabel("mV")
-    ax2.set_xlabel("time, sec")
+    plot_2pyr_connections(ax2)
+
+    ax2.text(-1, 1.2, "C", fontsize=20, weight="bold")
 
 
 
