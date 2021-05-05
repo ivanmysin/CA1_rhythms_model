@@ -10,29 +10,29 @@ import processingLib as proclib
 
 plotting_param = {
     "neuron_colors" : {
-        "pyr" : "#ED2024",  # (1.0, 0.0, 0.0), # red
-        "pvbas": "#DCA448", # (0.0, 0.0, 1.0), # blue
-        "olm": "#9D248F", # (0.0, 0.0, 0.5), #
-        "cckbas": "#4CB748", # (0.0, 1.0, 0.0), # green
-        "ivy": "#B4A1CD", #(0.0, 0.5, 0.5), #
-        "ngf": "#04F9D3", #(0.5, 0.5, 0.5), #
-        "bis": "#3953A4", #(0.1, 0.0, 0.5), #
-        "aac": "#82D3EC", #(1.0, 0.0, 0.5), #
-        "sca": "#BFBFBF", #(0.0, 1.0, 0.5), #
+        "pyr" : (1.0, 0.0, 0.0), # red
+        "pvbas": (0.0, 0.0, 1.0), # blue
+        "olm": (0.0, 0.0, 0.5), #
+        "cckbas": (0.0, 1.0, 0.0), # green
+        "ivy": (0.0, 0.5, 0.5), #
+        "ngf": (0.5, 0.5, 0.5), #
+        "bis": (0.1, 0.0, 0.5), #
+        "aac": (1.0, 0.0, 0.5), #
+        "sca": (0.0, 1.0, 0.5), #
 
-        "ca3_spatial": "#FF8686", #(0.5, 0.5, 0.0), #
-        "ca3_non_spatial": "#FF8686", #(0.5, 0.5, 0.0), #
-        "mec": "#FFCAF6", #(0.5, 1.0, 0.0), #
+        "ca3_spatial": (0.5, 0.5, 0.0), #
+        "ca3_non_spatial": (0.5, 0.5, 0.0), #
+        "mec": (0.5, 1.0, 0.0), #
         "lec": (0.9, 0.7, 0.0), #
-        "msteevracells": "#2596FF", #(0.0, 0.8, 0.5), #
+        "msteevracells": (0.0, 0.8, 0.5), #
         "mskomalicells": (0.0, 0.5, 0.9), #
-        "msach": "#FDBC58", #(0.8, 0.2, 0.0), #
+        "msach": (0.8, 0.2, 0.0), #
     },
 
-    "neuron_order" : ["pyr", "pvbas", "cckbas", "olm", "aac", "ivy", "bis", "sca", "ngf", "ca3_spatial", "ca3_non_spatial", "mec", "lec", "msteevracells", "mskomalicells", "msach"],
-    "rhytms_order" : ["theta", "slow gamma", "middle gamma" , "fast gamma"],
+    "neuron_order" : ["pyr", "pvbas", "cckbas", "olm", "aac", "ivy", "bis", "sca", "ngf", "ca3_spatial", "ca3_non_spatial", "mec",  "msteevracells", "msach"], # "mskomalicells","lec",
+    "rhytms_order" : ["theta", "slow gamma", "middle gamma", "fast gamma"],
 
-    "number_pyr_layer" : 1,  # number of chennel from pyramidal layer
+    "number_pyr_layer" : 2,  # number of chennel from pyramidal layer
 
     "frequencies4wavelet" : [2, 30],
 }
@@ -56,8 +56,9 @@ def plot_spike_raster(filepath):
                 axes = plt.subplot(gs[celltype_idx])
            
                 for sp_idx, (cell_key, firing) in enumerate(sorted(celltype_group.items(), key=lambda x: int(x[0].split("_")[-1]),)):
-                    sp_idx += 1
-                    axes.scatter(firing,  np.zeros(firing.size) + sp_idx, color=plotting_param["neuron_colors"][celltype], s=0.2 )
+                    # sp_idx += 1
+                    # cell_key = int(cell_key.split("_")[-1])
+                    axes.scatter(firing,  np.zeros(firing.size)+sp_idx+1, color=plotting_param["neuron_colors"][celltype], s=0.2 )
 
                 axes.set_ylim(1, sp_idx)
                 axes.set_xlim(t0, t1)
@@ -69,7 +70,6 @@ def plot_spike_raster(filepath):
                     axes.tick_params(labelbottom=False, bottom=False)
             except KeyError:
                 continue
-            
         fig.tight_layout()
         plt.show()
 
@@ -89,7 +89,7 @@ def plot_lfp(filepath):
         
         
         lfp_group = h5file["extracellular/electrode_1/lfp/origin_data"]
-        wavelet_group = h5file["extracellular/electrode_1/lfp/processing/wavelet"]
+        wavelet_group = h5file["extracellular/electrode_1/lfp/processing2/wavelet"]
 
         lfp_keys = sorted(lfp_group.keys(), key = lambda x: int(x.split("_")[-1]), reverse=True )
         
@@ -150,7 +150,7 @@ def plot_lfp(filepath):
 def plot_modulation_index(filepath):
     with h5py.File(filepath, 'r') as h5file:
 
-        mi_group = h5file["extracellular/electrode_1/lfp/processing/modulation_index/channel_"+str(plotting_param["number_pyr_layer"])]
+        mi_group = h5file["extracellular/electrode_1/lfp/processing2/modulation_index/channel_"+str(plotting_param["number_pyr_layer"])]
         mi = mi_group["modulation_index"][:]
         freqs4ampl = mi_group["freqs4ampl"][:]
         freqs4phase = mi_group["freqs4phase"][:]
@@ -167,7 +167,7 @@ def plot_modulation_index(filepath):
 def plot_phase_by_amplitude_coupling(filepath):
     with h5py.File(filepath, 'r') as h5file:
 
-        coup_group = h5file["extracellular/electrode_1/lfp/processing/theta_gamma_coupling/channel_"+str(plotting_param["number_pyr_layer"])]
+        coup_group = h5file["extracellular/electrode_1/lfp/processing2/theta_gamma_coupling/channel_"+str(plotting_param["number_pyr_layer"])]
         coupling = coup_group["coupling_matrix"][:]
         gamma_freqs = coup_group["gamma_freqs"][:]
         theta_phase = coup_group["theta_phase"][:]
@@ -189,7 +189,6 @@ def plot_phase_by_amplitude_coupling(filepath):
         axes = plt.subplot(gs[1, 0])
         gr = axes.pcolormesh(theta_phase, gamma_freqs, coupling, cmap="rainbow", shading='auto')
         axes.set_xlim(-np.pi, np.pi)
-        axes.set_ylim(30, 120)
         axes.set_ylabel("gamma frequency, Hz")
         axes.set_xlabel("theta phase, rad")
 
@@ -228,7 +227,7 @@ def plot_v(filepath):
 
 def plot_phase_disrtibution(filepath):
     with h5py.File(filepath, 'r') as h5file:
-        distr_group = h5file["extracellular/electrode_1/firing/processing/phase_distrs"]
+        distr_group = h5file["extracellular/electrode_1/firing/processing2/phase_distrs"]
 
         fig, axes = plt.subplots(nrows=len(plotting_param["neuron_order"]), ncols=len(plotting_param["rhytms_order"]), figsize=(5, 10))
         for celltypes_idx, celltype in enumerate(plotting_param["neuron_order"]):
@@ -236,8 +235,6 @@ def plot_phase_disrtibution(filepath):
                 try:
                     phase_distr = distr_group[celltype][rhythm_name][:]
                 except KeyError:
-                    continue
-                if phase_distr.size == 0:
                     continue
                 phases = np.linspace(-np.pi, np.pi, phase_distr.size)
                 signal4phase = np.max(phase_distr) * 0.25 * (np.cos(phases) + 1)
@@ -298,7 +295,7 @@ def plot_pyr_layer_lfp_vs_raster(filepath):
 def plot_phase_precession(filepath):
     with h5py.File(filepath, 'r') as h5file:
         sampling_rate = h5file["extracellular/electrode_1/lfp/origin_data"].attrs["SamplingRate"]
-        theta_signal = h5file["extracellular/electrode_1/lfp/processing/bands/channel_1/theta"][:]
+        theta_signal = h5file["extracellular/electrode_1/lfp/processing2/bands/channel_1/theta"][:]
         theta_phases = np.angle( hilbert(theta_signal) )
 
         firing_group = h5file["extracellular/electrode_1/firing/origin_data/pyr"] # pyr !!!!
@@ -346,7 +343,7 @@ def plot_current_source_density(filepath, band_name):
     with h5py.File(filepath, 'r') as h5file:
         sampling_rate = h5file["extracellular/electrode_1/lfp/origin_data"].attrs["SamplingRate"]
         sampling_rate *= 0.001 
-        csd = h5file["extracellular/electrode_1/lfp/processing/current_source_density/" + band_name][:]
+        csd = h5file["extracellular/electrode_1/lfp/processing2/current_source_density/" + band_name][:]
 
         t = np.linspace(0, csd.shape[1]/sampling_rate, csd.shape[1])
         depth = np.linspace(-300, 800, csd.shape[0])
@@ -367,7 +364,7 @@ def plot_current_source_density(filepath, band_name):
         
 def plot_nm_phase_phase_coupling(filepath):
     with h5py.File(filepath, 'r') as h5file:
-        gr_name = "extracellular/electrode_1/lfp/processing/theta_gamma_phase_phase_coupling/channel_"
+        gr_name = "extracellular/electrode_1/lfp/processing2/theta_gamma_phase_phase_coupling/channel_"
         gr_name += str(plotting_param["number_pyr_layer"])
         coup_group = h5file[gr_name]
         nmarray = coup_group["nmarray"][:]
@@ -395,13 +392,14 @@ def plot_v_vs_pyr_lfp(filepath):
         intracell_keys = intracellular_group.keys()
 
 
-        fig, axes = plt.subplots(nrows=10, sharex=True, figsize=(5, 10))
+        fig, axes = plt.subplots(nrows=len(plotting_param["neuron_order"])+1, sharex=True, figsize=(5, 10))
         axes[0].plot(t[:lfp.size], lfp, color="black")
         for celltype_idx, celltype in enumerate(plotting_param["neuron_order"]):
+            celltype_idx += 1
             for key in intracell_keys:
-                if  intracellular_group[key].attrs["celltype"] != celltype: continue # 
+                if  intracellular_group[key].attrs["celltype"] != celltype: continue
 
-                celltype_idx += 1
+
                 v = intracellular_group[key][:]
                 celltype = intracellular_group[key].attrs["celltype"]
                 axes[celltype_idx].plot(t, v, label=celltype, color=plotting_param["neuron_colors"][celltype])
@@ -444,13 +442,13 @@ if __name__ == "__main__":
     # plot_modulation_index(filepath)
     # plot_phase_by_amplitude_coupling(filepath)
     # plot_nm_phase_phase_coupling(filepath)
-    # plot_phase_disrtibution(filepath)
-    # plot_v_vs_pyr_lfp(filepath)
+    plot_phase_disrtibution(filepath)
+    plot_v_vs_pyr_lfp(filepath)
 
 
     # plot_v(filepath)
     # plot_pyr_layer_lfp_vs_raster(filepath)
-    plot_phase_precession(filepath)
+    # plot_phase_precession(filepath)
 
 
 

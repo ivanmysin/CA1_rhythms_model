@@ -5,15 +5,15 @@ import h5py
 import processingLib as plib
 from scipy.stats import zscore
 from scipy.ndimage import zoom
-from scipy.signal import decimate
+
 processing_param = {
 
 
     "morlet_w0" : 8.0,      # центральная частота для вейвлета Морле
-    "freqs_step" : 10,      # количество частот, для которых вычисляется вейвлет за один цикл 
+    "freqs_step" : 10,      # количество частот, для которых вычисляется вейвлет за один цикл
     "max_freq_lfp" : 500,   # Гц, анализируем только до этой частоты 
 
-    "number_pyr_layer" : 1, # number of channel from pyramidal layer
+    "number_pyr_layer" : 2, # number of channel from pyramidal layer
 
     "butter_order" : 2,     # Порядок для фильтра Баттерворда
     "filt_bands" : {
@@ -50,11 +50,12 @@ def processing_and_save(filepath):
         lfp_group = h5file["extracellular/electrode_1/lfp"]
         lfp_group_origin = lfp_group["origin_data"]
 
+        # process_group = lfp_group["processing"]
         try:
-            process_group = lfp_group.create_group("processing")
+             process_group = lfp_group.create_group("processing")
         except ValueError:
-            del h5file["extracellular/electrode_1/lfp/processing"]
-            process_group = lfp_group.create_group("processing")
+             del h5file["extracellular/electrode_1/lfp/processing"]
+             process_group = lfp_group.create_group("processing")
 
         wavelet_group = process_group.create_group("wavelet")
         bands_group = process_group.create_group("bands")
@@ -63,20 +64,17 @@ def processing_and_save(filepath):
         theta_gamma_phase_phase_coupling_group = process_group.create_group("theta_gamma_phase_phase_coupling")
         modulation_index_group = process_group.create_group("modulation_index")
 
-        fd = 0.1 * lfp_group_origin.attrs["SamplingRate"]
-        
+        fd = lfp_group_origin.attrs["SamplingRate"]
+
         lfp_keys = lfp_group_origin.keys()
 
         for key_idx in range(len(lfp_keys)):
             key = "channel_" + str(key_idx + 1)
             lfp = lfp_group_origin[key][:]
 
-            
-            lfp = decimate(lfp, 10)
-            
-            freqs = np.fft.rfftfreq(lfp.size, d=1/fd)
-            freqs = freqs[1:]  # remove 0 frequency
-            freqs = freqs[freqs <= processing_param["max_freq_lfp"] ]  # remove frequencies below 500 Hz
+            freqs = np.linspace(2, 200, 198)  # np.fft.rfftfreq(lfp.size, d=1/fd)
+            # freqs = freqs[1:]  # remove 0 frequency
+            # freqs = freqs[freqs <= processing_param["max_freq_lfp"] ]  # remove frequencies below 500 Hz
 
 
             channel_wavelet_group = wavelet_group.create_group(key)
@@ -139,17 +137,17 @@ def processing_and_save(filepath):
             ####################################################################################
             # phase amplidute modulation index
             channel_modulation_index_group = modulation_index_group.create_group(key)
-            
-            freqs = channel_wavelet_group["frequecies"][:] 
+
+            freqs = channel_wavelet_group["frequecies"][:]
             freqs4phase_sl = plib.slice_by_bound_values(freqs, processing_param["modulation_index"]["freqs4phase"][0], processing_param["modulation_index"]["freqs4phase"][1])
             freqs4ampl_sl = plib.slice_by_bound_values(freqs, processing_param["modulation_index"]["freqs4amplitude"][0], processing_param["modulation_index"]["freqs4amplitude"][1])
-                        
-            
+
+
             W4phase = channel_wavelet_group["wavelet_coeff"][freqs4phase_sl, :]
             W4ampls = channel_wavelet_group["wavelet_coeff"][freqs4ampl_sl, :]
-            
+
             mi = plib.get_modulation_index(W4phase, W4ampls, nbins=20)
-            
+
             channel_modulation_index_group.create_dataset("freqs4phase", data=freqs[freqs4phase_sl])
             channel_modulation_index_group.create_dataset("freqs4ampl", data=freqs[freqs4ampl_sl])
             channel_modulation_index_group.create_dataset("modulation_index", data=mi)
@@ -194,6 +192,10 @@ def processing_and_save(filepath):
 
             celltype_firings = np.empty(shape=0, dtype=np.float64)
             for dsetname, cell_firing_dset in firing_origin[celltype].items():
+
+                # if celltype == "pyr" and int(dsetname.split("_")[-1]) < 3500:
+                #     continue
+
                 celltype_firings = np.append(celltype_firings, cell_firing_dset[:])
 
             for band_name in processing_param["filt_bands"].keys():
@@ -215,9 +217,10 @@ def processing_and_save(filepath):
         
         
 if __name__ == "__main__":
-    from basic_parameters import basic_params
+    # from basic_parameters import basic_params
     
-    filepath =  "/home/ivan/Data/CA1_simulation/artificial_signals.hdf5" # basic_params["file_results"] #
+    filepath =  "/home/ivan/Data/CA1_simulation/test_10000_!!!.hdf5"   # test_3000_!!!.hdf5" # test_10000.hdf5"
+    # test_!!!.hdf5" #theta_state_full_cells   _full_time basic_params["file_results"] #
     # print(filepath)
     processing_and_save(filepath)
 
