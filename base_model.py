@@ -19,8 +19,5 @@ if rank == 0:
 else:
     basic_params = comm.recv(source=0, tag=rank)
 
-## basic_params = comm.bcast(basic_params, root=0)
-
-
 run_simulation(basic_params)
 

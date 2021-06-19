@@ -51,8 +51,8 @@ def get_basic_params():
         },
         "PyrDencity" : 0.2, # pyramidal cells / micrometer^2
 
-        "file_results":  "../../Data/CA1_simulation/test.hdf5", # None, #
-        "duration" : 5200, # 10200, # 2500, # 700, # 2500, #, #  # 10 sec simulation time
+        "file_results":  "./Results/theta_state.hdf5", # None, #
+        "duration" : 10200, # 2500, # 700, # 2500, #, #  # 10 sec simulation time
         "step_duration" : 0,
         
         "del_start_time" : 200, # time after start for remove
