@@ -27,9 +27,9 @@ Directories and files
     ./test_scripts - directory with scipts for testing some properties of the models
      base_model.py - main python file
      basic_parameters.py - python file containing
-     nontheta_state_params.py
-     simulation_parallel.py
-     process.py
+     nontheta_state_params.py - парметы для нетета-режима
+     simulation_parallel.py - содержит функцию   , которая собирает и запускает симуляцию.
+     process.py - обрабатывает hdf5 file
      processingLib.py
      plot_result.py
      figure_1(2-6).py
@@ -61,4 +61,4 @@ How to process
 
 How to plot
 -----------------------------------
-Функции в файлах умеют свчитывать из hdf5 файла предобработанные данные и строить графики.
+Функции в файлах умеют считывать из hdf5 файла предобработанные данные и строить графики.
