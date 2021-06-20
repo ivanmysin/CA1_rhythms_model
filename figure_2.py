@@ -10,8 +10,8 @@ params = {'legend.fontsize': 'x-large',
 plt.rcParams.update(params)
 
 
-filepath = "/home/ivan/Data/CA1_simulation/test_10000_!!!.hdf5"   #test_!!! theta_state_full_cells
-figfilepath = "/home/ivan/Data/CA1_simulation/new/figure_2.png"
+filepath = "./Results/theta_state.hdf5"
+figfilepath = "./Results/figure_2.png"
 
 fig, axes = plt.subplots(nrows=10, ncols=4, figsize=(20, 15), constrained_layout=True)
 

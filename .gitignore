@@ -1,5 +1,9 @@
-
+.directory
 /.idea/*
 /venv/*
 /mods/x86_64/*
 /__pycache__/*
+*.pyc
+/Results/*.hdf5
+/Results/*.png
+
