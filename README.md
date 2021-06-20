@@ -20,6 +20,7 @@ Packages for saving, processing and plotting:
 
 Directories and files
 -----------------------------------
+Подробно написать, что делает каждый файл!!!
 
     ./cells - directory with models of cells (hoc files)
     ./mod - directory with mechanisms for cells (mod files)
@@ -51,3 +52,13 @@ You need:
 
 Full simulation need 70 Gb RAM.
 Full simulation: 10000 pyramidal cell, 
+Результаты симуляции сохраняются в hdf5 файл.
+
+How to process
+-----------------------------------
+Если запустить функцию из файла process.py, но она обработает и сохранит
+в том же файле вейвлет спектры, полосы, распределение нейронов по фазам ритмов и т.д.
+
+How to plot
+-----------------------------------
+Функции в файлах умеют свчитывать из hdf5 файла предобработанные данные и строить графики.
