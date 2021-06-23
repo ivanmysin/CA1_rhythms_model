@@ -13,23 +13,25 @@ ngf - neurogliaform cells
 bis - bistratifered cells
 aac - axo-axonal cells
 csa - Schaffer collateral-associated cells
-
 ca3_spatial - CA3 pyramidal cells with place cells dynamics
 ca3_non_spatial - CA3 pyramidal cells without place cells dynamics
-
 mec - stellate cells of the medial entorhinal cortex
-lec - FAN cells of the lateral entorhinal cortex
+msach - medial septal cholinergic neurons
+msteevracells  - medial septal GABAergic neurons (Teevra cells)
 """
 
-SIMULATE_NON_THETA_STATE = False
+SIMULATE_NON_THETA_STATE = False # flag simulate non-theta state (true) or theta state (false)
 
 
 def get_basic_params():
+    """
+    Function return dictionary of hyperparameters of the model
+    """
     
-    Npyr = 9000 # 
-    Npvbas = 200
-    Nca3_spatial = 3500
-    Nelecs = 10 # number of electrodes
+    Npyr = 9000             #  number of pyramidal cells
+    Npvbas = 200            #  number of pvbas cells
+    Nca3_spatial = 3500     #  number of ca3 spatial cells
+    Nelecs = 10             # number of electrodes
     
     if Nelecs > 1:
         el_y = np.linspace(-200, 600, Nelecs)
@@ -37,13 +39,14 @@ def get_basic_params():
         el_y = np.zeros(Nelecs)
     
     
-    pyr_dx = 3
-    pvbas_dx = 50
+    pyr_dx = 3      # step of pyramidal coordinates
+    pvbas_dx = 50   # step of pvbas coordinates
     
-    pyr_coords = np.cumsum( np.zeros(Npyr) + pyr_dx ) 
-    pyr_coords[pyr_coords.size//2:] = np.nan 
+    pyr_coords = np.cumsum( np.zeros(Npyr) + pyr_dx )  #  coordinates of pyramidal cells
+    pyr_coords[pyr_coords.size//2:] = np.nan # half of pyr do not have coordinates
     
     basic_params = {
+        #  coordinates of electrodes
         "elecs" : {
             "el_x" : np.zeros(Nelecs),
             "el_y" : el_y, 
@@ -51,16 +54,15 @@ def get_basic_params():
         },
         "PyrDencity" : 0.2, # pyramidal cells / micrometer^2
 
-        "file_results":  "./Results/theta_state.hdf5", # None, #
-        "duration" : 10200, # 2500, # 700, # 2500, #, #  # 10 sec simulation time
-        "step_duration" : 0,
-        
+        "file_results":  "./Results/theta_state.hdf5", # file for saving results
+        "duration" : 10200, # 10 sec simulation time
+
         "del_start_time" : 200, # time after start for remove
         
         "pyr_coodinates" : pyr_coords,
         "ca3_coodinates" : np.cumsum( np.zeros(Nca3_spatial) + pyr_dx ),
         "pvbas_coodinates" : np.cumsum( np.zeros(Npvbas) + pvbas_dx ),
-        "var_conns_on_pyr" : 9000, # 500, # 25000, # 
+        "var_conns_on_pyr" : 9000, # variation for connection settings on pyramidal cells
         
         
         "CellNumbersInFullModel" : {
@@ -73,140 +75,113 @@ def get_basic_params():
             "Nbis" :    70,
             "Naac" :    60,
             "Nsca" :    40,
-            
-            
             "Nca3_spatial" : 3500,
             "Nca3_non_spatial" : 3500,
             "Nmec" : 9000, 
-            "Nlec" : 9000,  
             "Nmsteevracells" : 200,
             "Nmskomalicells" : 200,
             "Nmsach"         : 150,
         },
-        
+
+        # number of cells
         "CellNumbers" : {
-            "Npyr" : Npyr, # 9000, #
-            "Npvbas" : Npvbas, # 200,
+            "Npyr" : Npyr,
+            "Npvbas" : Npvbas,
             "Nolm" : 80,
             "Ncckbas" : 160,
-            "Nivy" : 260, # 130,
-            "Nngf" : 130, # 65,
-            "Nbis" : 70, # 35,
-            "Naac" : 60, # 30,
-            "Nsca" : 40, # 20,
-            
-            
-            "Nca3_spatial" : Nca3_spatial, # 2000, # 3500,
+            "Nivy" : 260,
+            "Nngf" : 130,
+            "Nbis" : 70,
+            "Naac" : 60,
+            "Nsca" : 40,
+
+            "Nca3_spatial" : Nca3_spatial,
             "Nca3_non_spatial" : 3500,
-            "Nmec" : 3500, # 3500
-            "Nlec" : 0, ## 500,
+            "Nmec" : 3500,
             "Nmsteevracells" : 200,
-            "Nmskomalicells" : 0, # 200,
             "Nmsach"         : 150,
         },
-        
+
+        # cells parameters
         "CellParameters" : {
             "ca3_spatial" : {
                 "cellclass" : "ArtifitialPlaceCell",
-                "Rtheta" : 0.4,
-                "low_mu" : 1.3, # 1.1, # 1.75,
+                "Rtheta" : 0.4, # theta R
+                "low_mu" : 1.3, # theta phase
 
-                "Rgamma" : 0.4,
-                "high_mu" : 0.0,
+                "Rgamma" : 0.4,  # gamma R
+                "high_mu" : 0.0, # gamma phase
 
-                "spike_rate" : 1000000.0,   # 100000.0,
+                "spike_rate" : 1000000.0,
                 "latency" : 10.0,
 
                 "place_center_t" : 500,
-                "place_t_radius" : 500, #  1500, # 
+                "place_t_radius" : 500,
             
-                "low_freqs" : 7.0,  # 5.0,
-                "high_freqs" : 35.0,  # 30.0,
+                "low_freqs" : 7.0,  # theta frequency
+                "high_freqs" : 35.0,  # gamma frequency
 
                 "delta_t" : 0.1,
             },
             
             "ca3_non_spatial" : {
                 "cellclass" : "ArtifitialCell",
-                "R" : 0.3,
-                "mu" : 1.3, # 1.1,  # 1.75,
-                "freqs" : 7.0, # 5.0,
-                "spike_rate" : 1.0,   # 100000.0,
+                "R" : 0.3,     # gamma R
+                "mu" : 1.3,    # theta phase
+                "freqs" : 7.0, # theta frequency
+                "spike_rate" : 1.0,
                 "latency" : 10.0,
                 "delta_t" : 0.1,
-                
-                
+
             },
             
             "mec" : {
-                "cellclass" : "ArtifitialGridCell",  # "ArtifitialPlaceCell", #  
+                "cellclass" : "ArtifitialGridCell",
 
                 "Rtheta": 0.3,
-                "low_mu": -1.04, # 5.24, # -0.5, # -0.8, # -1.75, # 0, # 
+                "low_mu": -1.04, # theta phase
 
                 "Rgamma": 0.4,
-                "high_mu": 0.0,
+                "high_mu": 0.0, # gamma phase
 
-                "spike_rate": 10e7, # 10000000.0,  # 100000.0,
+                "spike_rate": 10e7,
                 "latency": 10.0,
 
                 "delta_t" : 0.1,
                 
-                "low_freqs" : 7.0, #  5.0,
-                "high_freqs" : 63.0,
+                "low_freqs" : 7.0,   #  theta frequency
+                "high_freqs" : 63.0,  # middle gamma frequency
             
-                "Rgrid" : 0.9, # 0.4,
-                "grid_freqs" : 0.1, # 0.5, # 
-                "grid_phase" : 0, 
+                "Rgrid" : 0.9,      # reqularity of grid
+                "grid_freqs" : 0.1, # period of grid
+                "grid_phase" : 0,   # grid of phase
             },
             
-            "lec" : {
-                "cellclass" : "ArtifitialCell",
-                "R" : 0.1,
-                "mu" : 0.0,
-                "freqs" : 7.0, # 5.0,
-                "latency" : 10.0,
-                "spike_rate": 5.0,  
-                
-                "delta_t" : 0.1,  
-            },
-            
+
             "msteevracells" : {
                 "cellclass" : "ArtifitialCell",
-                "R" : 0.6,
-                "mu" : np.pi,
-                "freqs" : 7.0, # 5.0,
+                "R" : 0.6,     # theta R
+                "mu" : np.pi,  # theta phase
+                "freqs" : 7.0, # theta frequency
                 "latency" : 4.0,
                 "spike_rate": 15.0,
-                
                 "delta_t" : 0.1,   
             },
             
-            "mskomalicells" : {
-                "cellclass" : "ArtifitialCell",
-                "R" : 0.6,
-                "mu" : 0.0,  # !!!!
-                "freqs" : 7.0, # 5.0,
-                "latency" : 4.0,
-                "spike_rate": 15.0,  
-                
-                "delta_t" : 0.1, 
-            },
-            
+
             "msach" : {
                 "cellclass" : "ArtifitialCell",
-                "R" : 0.4,
-                "mu" : np.pi,  # !!!!
-                "freqs" : 7.0, # 5.0,
+                "R" : 0.4,     # theta R
+                "mu" : np.pi,  # theta phase
+                "freqs" : 7.0, # theta frequency
                 "latency" : 10.0,
                 "spike_rate": 3.0,
-                
                 "delta_t" : 0.1,     
             },
             
             "pyr" : {
-                "cellclass" : "CA1PyramidalCell", # "poolosyncell", # 
-                "iext" : 0, #-0.008,  #0.002,
+                "cellclass" : "CA1PyramidalCell",
+                "iext" : 0,
                 "iext_std" : 0.002,
             },
             
@@ -259,9 +234,10 @@ def get_basic_params():
             },
         
         },
-        
+
+        # indexes of neurons for saving soma potentials
         "save_soma_v" : {
-            "pyr" :  [range(200, 300)],    # [0, ], #  [range(1400)]
+            "pyr" :  [range(200, 300)],    # [0, ],
             "pvbas" : [range(30, 80)], # [0, ], #
             "olm" :   [range(10)], # [0, ], # [0, 1, 3],
             "cckbas" : [range(10)], # #[0, ],
@@ -275,13 +251,12 @@ def get_basic_params():
         
         },
 
-
+        # parameters of connections
         "connections" : {
-            
             # connection to pyramidal neurons
             "ca3_spatial2pyr": {
-                "gmax": 1000 * pyr_dx, #200* 1000 * pyr_dx,  # 16000.0, # 0.016,
-                "gmax_std" : 0.9, # 0.002,
+                "gmax": 1000 * pyr_dx,
+                "gmax_std" : 0.9,
                 
                 "Erev": 0,
                 "tau_rise": 0.5,
@@ -357,25 +332,6 @@ def get_basic_params():
                 #},
             },
             
-            "lec2pyr": {  # need to optimize
-                "gmax": 0.06,
-                "gmax_std" : 0.007,
-                
-                "Erev": 0,
-                "tau_rise": 0.5,
-                "tau_decay": 3,
-
-                "prob": 0.07,
-                
-                "delay": 10,
-                "delay_std" : 2,
-                
-
-                "sourse_compartment" : "acell",
-                "target_compartment" : "lm_list",
-            },
-            
-
             "pyr2pyr": {
                 "gmax": 0.01,
                 "gmax_std" : 0.007,
@@ -403,8 +359,8 @@ def get_basic_params():
             },
             
             "cckbas2pyr": {
-                "gmax": 2.5, # 4.5, #
-                "gmax_std" : 1.2, # 1.2,
+                "gmax": 2.5,
+                "gmax_std" : 1.2,
                 
                 "Erev": -75,
                 "tau_rise": 0.2,
@@ -477,14 +433,14 @@ def get_basic_params():
             },
             
            "pvbas2pyr": {
-                "gmax": 30 * pvbas_dx, #10*  20.0, # 0.5, # 2.0, # 0.05,
-                "gmax_std" : 0.9, #  0.025,
+                "gmax": 30 * pvbas_dx,
+                "gmax_std" : 0.9,
                 
                 "Erev": -75,
                 "tau_rise": 0.3,
                 "tau_decay": 6.2,
 
-                "prob": 0.8, # 0.29, #
+                "prob": 0.8,
                 
                 "delay": 1.2,
                 "delay_std" : 0.2,
@@ -531,7 +487,7 @@ def get_basic_params():
             },
 
            "sca2pyr": {
-                "gmax": 0.098, # 3 
+                "gmax": 0.098,
                 "gmax_std" : 0.05,
 
                 "Erev": -75,
@@ -551,14 +507,14 @@ def get_basic_params():
             
             # connection to pvbas
             "ca3_spatial2pvbas": {
-                "gmax": 15 * pvbas_dx, # 5 * pvbas_dx, # 10000, # 160, #7.0, # 0.7,
+                "gmax": 15 * pvbas_dx,
                 "gmax_std" : 0.2,
                 
                 "Erev": 0,
                 "tau_rise": 2.0,
                 "tau_decay": 6.3,
 
-                "prob": 0.6, # 0.02
+                "prob": 0.6,
                 
                 "delay": 1.5,
                 "delay_std" : 0.5,
@@ -603,7 +559,7 @@ def get_basic_params():
             },
             
             "pyr2pvbas": {
-                "gmax": 0.5,  # !!! 0.05,
+                "gmax": 0.5,
                 "gmax_std" : 0.04,
                 
                 "Erev": 0,
@@ -629,8 +585,8 @@ def get_basic_params():
             },
             
             "pvbas2pvbas": {
-                "gmax": 10.0, # 800, # 0.08, # 0.05 # !!!! 0.023,
-                "gmax_std" : 0.01, #  0.01,
+                "gmax": 10.0,
+                "gmax_std" : 0.01,
                 
                 "Erev": -75,
                 "tau_rise": 0.8,
@@ -647,7 +603,7 @@ def get_basic_params():
             },
             
             "cckbas2pvbas": {
-                "gmax": 10.0, #!!! 1.0,
+                "gmax": 10.0,
                 "gmax_std" : 0.2,
                 
                 "Erev": -75,
@@ -672,7 +628,7 @@ def get_basic_params():
                 "tau_rise": 0.25,
                 "tau_decay": 7.5,
 
-                "prob": 0.5, # optimized
+                "prob": 0.5,
                 
                 "delay": 1.2,
                 "delay_std" : 0.2,
@@ -759,8 +715,8 @@ def get_basic_params():
             
             # connections to cckbas
             "msteevracells2cckbas" : {
-                "gmax" : 3.5, # !!!! 
-                "gmax_std" : 0.2, # !!!!
+                "gmax" : 3.5,
+                "gmax_std" : 0.2,
                 "Erev": -75,
                 "tau_rise": 0.5,
                 "tau_decay": 5.0,
@@ -783,7 +739,7 @@ def get_basic_params():
                 "tau_rise": 0.29,
                 "tau_decay": 2.67,
 
-                "prob": 0.05, # 0.15, # !!!
+                "prob": 0.05,
                 
                 "delay": 1.2,
                 "delay_std" : 0.2,
@@ -795,7 +751,7 @@ def get_basic_params():
             
            
            "cckbas2cckbas": {
-                "gmax": 0.2, #  0.2, # 
+                "gmax": 0.2,
                 "gmax_std" : 0.2, 
                 
                 "Erev": -75,
@@ -814,24 +770,6 @@ def get_basic_params():
             
             
             # hypotetical connections
-            "olm2cckbas": {
-               "gmax": 0.5,
-               "gmax_std" : 0.7,
-               
-               "Erev": -75,
-               "tau_rise": 0.5,
-               "tau_decay": 4.0,
-
-               "prob": 0, # 0.5, 
-                
-               "delay": 1.2,
-               "delay_std" : 0.2,
-                
-
-               "sourse_compartment" : "soma",
-               "target_compartment" : "dendrite_list",
-            },
-            
             "bis2cckbas": {
                 "gmax": 1.0,
                 "gmax_std" : 0.7,
@@ -866,32 +804,14 @@ def get_basic_params():
                 "sourse_compartment" : "soma",
                 "target_compartment" : "dendrite_list",
             },
-            
-            
-            
-            "ivy2cckbas": {
-                "gmax": 0.5,
-                "gmax_std" : 0.2,
-                "Erev": -75,
-                "tau_rise": 0.5,
-                "tau_decay": 4.0,
-            
-                "prob": 0, #, 0.2,
 
-                "delay": 1.2,
-                "delay_std" : 0.2,
-
-                "sourse_compartment" : "soma",
-                "target_compartment" : "dendrite_list",
-            },
-            
             # end connections to cckbas
             
             
             # connections to aac
             "msteevracells2aac" : {
-                "gmax" : 0.9, # !!!! 
-                "gmax_std" : 0.7, # !!!!
+                "gmax" : 0.9,
+                "gmax_std" : 0.7,
                 "Erev": -75,
                 "tau_rise": 0.5,
                 "tau_decay": 3,
@@ -980,24 +900,7 @@ def get_basic_params():
                 "target_compartment" : "dendrite_list",
             },
             
-            "lec2aac": {
-                "gmax": 0.1,
-                "gmax_std" : 0.05,
-                
-                "Erev": 0,
-                "tau_rise": 2,
-                "tau_decay": 6.3,
 
-                "prob": 0.003,
-                
-                "delay": 8.0,
-                "delay_std" : 0.5,
-                
-
-                "sourse_compartment" : "acell",
-                "target_compartment" : "dendrite_list",
-            },
-            
             "olm2aac": {
                 "gmax": 1.5,
                 "gmax_std" : 0.7,
@@ -1481,25 +1384,7 @@ def get_basic_params():
                 "sourse_compartment" : "acell",
                 "target_compartment" : "dendrite_list",
             },
-            
-            "lec2ngf": {
-                "gmax": 0.7,
-                "gmax_std" : 0.3,
-                
-                "Erev": 0,
-                "tau_rise": 0.5,
-                "tau_decay": 3,
 
-                "prob": 0.05, # ! need to optimize
-                
-                "delay": 1.2,
-                "delay_std" : 0.2,
-                
-
-                "sourse_compartment" : "acell",
-                "target_compartment" : "dendrite_list",
-            },
-            
             "olm2ngf": {
                 "gmax": 1.27,
                 "gmax_std" : 0.6,
@@ -1688,18 +1573,20 @@ def get_basic_params():
       
 
         }, # end of connetion settings
-        
+
+
+        # parameters of gap junctions
         "gap_junctions_params" : {
             "pvbas2pvbas" : {
-                "r" : 1e5, # 100000 1e5
-                "r_std" : 10, #1e4,
+                "r" : 1e5,
+                "r_std" : 10,
                 "prob": 0.1,
                 "compartment1" : "dendrite_list",
                 "compartment2" : "dendrite_list",
             },
             
             "ngf2ngf" : {
-                "r" : 1e6, # 1e5
+                "r" : 1e6,
                 "r_std" : 10,
                 "prob": 0.7,
                 "compartment1" : "dendrite_list",
@@ -1712,6 +1599,11 @@ def get_basic_params():
     return basic_params
 
 def get_object_params(Nthreads=1):
+    """
+    Function return list.
+    Each element of the list is dictionary of parameters for one thread of CPU
+    """
+
     basic_params = get_basic_params()
     
     if SIMULATE_NON_THETA_STATE:
@@ -1747,8 +1639,6 @@ def get_object_params(Nthreads=1):
     
     neurons_by_threads = np.tile(np.arange(Nthreads), int(np.ceil(Ncells/Nthreads)) )
     neurons_by_threads = neurons_by_threads[:Ncells]
-    # basic_params["celltypes"] = cell_types_in_model
-    # print(neurons_by_threads)
 
 
     save_soma_v_idx = np.empty(shape=0, dtype=np.int)
@@ -1757,8 +1647,6 @@ def get_object_params(Nthreads=1):
 
         if celltype == "vect_idxes": continue
 
-        # list_idx = np.arange(basic_params["CellNumbers"]["N"+celltype] )
-        
         indices = [i for i, x in enumerate(cell_types_in_model) if x == celltype]
         if len(indices) == 0:
             continue
@@ -1792,7 +1680,7 @@ def get_object_params(Nthreads=1):
             cellparam["low_I0"] = theta_i0
             cellparam["high_I0"] = gamma_i0
 
-            cellparam["place_center_t"] = 500  # !!!!!
+            cellparam["place_center_t"] = 500
         
         elif cellparam["cellclass"] == "ArtifitialGridCell":
             Rtheta = cellparam["Rtheta"]
@@ -1827,21 +1715,17 @@ def get_object_params(Nthreads=1):
     Nmec = basic_params["CellNumbers"]["Nmec"]
 
 
-    pyr_coord_x = basic_params["pyr_coodinates"]   # np.zeros(Npyr) + 1500   # 
-    #pyr_coord_x[pyr_coord_x.size//2:] = np.nan 
+    pyr_coord_x = basic_params["pyr_coodinates"]
 
-    pvbas_coord_x = basic_params["pvbas_coodinates"]  # np.cumsum( np.zeros(Npvbas) + 50)  #  50
-    ca3_coord_x = basic_params["ca3_coodinates"] # 
+    pvbas_coord_x = basic_params["pvbas_coodinates"]
+    ca3_coord_x = basic_params["ca3_coodinates"]
 
-    mec_grid_phases = np.linspace(-np.pi, np.pi, Nmec)  # rad  !!!!!!!!!!!
-    # mec_grid_freqs = np.zeros(Nmec) + 0.333    # Hz
+    mec_grid_phases = np.linspace(-np.pi, np.pi, Nmec, endpoint=False)
 
 
     ca3_coord_x_iter = iter(ca3_coord_x)
     mec_grid_phases_iter = iter(mec_grid_phases)
-    # mec_grid_freqs_iter = iter(mec_grid_freqs)
 
-    # neurons_tmp = []
     for cell_idx, celltype in enumerate(cell_types_in_model):
         cell_param = basic_params["CellParameters"][celltype]
         
@@ -1869,26 +1753,13 @@ def get_object_params(Nthreads=1):
             else:
                 neuron["cellparams"]["iext"] = np.random.normal(cell_param["iext"], cell_param["iext_std"] )
             
-            # if cell_idx == 4:
-            #    neuron["cellparams"]["iext"] = 0.005
-
-
-
 
         th_idx = int(neurons_by_threads[cell_idx])
         OBJECTS_PARAMS[th_idx]["neurons"].append(neuron)
 
-
-
-
-    var_conns_on_pyr = basic_params["var_conns_on_pyr"]  # 1000.0
+    var_conns_on_pyr = basic_params["var_conns_on_pyr"]
     var_conns_on_pvbas =  var_conns_on_pyr * 3
     var_conns_pvbas2pvbas = var_conns_on_pyr * 50
-    # synapses = []
-
-    # Ncells = len( basic_params["celltypes"] )
-    # Wpyrbas = np.zeros( [Ncells, Ncells],  dtype=np.float)
-
 
     for presynaptic_cell_idx, pre_celltype in enumerate(cell_types_in_model):
         for postsynaptic_cell_idx, post_celltype in enumerate(cell_types_in_model):
@@ -1923,11 +1794,6 @@ def get_object_params(Nthreads=1):
                     dist = pyr_coord - ca3_coord_x[ca3_idx]
                     dist_normalizer = np.exp(-0.5 * dist**2 / var_conns_on_pyr ) / (np.sqrt(var_conns_on_pyr * 2 * np.pi ) )
 
-
-                    #if dist_normalizer > 0.001:
-                    #    number_connections += 1
-                        
-
                     gmax = gmax * dist_normalizer
                
                 else:
@@ -1949,36 +1815,16 @@ def get_object_params(Nthreads=1):
                         dist = cent + 500 - pyr_coord
 
                         dist_normalizer = np.exp(-0.5 * dist**2 / var_conns_on_pyr ) / (np.sqrt(var_conns_on_pyr * 2 * np.pi ))
-                        #if dist_normalizer > 0.001:
-                        #    number_connections += 1
+
                         gmax_tmp += gmax * dist_normalizer
                         
                     gmax = gmax_tmp
-                    # if gmax > 0.5:
-                    #     print(grid_phase)
+
                 else:
-                    gmax = 0.016 # 0.01 * gmax # !!!!!
-                    if np.random.rand() > 0.3: # 0.1
+                    gmax = 0.016
+                    if np.random.rand() > 0.3:
                         number_connections = 0
                 
-
-                
-            elif conn_name == "pyr2pyr_!":
-                pyr_idx1 = postsynaptic_cell_idx - gids_of_celltypes["pyr"][0]
-                pyr_idx2 = presynaptic_cell_idx - gids_of_celltypes["pyr"][0]
-                
-                pyr_coord1 = pyr_coord_x[pyr_idx1]
-                pyr_coord2 = pyr_coord_x[pyr_idx2]
-                
-                if not ( np.isnan(pyr_coord1) or np.isnan(pyr_coord2) ):
-                    dist = pyr_coord_x[pyr_idx1] - pyr_coord_x[pyr_idx2]
-                    dist_normalizer = np.exp(-0.5 * dist**2 / var_conns_on_pyr ) / (np.sqrt(var_conns_on_pyr * 2 * np.pi ))
-                    #if dist_normalizer > 0.01:
-                    #    number_connections += 1
-                    gmax = gmax * dist_normalizer
-                else:
-                    gmax = gmax * 0.02 # !!!!!!!
-
             elif conn_name == "pvbas2pyr":
                 pyr_idx = postsynaptic_cell_idx - gids_of_celltypes["pyr"][0]
                 pyr_coord = pyr_coord_x[pyr_idx]
@@ -1992,16 +1838,7 @@ def get_object_params(Nthreads=1):
                 dist = 1 / (dist + 0.000001)
                     
                 dist_normalizer = np.exp(-0.5 * dist**2 / var_conns_on_pyr ) / (np.sqrt(var_conns_on_pyr * 2 * np.pi ))
-
-                    # Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
-
-                    # if dist_normalizer > 0.01:
-                    #    number_connections += 1
-
                 gmax = gmax * dist_normalizer
-                
-                #else:
-                    #gmax = gmax * 0.001 # !!!!
 
             elif conn_name == "pyr2pvbas":
                 pyr_idx = presynaptic_cell_idx - gids_of_celltypes["pyr"][0]
@@ -2012,13 +1849,10 @@ def get_object_params(Nthreads=1):
                     dist = pyr_coord_x[pyr_idx] - pvbas_coord_x[pvbas_idx]
                     dist_normalizer = np.exp(-0.5 * dist**2 / var_conns_on_pvbas ) / (np.sqrt(var_conns_on_pvbas * 2 * np.pi ))
 
-                    #if dist_normalizer > 0.001:
-                    #    number_connections += 1
-
                     gmax = gmax * dist_normalizer
                 
                 else:
-                    gmax = gmax * 0.1 # !!!!
+                    gmax = gmax * 0.1
 
             elif conn_name == "ca3_spatial2pvbas":
                 pvbas_idx = postsynaptic_cell_idx - gids_of_celltypes["pvbas"][0]
@@ -2027,24 +1861,8 @@ def get_object_params(Nthreads=1):
                 dist = pvbas_coord_x[pvbas_idx] - ca3_coord_x[ca3_idx]
                 dist_normalizer = np.exp(-0.5 * dist**2 / var_conns_on_pvbas ) / (np.sqrt(var_conns_on_pvbas * 2 * np.pi ))
 
-                #if dist_normalizer > 0.0001:
-                #    number_connections += 1
                 gmax = gmax * dist_normalizer
 
-
-            elif conn_name == "pvbas2pvbas_!":
-                pvbas_idx1 = postsynaptic_cell_idx - gids_of_celltypes["pvbas"][0]
-                pvbas_idx2 = presynaptic_cell_idx - gids_of_celltypes["pvbas"][0]
-                dist = pvbas_coord_x[pvbas_idx1] - pvbas_coord_x[pvbas_idx2]
-                dist_normalizer = np.exp(-0.5 * dist**2 / var_conns_pvbas2pvbas ) / (np.sqrt(var_conns_pvbas2pvbas * 2 * np.pi ))
-
-                #if dist_normalizer > 0.001:
-                #    number_connections += 1
-                #gmax = gmax * dist_normalizer
-                #print(gmax)
-
-
-            # Wpyrbas[presynaptic_cell_idx, postsynaptic_cell_idx] = dist_normalizer
             if gmax < 1e-5:
                 number_connections = 0
 
@@ -2059,7 +1877,7 @@ def get_object_params(Nthreads=1):
                 #np.random.lognormal(mean=np.log(gmax), sigma=conn_data["gmax_std"])
 
 
-                if gmax_syn < 0.000001: # or gmax_syn > 50:
+                if gmax_syn < 0.000001:
                     continue
 
                 connection = {
@@ -2102,11 +1920,6 @@ def get_object_params(Nthreads=1):
 
                 th_idx = int(neurons_by_threads[postsynaptic_cell_idx])
                 OBJECTS_PARAMS[th_idx]["synapses_params"].append(connection)
-
-
-
-
-    #OBJECTS_PARAMS["synapses_params"] = synapses
 
 
     gap_juncs = []
@@ -2156,31 +1969,17 @@ def get_object_params(Nthreads=1):
         OBJECTS_PARAMS[th_idx]["step_duration"] = deepcopy(basic_params["step_duration"])
         OBJECTS_PARAMS[th_idx]["file_results"] = deepcopy(basic_params["file_results"])
         OBJECTS_PARAMS[th_idx]["del_start_time"] = deepcopy(basic_params["del_start_time"])
-
-        # OBJECTS_PARAMS["common_params"] = {}
         OBJECTS_PARAMS[th_idx]["common_params"]["radius4piramids"] = np.sqrt( basic_params["CellNumbers"]["Npyr"] / basic_params["PyrDencity"] ) / np.pi
     
     return OBJECTS_PARAMS
 
 
 if __name__ == "__main__":
+    # This test code. You can run and see format of list and dictionaries genereated by functions in this file
     Nthreads = 4
     objc_p = get_object_params(Nthreads=Nthreads)
 
-    # for ith in range(Nthreads):
-    #     neurons = objc_p[ith]["neurons"]
-    #     for neuron in neurons:
-    #         print(neuron["gid"], ith)
-
-
-
-    #     if neuron["celltype"] == "mec":
-    #         print(neuron["cellparams"]["grid_phase"])
-
-
-
     for ith in range(Nthreads):
-        # neurons = objc_p[ith]["neurons"]
         for syn in objc_p[ith]["synapses_params"]:
             pre_gid = syn["pre_gid"]
             pre_ith = int (pre_gid % Nthreads)
@@ -2192,35 +1991,3 @@ if __name__ == "__main__":
                     print("Hello")
                 ph = pre["cellparams"]["grid_phase"]
                 print(ph)
-
-
-
-# import matplotlib.pyplot as plt
-
-# plt.imshow(Wpyrbas)
-# plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

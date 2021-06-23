@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Nov 27 14:10:11 2014
-library for data proceccing 
+library for data proceccing
 @author: ivan
 """
 import numpy as np
@@ -10,7 +9,7 @@ import scipy.signal as sig
 from scipy.ndimage.filters import convolve1d
 from scipy.signal.windows import parzen
 from elephant import signal_processing as sigp
-from elephant.current_source_density import estimate_csd
+
 
 #####################################################################
 def circular_distribution(amples, angles, angle_step, nkernel=15, density=True):
@@ -94,7 +93,7 @@ def cossfrequency_phase_phase_coupling(low_fr_signal, high_fr_signal, nmarray, t
     return coupling, bins, distrs
 ###################################################################
 def phase_phase_coupling(low_fr_signal, high_fr_signal, bands4highfr, fd, nmarray, thresh_std=None, circ_distr=False, butter_order=2):
-    import matplotlib.pyplot as plt
+
     couplings = []
     distrss = []
     for band in bands4highfr:

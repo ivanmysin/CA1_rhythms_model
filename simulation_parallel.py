@@ -5,14 +5,13 @@ h.nrnmpi_init()
 
 
 import numpy as np
-import matplotlib.pyplot as plt
 import h5py
 import os
 import sys
 from time import time
 
 def join_lfp(comm, electrodes):
-    # print("Hello from join lfp!")
+    # function unite lfp from threads
     rank = comm.Get_rank()
 
     lfp_data = []
@@ -40,6 +39,7 @@ def join_lfp(comm, electrodes):
     return lfp_data
 
 def join_vect_lists(comm, vect_list, gid_vect):
+    # function unite vectors from threads
     rank = comm.Get_rank()
     jointed = []
     all_gid = comm.gather(gid_vect, root=0)
@@ -63,6 +63,9 @@ def join_vect_lists(comm, vect_list, gid_vect):
 
 
 def run_simulation(params):
+    """
+    Function get parameters and run the model
+    """
     pc = h.ParallelContext()
     
     pc.timeout(1200)
@@ -76,26 +79,23 @@ def run_simulation(params):
     
     h.cvode.use_fast_imem(1)
 
-    sys.path.append("../LFPsimpy/")
+    sys.path.append("../LFPsimpy/") # path to LFPsimpy
     from LFPsimpy import LfpElectrode
 
 
+    # load all cells
     cell_path = "./cells/"
     for file in os.listdir(cell_path):
         if file.find(".hoc") != -1:
             h.load_file(cell_path + file)
     
-    
-    #  ncells = len(params["neurons"])  # whole number of cells in the model
-    # gid_vect = np.arange( pc.id(), ncells, pc.nhost(), dtype=np.int )
     gid_vect = np.asarray( [neuron_param["gid"] for neuron_param in params["neurons"]] )
 
 
 
     all_cells = h.List()
     hh_cells = h.List()
-    # artificial_cells = h.List()
-    
+
     
     pyramidal_sec_list = h.SectionList()
     is_pyrs_thread = False
@@ -106,7 +106,7 @@ def run_simulation(params):
     
     soma_v_vecs = []
     
-    
+    # create objects for neurons simulation
     for neuron_param in params["neurons"]:
         
         celltypename = neuron_param["celltype"]
@@ -134,7 +134,6 @@ def run_simulation(params):
         
         # set counters for spike generation
         if cell.is_art() == 0:
-            # print("Hello from real neurons setting")
             for sec in cell.all:
                 sec.insert("IextNoise")
                 sec.myseed_IextNoise = RNG.integers(0, 1000000000000000, 1)
@@ -144,17 +143,14 @@ def run_simulation(params):
             if hasattr(cell, "axon_list"):
                 mt = h.MechanismType(0)
                 mt.select('IextNoise')
-                #print(cell.celltype)
                 for sec in cell.axon_list:
                      mt.remove(sec=sec)
-            #else:
-                #print(cell.celltype)
+
     
             firing = h.NetCon(cell.soma[0](0.5)._ref_v, None, sec=cell.soma[0])
             firing.threshold = -30 * mV
 
         else:
-            # print("Hello from art neurons setting")
             cell.celltype = celltypename
             
             for p_name, p_val in neuron_param["cellparams"].items():
@@ -201,13 +197,8 @@ def run_simulation(params):
     connections = h.List()
     synapses = h.List()
 
-    
-    
     for syn_params in params["synapses_params"]:
-        
         post_idx = np.argwhere( gid_vect == syn_params["post_gid"] ).ravel()
-        
-        # if post_idx.size == 0: continue
         post_idx = post_idx[0]
         
         postsynaptic_cell = all_cells[ post_idx ]
@@ -239,27 +230,27 @@ def run_simulation(params):
         
 
         try:
-            
+            # check NMDA in synapse
             gmax_nmda = syn_params["NMDA"]["gNMDAmax"]
-            
             syn_nmda = h.NMDA(post_comp(0.5), sec=post_comp)
             syn_nmda.tcon = syn_params["NMDA"]["tcon"]
             syn_nmda.tcoff = syn_params["NMDA"]["tcoff"]
             syn_nmda.gNMDAmax = gmax_nmda
             
-            conn2 = pc.gid_connect(syn_params["pre_gid"], syn_nmda)  # h.NetCon(pre_pyr.soma[0](0.5)._ref_v, syn_nmda, sec=pre_pyr.soma[0])
+            conn2 = pc.gid_connect(syn_params["pre_gid"], syn_nmda)
             conn2.delay = syn_params["delay"]
             conn2.weight[0] = syn_params["NMDA"]["gNMDAmax"]
             conn2.threshold = -30 * mV
        
             connections.append(conn2)
             synapses.append(syn_nmda)
-            
-       
+
         except KeyError:
             pass
 
     pc.barrier()
+
+    # create gap junction objects
     gap_junctions = h.List()
     
     for gap_params in params["gap_junctions"]:
@@ -338,44 +329,33 @@ def run_simulation(params):
             
             cell = all_cells[ this_idx ]
             comp_list = getattr(cell, comp_name)
-            # len_list = sum([1 for _ in comp1_list])
-            
+
 
             for idx_tmp, comp_tmp in enumerate(comp_list):
                 if idx_tmp == 0: comp = comp_tmp
 
 
-            pc.source_var(comp(0.5)._ref_v, sgid_gap_src, sec=comp) #  this_gid
+            pc.source_var(comp(0.5)._ref_v, sgid_gap_src, sec=comp)
 
             gap = h.GAP(0.5, sec=comp)
             gap.r = gap_params["r"]
 
+            pc.target_var(gap._ref_vgap, sgid_gap_trg)
 
-
-            pc.target_var(gap._ref_vgap, sgid_gap_trg) #  out_gid
-
-            
-
-
-        else:
-            # print( pc.id() )
-            pass
 
     pc.setup_transfer()
     pc.barrier()
     if pc.id() == 0: 
         print("End of connection settings")
     
-    
+
+    # create electrodes objects for LFP simulation
     el_x = params["elecs"]["el_x"]
     el_y = params["elecs"]["el_y"]
     el_z = params["elecs"]["el_z"]
 
-    
     electrodes = []
-    
-    
-    
+
     for idx_el in range(el_x.size):
         if is_pyrs_thread:
             le = LfpElectrode(x=el_x[idx_el], y=el_y[idx_el], z=el_z[idx_el], sampling_period=h.dt, \
@@ -385,12 +365,6 @@ def run_simulation(params):
             electrodes.append(None)
     
 
-    # soma1_v = None
-    # if pc.id() == 0 :
-        # print( len(hh_cells) )
-        # print( hh_cells[0].celltype )
-        # soma1_v = h.Vector()
-        # soma1_v.record(hh_cells[0].soma[0](0.5)._ref_v)
 
     if pc.id() == 0:
         t_sim = h.Vector()
@@ -398,17 +372,10 @@ def run_simulation(params):
     else:
         t_sim = None
 
-
-
-
     h.tstop = params["duration"] * ms
 
-
-    
     pc.set_maxstep(5 * ms)
 
-    
-    
     h.finitialize()
     pc.barrier()
     if pc.id() == 0:
@@ -416,20 +383,7 @@ def run_simulation(params):
     
     
     timer = time()
-    
-    #ndurs = int(params["duration"] / params["step_duration"])
-    #last_dur = params["duration"] % params["step_duration"]
-    
-    #for idx_sim in range(ndurs):
-    #    pc.psolve(params["step_duration"] * ms)
-        
-    #    pc.barrier()
-    #    if pc.id() == 0:
-    #        print( (idx_sim + 1) * params["step_duration"] , " ms is simulated")
-    
-    #if last_dur > 0:
-    #    pc.psolve(last_dur * ms)
-    
+
     pc.psolve(params["duration"] * ms)
     pc.barrier()
     if pc.id() == 0:
@@ -437,36 +391,13 @@ def run_simulation(params):
         print("Time of simulation in sec ", time()-timer)
     
     
-    # print(np.asarray(v_tmp))
-    # if pc.id() == 0:
-    #    soma1_v = np.asarray(soma1_v)
-    #    # print(soma1_v)
-    #    plt.plot(t_sim, soma1_v)
-    #    plt.savefig("../../Data/test.png")
-    #    # plt.show()
-    
+
     # unite data from all threads to 0 thread
     comm = MPI.COMM_WORLD
-    
-    # print(pc.id(), "Join lfp data")
     lfp_data = join_lfp(comm, electrodes)
-    
-    
-    # lfp_data = []
-    # if (pc.id() == 0):
-    #     for el in electrodes:
-    #         lfp_data.append(el.values)
-    
-    
-    # print(pc.id(), "Join spike train")
     spike_trains = join_vect_lists(comm, spike_times_vecs, gid_vect)
-    # print(pc.id(), "Join Vm of soma")
-    #print("len of soma_v_vecs",  len(soma_v_vecs) )
     soma_v_list = join_vect_lists(comm, soma_v_vecs, gid_vect)
-    # print("len of soma_v_list", len(soma_v_list))
 
-
-    # print(pc.id(), "Start saving results to file")
     if (pc.id() == 0) and (params["file_results"] != None):
         
         t_sim = np.asarray(t_sim)
@@ -475,12 +406,14 @@ def run_simulation(params):
             rem_time = 0
         rem_idx = int(rem_time / h.dt)
 
+        # save results to file
         with h5py.File(params["file_results"], 'w') as h5file:
             celltypes = params["cell_types_in_model"]
             t_sim = t_sim[rem_idx:] - rem_time
 
             h5file.create_dataset("time", data = t_sim)
-            
+
+            # save LFP data
             extracellular_group = h5file.create_group("extracellular")
             ele_group = extracellular_group.create_group('electrode_1')
             lfp_group = ele_group.create_group('lfp')
@@ -488,51 +421,33 @@ def run_simulation(params):
             lfp_group_origin = lfp_group.create_group('origin_data')
             lfp_group_origin.attrs['SamplingRate'] = 1000 / h.dt   # dt in ms 
 
-
-
             for idx_el, lfp in enumerate(lfp_data):
                 lfp_group_origin.create_dataset("channel_" + str(idx_el+1), data = lfp[rem_idx:] )
-            
-            firing_group = h5file.create_group("extracellular/electrode_1/firing/origin_data")
-            
 
+            # save firing data
+            firing_group = h5file.create_group("extracellular/electrode_1/firing/origin_data")
 
             for celltype in set(celltypes):
                 cell_friring_group = firing_group.create_group(celltype)
-            
 
                 for cell_idx, sp_times in enumerate(spike_trains):
                     if celltype != celltypes[cell_idx]:
                         continue
-
-
                     sp_times = sp_times[sp_times >= rem_time] - rem_time
-          
-                    cell_friring_group.create_dataset("neuron_" + str(cell_idx+1), data=sp_times) # cell_spikes_dataset 
-            
-    
-    
+                    cell_friring_group.create_dataset("neuron_" + str(cell_idx+1), data=sp_times) # cell_spikes_dataset
+
+            # save intracellular membrane potential
             intracellular_group = h5file.create_group("intracellular")
             intracellular_group_origin = intracellular_group.create_group("origin_data")
 
-
             for soma_v_idx in params["save_soma_v"]: 
                 soma_v = soma_v_list[soma_v_idx]
-                
                 if soma_v.size == 0: continue
-                
                 soma_v_dataset = intracellular_group_origin.create_dataset("neuron_" + str(soma_v_idx+1), data=soma_v[rem_idx:] )
-                
                 cell_type = celltypes[soma_v_idx]
                 soma_v_dataset.attrs["celltype"] = cell_type
-    
- 
-    
-        
-    
+
     pc.done()
     h.quit()
-    
-    
-    
+
     return
