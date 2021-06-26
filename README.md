@@ -20,8 +20,6 @@ Packages for saving, processing and plotting:
 
 Directories and files
 -----------------------------------
-Подробно написать, что делает каждый файл!!!
-
      /cells - directory with models of cells (hoc files)
      /mod - directory with mechanisms for cells (mod files)
      /Results - directory for saving simulation results and plots
@@ -29,16 +27,12 @@ Directories and files
      basic_parameters.py - python file containing all parameters of simulation
      nontheta_state_params.py - parameters for non-theta state
      presimulation_lib.py - helper functions for calculating some simulation parameters
-     simulation_parallel.py - содержит функцию   , которая собирает и запускает симуляцию.
-     process.py - обрабатывает hdf5 file
-     processingLib.py
-     plot_result.py
-     figure_1(2-6).py
+     simulation_parallel.py - contains function *run_simulation*, it builds and runs the simulation.
+     process.py - process hdf5 file
+     processingLib.py - library of funtions, which are used for signals porcessing
+     plot_result.py - library of funtions, which are used for plotting
+     figure_1(2-6).py - files, which are plot figures for article
      
-     run_from_notebook.ipynb
-     
-
-
 
 How to run
 -----------------------------------
@@ -66,27 +60,23 @@ Full simulation: 9000 pyramidal cell, ...
 
 Structure of HDF5 file with results
 -----------------------------------
-You can use any convenient program for viewing hdf5 files,
+You can use any free convenient program for viewing hdf5 files,
 for example, HDF COMPASS or hdfview.
 
-Structure
+Path for reading datasets from hdf5 file:
 
-      -root
+simulation time: /time
 
-        -- time dataset
-  
-        -- extracellular group
+spike train: /extracellular/electrode_1/firing/origin_data/*neuron_type*/*neuron_number*
 
-            --- electrode_1 group
+*neuron_type* is type of neurons, for example, pyr, aac, pvbas
 
-              ---- firing group
-                  ----- origin_data group
-                        ------- group for each neuron type
-                        ------------ datasets are firing times of each neuron
-                  ----- processing group
-              
+*neuron_number* is number of neuron in simulation, for example, "neuron_1"
 
-              ---- lfp group
+lfp: /extracellular/electrode_1/lfp/origin_data/*channel_number*
 
-   
-        -- intracellular group
+*channel_number* is number of channel, for example, "channel_1", 1 is stratum oriens, 10 is stratum lacunosum-moleculare
+
+somatic potential: /intracellular/origin_data/*neuron_number*
+
+*neuron_number* is the same as for spike train, type of neuron has been noted in attributes.
