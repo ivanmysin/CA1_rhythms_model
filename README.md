@@ -51,12 +51,13 @@ in the same file, wavelet spectra, bands, distribution of neurons by rhythm phas
   
       python process.py
 
-* Run one of the *figure_1(2-6).py* file to plot figure. For example:
+* Run one of the *figure_2(4, 5, 7, 8).py* file to plot figure. For example:
 
       python figure_2.py
 
 Full simulation need 70 Gb RAM.
-Full simulation: 9000 pyramidal cell, ...  
+Full simulation: 9000 pyramidal cell and CA3 gererators, 200 PV basket cells etc.
+You can change cells numbers in *basic_parameters.py* file to reduce RAM usage and computational resources. 
 
 Structure of HDF5 file with results
 -----------------------------------

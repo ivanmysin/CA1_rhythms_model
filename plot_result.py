@@ -3,10 +3,10 @@ from scipy.signal import hilbert
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
 import h5py
-from basic_parameters import get_object_params
+from basic_parameters import get_basic_params
 import processingLib as proclib
 
-# basic_params = get_object_params()
+basic_params = get_basic_params()
 
 plotting_param = {
     "neuron_colors" : {
@@ -421,21 +421,10 @@ def plot_v_vs_pyr_lfp(filepath):
 
 
 #################################################################################
-def main_plots(filepath):
-    plot_lfp(filepath)
-    
-    
-    
-    return
-    
-    
-    
-    
+
     
 if __name__ == "__main__":
-    filepath = "/home/ivan/Data/CA1_simulation/test.hdf5"  # basic_params["file_results"]  # "/home/ivan/Data/CA1_simulation/artificial_signals.hdf5"
-    
-    # main_plots(filepath)
+    filepath = basic_params["file_results"]
     # plot_lfp(filepath)
     # plot_current_source_density(filepath, "theta")
     # plot_spike_raster(filepath)
