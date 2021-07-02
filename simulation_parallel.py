@@ -128,10 +128,7 @@ def run_simulation(params):
             for sec in cell.all:
                 pyramidal_sec_list.append(sec)
             is_pyrs_thread = True
-  
-        
-        
-        
+
         # set counters for spike generation
         if cell.is_art() == 0:
             for sec in cell.all:

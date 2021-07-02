@@ -3,8 +3,16 @@ import matplotlib.pyplot as plt
 import h5py
 
 from plot_result import plotting_param
-filepath = "/home/ivan/Data/CA1_simulation/test_ripples.hdf5" # theta_nice.hdf5" #
-figfilepath = "/home/ivan/Data/CA1_simulation/figure_6.png"
+from basic_parameters import get_basic_params
+
+basic_params = get_basic_params()
+filepath = basic_params["file_results"]
+
+
+figfilepath = "./Results/figure_8.png"
+
+
+
 params = {'legend.fontsize': 'xx-large',
           'figure.figsize': (15, 5),
          'axes.labelsize': 'xx-large',
@@ -56,24 +64,12 @@ with h5py.File(filepath, 'r') as h5file:
 
     ripple_lfp = h5file["extracellular/electrode_1/lfp/processing/bands/channel_{}/slow ripples".format(plotting_param["number_pyr_layer"])][:]
     axes[1, 0].plot(ts, ripple_lfp, label="ripples band")
-    #axes[1, 0].set_ylabel("mV")
     axes[1, 0].legend(loc='upper right')
-    #axes[1, 1].text(0, 0.5, "Ripples band of LFP")
 
-
-    # intracellular_group = h5file["intracellular/origin_data"]
-    # intracell_keys = sorted(intracellular_group.keys(), key=lambda neur_num: int(neur_num.split("_")[-1]))
     raster_group = h5file["extracellular/electrode_1/firing/origin_data"]
 
     axes[2, 0].set_title("Raster plots")
     for celltype_idx, celltype in enumerate(neuron_order):
-        # for neuron_number in intracellular_group.keys():
-        #     if celltype == intracellular_group[neuron_number].attrs["celltype"]:
-        #         Vm = intracellular_group[neuron_number][:]
-        #         axes[celltype_idx + 3, 0].plot(t, Vm, label=celltype, color=plotting_param["neuron_colors"][celltype])
-        #
-        #         axes[celltype_idx + 3, 1].text(0, 0.5, celltype)
-        #         break
 
         try:
             celltype_firings = raster_group[celltype]
@@ -93,8 +89,6 @@ with h5py.File(filepath, 'r') as h5file:
 
         axes[celltype_idx+2, 0].scatter(firings_x, firings_y, s=3, color=plotting_param["neuron_colors"][celltype],  label=celltype)
         axes[celltype_idx+2, 1].text(0, 0.5, celltype, fontsize="xx-large")
-
-    #axes[12, 0].set_title("Raster of spikes")
 
 
 for ax in axes[:, 0]:

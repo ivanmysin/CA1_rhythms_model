@@ -8,9 +8,12 @@ params = {'legend.fontsize': 'x-large',
          'xtick.labelsize':'xx-large',
          'ytick.labelsize':'xx-large'}
 plt.rcParams.update(params)
+from basic_parameters import get_basic_params
+
+basic_params = get_basic_params()
+filepath = basic_params["file_results"]
 
 
-filepath = "./Results/theta_state.hdf5"
 figfilepath = "./Results/figure_2.png"
 
 fig, axes = plt.subplots(nrows=10, ncols=4, figsize=(20, 15), constrained_layout=True)
@@ -61,11 +64,6 @@ with h5py.File(filepath, 'r') as h5file:
                 a.set_xticks([])
             else:
                 a.set_xlabel("time, ms")
-
-
-
-
-
 
 fig.savefig(figfilepath)
 plt.show()
