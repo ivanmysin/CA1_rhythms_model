@@ -1654,7 +1654,7 @@ def get_object_params(Nthreads=1):
         indices = np.asarray(indices)
         list_idx = np.asarray(list_idx)
         
-        save_soma_v_idx = np.append(save_soma_v_idx, indices[list_idx])
+        save_soma_v_idx = np.append(save_soma_v_idx, indices[list_idx[list_idx<len(indices)]])
 
     for th_idx in range(Nthreads):
         if th_idx == 0:
@@ -1966,7 +1966,6 @@ def get_object_params(Nthreads=1):
     for th_idx in range(Nthreads):
         OBJECTS_PARAMS[th_idx]["elecs"] = deepcopy(basic_params["elecs"])
         OBJECTS_PARAMS[th_idx]["duration"] = deepcopy(basic_params["duration"])
-        OBJECTS_PARAMS[th_idx]["step_duration"] = deepcopy(basic_params["step_duration"])
         OBJECTS_PARAMS[th_idx]["file_results"] = deepcopy(basic_params["file_results"])
         OBJECTS_PARAMS[th_idx]["del_start_time"] = deepcopy(basic_params["del_start_time"])
         OBJECTS_PARAMS[th_idx]["common_params"]["radius4piramids"] = np.sqrt( basic_params["CellNumbers"]["Npyr"] / basic_params["PyrDencity"] ) / np.pi
