@@ -31,7 +31,7 @@ Directories and files
      process.py - process hdf5 file
      processingLib.py - library of funtions, which are used for signals porcessing
      plot_result.py - library of funtions, which are used for plotting
-     figure_1(2-6).py - files, which are plot figures for article
+     figure_n.py - files, which are plot figures for article. n is number of figure in article
      
 
 How to run
