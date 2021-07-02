@@ -53,7 +53,7 @@ in the same file, wavelet spectra, bands, distribution of neurons by rhythm phas
 
 * Run one of the *figure_1(2-6).py* file to plot figure. For example:
 
-      python figure_1.py
+      python figure_2.py
 
 Full simulation need 70 Gb RAM.
 Full simulation: 9000 pyramidal cell, ...  

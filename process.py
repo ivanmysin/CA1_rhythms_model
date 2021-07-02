@@ -45,12 +45,12 @@ processing_param = {
 
 def processing_and_save(filepath):
     with h5py.File(filepath, 'a') as h5file:
-        # t = h5file["time"][:]
+
 
         lfp_group = h5file["extracellular/electrode_1/lfp"]
         lfp_group_origin = lfp_group["origin_data"]
 
-        # process_group = lfp_group["processing"]
+
         try:
              process_group = lfp_group.create_group("processing")
         except ValueError:
@@ -72,8 +72,7 @@ def processing_and_save(filepath):
             key = "channel_" + str(key_idx + 1)
             lfp = lfp_group_origin[key][:]
 
-            freqs = np.linspace(2, 200, 198)  # np.fft.rfftfreq(lfp.size, d=1/fd)
-            # freqs = freqs[1:]  # remove 0 frequency
+            freqs = np.linspace(2, 200, 198)
             # freqs = freqs[freqs <= processing_param["max_freq_lfp"] ]  # remove frequencies below 500 Hz
 
 
@@ -184,7 +183,7 @@ def processing_and_save(filepath):
         phase_distrs_group = firing_process_group.create_group("phase_distrs")
 
 
-        # тут нужно взять канал из пирамидного слоя
+        # signal from pyramidal layer
         band_pyr_channel = h5file["extracellular/electrode_1/lfp/processing/bands/channel_" + str(processing_param["number_pyr_layer"]) ]
 
         for celltype in firing_origin.keys():
@@ -192,10 +191,6 @@ def processing_and_save(filepath):
 
             celltype_firings = np.empty(shape=0, dtype=np.float64)
             for dsetname, cell_firing_dset in firing_origin[celltype].items():
-
-                # if celltype == "pyr" and int(dsetname.split("_")[-1]) < 3500:
-                #     continue
-
                 celltype_firings = np.append(celltype_firings, cell_firing_dset[:])
 
             for band_name in processing_param["filt_bands"].keys():
@@ -209,19 +204,15 @@ def processing_and_save(filepath):
 
 
 
-            ####################################################################################
-            # phase precessions
-        
-        
+
     return
         
         
 if __name__ == "__main__":
-    # from basic_parameters import basic_params
-    
-    filepath =  "/home/ivan/Data/CA1_simulation/test_10000_!!!.hdf5"   # test_3000_!!!.hdf5" # test_10000.hdf5"
-    # test_!!!.hdf5" #theta_state_full_cells   _full_time basic_params["file_results"] #
-    # print(filepath)
+    from basic_parameters import get_basic_params
+
+    basic_params = get_basic_params()
+    filepath = basic_params["file_results"]
     processing_and_save(filepath)
 
 

@@ -13,7 +13,9 @@ from elephant import signal_processing as sigp
 
 #####################################################################
 def circular_distribution(amples, angles, angle_step, nkernel=15, density=True):
-
+    """
+    return circular distribution smoothed by the parsen kernel
+    """
     kernel = parzen(nkernel)
     bins = np.arange(-np.pi, np.pi + angle_step, angle_step)
     distr, _ = np.histogram(angles, bins=bins, weights=amples, density=density)
@@ -26,6 +28,9 @@ def circular_distribution(amples, angles, angle_step, nkernel=15, density=True):
 ###############################################################
 
 def get_angles_in_range(angles):
+    """
+    return angles from -pi to pi
+    """
     two_pi = 2 * np.pi
     anles_in_range = angles % (two_pi)
     anles_in_range[anles_in_range < -np.pi] += two_pi
@@ -35,6 +40,9 @@ def get_angles_in_range(angles):
 ################################################################
 
 def cossfrequency_phase_amp_coupling(phase_signal, coefAmp, phasebins=20, nkernel=15):
+    """
+    compute disribution amplitudes by phases of phase_signal
+    """
     phase_signal = np.angle(sig.hilbert(phase_signal), deg=False)
 
     coefAmp = np.abs(coefAmp)
@@ -52,6 +60,10 @@ def cossfrequency_phase_amp_coupling(phase_signal, coefAmp, phasebins=20, nkerne
 
 ###################################################################
 def cossfrequency_phase_phase_coupling(low_fr_signal, high_fr_signal, nmarray, thresh_std=None, circ_distr=False):
+    """
+    compute n:m test
+    """
+
     coupling = np.zeros(nmarray.size)
 
     low_fr_analitic_signal = sig.hilbert(low_fr_signal)
@@ -93,6 +105,9 @@ def cossfrequency_phase_phase_coupling(low_fr_signal, high_fr_signal, nmarray, t
     return coupling, bins, distrs
 ###################################################################
 def phase_phase_coupling(low_fr_signal, high_fr_signal, bands4highfr, fd, nmarray, thresh_std=None, circ_distr=False, butter_order=2):
+    """
+    run cossfrequency_phase_phase_coupling for diffrent bands
+    """
 
     couplings = []
     distrss = []
@@ -106,72 +121,10 @@ def phase_phase_coupling(low_fr_signal, high_fr_signal, bands4highfr, fd, nmarra
 
     return couplings, bins, distrss
 ###################################################################
-def get_asymetry_index(lfp, orders = 25):
-    idx_max = sig.argrelmax(lfp, order=orders)[0]
-    idx_min = sig.argrelmax(-lfp, order=orders)[0]
-
-    assymetry_index = np.array([], dtype=float)
-    n = np.min([idx_max.size, idx_min.size])
-    for idx in range(n):
-        if (idx == 0 or idx+1 == n):
-            continue
-
-        if (idx_max[idx] < idx_min[idx] and idx_max[idx+1] > idx_min[idx]):
-            asind = np.log( (idx_max[idx] - idx_min[idx-1]) / (idx_min[idx] - idx_max[idx]) )
-            assymetry_index = np.append(assymetry_index, asind)
-
-        if (idx_max[idx] > idx_min[idx] and idx_min[idx+1] > idx_max[idx]):
-            asind = np.log( (idx_max[idx] - idx_min[idx]) / (idx_min[idx+1] - idx_max[idx]) )
-            assymetry_index = np.append(assymetry_index, asind)
-    assymetry_index = assymetry_index[np.logical_not( np.isnan(assymetry_index) ) ]
-    return assymetry_index, idx_max, idx_min
-
-
-
-# def get_units_phase_coupling(lfp, firing, fd):
-#     angles = np.array([])
-#     length = np.array([])
-#     analitic_signal = sig.hilbert(lfp)
-#     amp = np.abs(analitic_signal)
-#     amp /= np.linalg.norm(amp)
-#     lfp_phases = np.angle(analitic_signal, deg=False )
-#
-#     """
-#     if (firing[1, :].size == 0):
-#         return 0, 0
-#     """
-#     start = np.min(firing[1, :]).astype(int)
-#     end = np.max(firing[1, :]).astype(int) + 1
-#     for idx in range(start, end):
-#         spike_times = firing[0, firing[1, :]  == idx]
-#         if (spike_times.size == 0):
-#             continue
-#         spike_ind = np.floor(spike_times*fd).astype(int)
-#         spike_phases = lfp_phases[spike_ind]
-#         tmp_x = np.sum( amp[spike_ind] * np.cos(spike_phases) )
-#         tmp_y = np.sum( amp[spike_ind] * np.sin(spike_phases) )
-#         mean_phase = np.arctan2(tmp_y, tmp_x)
-#         length_vect = np.sqrt(tmp_x**2 + tmp_y**2) / spike_phases.size
-#         angles = np.append(angles, mean_phase)
-#         length = np.append(length, length_vect)
-#
-#     return angles, length
-
-# def get_units_disrtibution(lfp, fd, firing, firing_slices):
-#     analitic_signal = sig.hilbert(lfp)
-#     lfp_phases = np.angle(analitic_signal, deg=False )
-#     neurons_phases = {}
-#     for key, sl in firing_slices.items():
-#         fir = firing[:, sl]
-#         neurons_phases[key] = np.array([], dtype=float)
-#         if (fir.size == 0):
-#             continue
-#         indexes = (fir[0, :] * fd).astype(int)
-#         neurons_phases[key] = lfp_phases[indexes]
-#
-#     return neurons_phases
-
 def get_phase_disrtibution(train, lfp, fs):
+    """
+    compute disrtibution of spikes by phases of LFP
+    """
     if train.size == 0:
         return np.empty(0, dtype=np.float), np.empty(0, dtype=np.float)
 
@@ -181,7 +134,6 @@ def get_phase_disrtibution(train, lfp, fs):
     lfp_phases = np.angle(analitic_signal, deg=False)
     lfp_ampls = np.abs(analitic_signal)
 
-    # print(train[-1]*0.001, " " , (lfp.size-1)/fs)
     train = np.floor(train * fs * 0.001).astype(np.int) # multiply on 0.001 because train in ms, fs in Hz
 
     train = train[train < lfp.size-1]
@@ -205,6 +157,9 @@ def get_phase_disrtibution(train, lfp, fs):
 #################################################################
 
 def current_sourse_density(lfp, dz=1):
+    """
+    compute CSD
+    """
     lfp = np.asarray(lfp)
     weights = np.array([1, -2, 1]) / dz**2
     csd = convolve1d(lfp, weights, axis=0, mode="nearest")
@@ -213,7 +168,10 @@ def current_sourse_density(lfp, dz=1):
 #################################################################
 
 def get_modulation_index(W4phase, W4ampls, nbins=20):
-    
+    """
+    compule modulation index
+    """
+
     Nampls = W4ampls.shape[0]
     Nphs = W4phase.shape[0]
     
@@ -242,23 +200,6 @@ def get_modulation_index(W4phase, W4ampls, nbins=20):
             modulation_index[idx4ampl, idx4phase ] = mi
     
     return modulation_index
-
-def get_mi_by_coherence(phase_band, ampl_w, fd, ph_fr_range=[4, 12], nperseg=4096):
-  
-    mi = []
-
-    for fr_idx in range(ampl_w.shape[0]):
-        
-        amples = np.abs(ampl_w[fr_idx, :])
-        
-        f, Coh = sig.coherence(phase_band, amples, fs=fd, nperseg=nperseg)
-        Coh = Coh[ (f>ph_fr_range[0])&(f<ph_fr_range[1]) ]
-        
-        mi.append(Coh)
-    
-    f = f[ (f>ph_fr_range[0])&(f<ph_fr_range[1]) ]
-    mi = np.vstack(mi)
-    return mi, f
 ########################################################################
 
 def slice_by_bound_values(arr, left_bound, right_bound):
