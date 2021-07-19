@@ -100,7 +100,8 @@ def run_simulation(params):
     pyramidal_sec_list = h.SectionList()
     is_pyrs_thread = False
     radius_for_pyramids = params["common_params"]["radius4piramids"]
-    
+    min_dist_to_el = params["common_params"]["min_dist_to_el"]
+
     spike_count_obj = []
     spike_times_vecs = []
     
@@ -120,8 +121,15 @@ def run_simulation(params):
         pc.set_gid2node(gid, pc.id())
         
         if celltypename == "pyr":
-            pyr_coord_in_layer_x = radius_for_pyramids * 2 * (RNG.random() - 0.5) # density of the pyramidal cells
-            pyr_coord_in_layer_y = radius_for_pyramids * 2 * (RNG.random() - 0.5) # density of the pyramidal cells
+            # x position of pyramidal cells
+            pyr_coord_in_layer_x = radius_for_pyramids * 2 * (RNG.random() - 0.5)
+            pyr_coord_in_layer_x += np.sign(pyr_coord_in_layer_x) * min_dist_to_el
+
+            # y position of pyramidal cells
+            pyr_coord_in_layer_y = radius_for_pyramids * 2 * (RNG.random() - 0.5)
+            pyr_coord_in_layer_y += np.sign(pyr_coord_in_layer_y) * min_dist_to_el
+
+
 
             cell.position(pyr_coord_in_layer_x, 0, pyr_coord_in_layer_y)
             

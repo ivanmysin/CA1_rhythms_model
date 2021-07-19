@@ -52,7 +52,9 @@ def get_basic_params():
             "el_y" : el_y, 
             "el_z" : np.zeros(Nelecs),
         },
-        "PyrDencity" : 0.2, # pyramidal cells / micrometer^2
+
+        "PyrDencity" : 0.2,    # pyramidal cells / micrometer^2
+        "min_dist_to_el" : 20, # minimal diatance of pyramidal cell to cite of LFP calculation, micrometer^2
 
         "file_results":  "./Results/theta_state.hdf5", # file for saving results
         "duration" : 10200, # 10 sec simulation time
@@ -1969,7 +1971,7 @@ def get_object_params(Nthreads=1):
         OBJECTS_PARAMS[th_idx]["file_results"] = deepcopy(basic_params["file_results"])
         OBJECTS_PARAMS[th_idx]["del_start_time"] = deepcopy(basic_params["del_start_time"])
         OBJECTS_PARAMS[th_idx]["common_params"]["radius4piramids"] = np.sqrt( basic_params["CellNumbers"]["Npyr"] / basic_params["PyrDencity"] ) / np.pi
-    
+        OBJECTS_PARAMS[th_idx]["common_params"]["min_dist_to_el"] = basic_params["min_dist_to_el"]
     return OBJECTS_PARAMS
 
 
