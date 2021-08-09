@@ -1592,7 +1592,7 @@ def get_basic_params():
             "ngf2ngf" : {
                 "r" : 1e6,
                 "r_std" : 10,
-                "prob": 0.4, # 0.7,
+                "prob": 0.7,
                 "compartment1" : "dendrite_list",
                 "compartment2" : "dendrite_list",
             },
