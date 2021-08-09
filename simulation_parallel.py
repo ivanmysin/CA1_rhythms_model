@@ -31,7 +31,8 @@ def join_lfp(comm, electrodes):
             
             if len(lfp_el) > 0:
                 lfp_el = np.vstack(lfp_el)
-                lfp_el = np.sum(lfp_el, axis=0)
+                
+                lfp_el = np.sum(lfp_el[1:, :], axis=0)
             else:
                 lfp_el = np.zeros(2)
             lfp_data.append(lfp_el)
@@ -76,8 +77,10 @@ def run_simulation(params):
     RNG = np.random.default_rng()
     
     load_mechanisms("./mods/")
-    
+    h.dt = 0.1 * ms
     h.cvode.use_fast_imem(1)
+    h.CVode().fixed_step(1)
+    h.cvode.use_local_dt(1)
 
     sys.path.append("../LFPsimpy/") # path to LFPsimpy
     from LFPsimpy import LfpElectrode
@@ -121,14 +124,12 @@ def run_simulation(params):
         pc.set_gid2node(gid, pc.id())
         
         if celltypename == "pyr":
-            # x position of pyramidal cells
-            pyr_coord_in_layer_x = radius_for_pyramids * 2 * (RNG.random() - 0.5)
-            pyr_coord_in_layer_x += np.sign(pyr_coord_in_layer_x) * min_dist_to_el
-
-            # y position of pyramidal cells
-            pyr_coord_in_layer_y = radius_for_pyramids * 2 * (RNG.random() - 0.5)
-            pyr_coord_in_layer_y += np.sign(pyr_coord_in_layer_y) * min_dist_to_el
-
+            # x and y position of pyramidal cells
+            
+            angle = 2 * np.pi * (RNG.random() - 0.5)
+            radius = radius_for_pyramids * 2 * (RNG.random() - 0.5) 
+            pyr_coord_in_layer_x = radius * np.cos(angle)
+            pyr_coord_in_layer_y = radius * np.sin(angle)
 
 
             cell.position(pyr_coord_in_layer_x, 0, pyr_coord_in_layer_y)
@@ -153,6 +154,10 @@ def run_simulation(params):
 
     
             firing = h.NetCon(cell.soma[0](0.5)._ref_v, None, sec=cell.soma[0])
+            
+#             if celltypename == "ngf":
+#                 firing.threshold = -5 * mV
+#             else:
             firing.threshold = -30 * mV
 
         else:
@@ -394,6 +399,17 @@ def run_simulation(params):
     if pc.id() == 0:
         print("End of the simulation!")
         print("Time of simulation in sec ", time()-timer)
+    
+    filepath = "./Results/" + str( pc.id() ) + ".hdf5"
+    with h5py.File(filepath, 'w') as h5file:
+        for el_idx, el in enumerate(electrodes):
+            lfp = el.values
+            lfp_time = el.times
+                   
+            h5file.create_dataset(str(el_idx), data=lfp)
+            h5file.create_dataset(str(el_idx)+"time", data=lfp_time)
+                   
+                   
     
     
 

@@ -3,6 +3,7 @@ import presimulation_lib as prelib
 from nontheta_state_params import theta_state2non_theta_state_params
 from copy import deepcopy
 import mpi4py
+import pickle
 """
 pyr - CA1 piramidal cells
 olm - Oriens-Lacunosum/Moleculare (OLM) Cells
@@ -57,6 +58,7 @@ def get_basic_params():
         "min_dist_to_el" : 20, # minimal diatance of pyramidal cell to cite of LFP calculation, micrometer^2
 
         "file_results":  "./Results/theta_state.hdf5", # file for saving results
+        "file_params" : "./Results/params.pickle"
         "duration" : 10200, # 10 sec simulation time
 
         "del_start_time" : 200, # time after start for remove
@@ -239,7 +241,7 @@ def get_basic_params():
 
         # indexes of neurons for saving soma potentials
         "save_soma_v" : {
-            "pyr" :  [range(200, 300)],    # [0, ],
+            "pyr" : np.append(np.arange(400, 450), np.arange(6000, 6050)), #  [range(400, 1400)],    # [0, ],
             "pvbas" : [range(30, 80)], # [0, ], #
             "olm" :   [range(10)], # [0, ], # [0, 1, 3],
             "cckbas" : [range(10)], # #[0, ],
@@ -316,7 +318,7 @@ def get_basic_params():
                 "tau_rise": 0.5,
                 "tau_decay": 3,
 
-                "prob": 0.6,
+                "prob":  0.6,
                 
                 "delay": 10,
                 "delay_std" : 2,
@@ -342,7 +344,7 @@ def get_basic_params():
                 "tau_rise": 0.1,
                 "tau_decay": 1.5,
 
-                "prob": 0.01,
+                "prob":  0.01,
 
                 "delay": 1.2,
                 "delay_std" : 0.2,
@@ -1590,7 +1592,7 @@ def get_basic_params():
             "ngf2ngf" : {
                 "r" : 1e6,
                 "r_std" : 10,
-                "prob": 0.7,
+                "prob": 0.4, # 0.7,
                 "compartment1" : "dendrite_list",
                 "compartment2" : "dendrite_list",
             },
@@ -1972,6 +1974,12 @@ def get_object_params(Nthreads=1):
         OBJECTS_PARAMS[th_idx]["del_start_time"] = deepcopy(basic_params["del_start_time"])
         OBJECTS_PARAMS[th_idx]["common_params"]["radius4piramids"] = np.sqrt( basic_params["CellNumbers"]["Npyr"] / basic_params["PyrDencity"] ) / np.pi
         OBJECTS_PARAMS[th_idx]["common_params"]["min_dist_to_el"] = basic_params["min_dist_to_el"]
+        
+    if not(basic_params["file_params"] is None):
+        with open(basic_params["file_params"], 'wb') as file_param:
+            pickle.dump(OBJECTS_PARAMS, file_param)
+        
+        
     return OBJECTS_PARAMS
 
 
