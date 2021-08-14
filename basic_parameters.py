@@ -28,9 +28,6 @@ def get_basic_params():
     """
     Function return dictionary of hyperparameters of the model
     """
-    
-    
-    
     Npyr = 9000             #  number of pyramidal cells
     Npvbas = 200            #  number of pvbas cells
     Nca3_spatial = 3500     #  number of ca3 spatial cells
