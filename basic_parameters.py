@@ -241,7 +241,7 @@ def get_basic_params():
 
         # indexes of neurons for saving soma potentials
         "save_soma_v" : {
-            "pyr" : np.append(np.arange(400, 450), np.arange(6000, 6050)), #  [range(400, 1400)],    # [0, ],
+            "pyr" : [range(6000, 6050)], # np.append(np.arange(400, 450), np.arange(6000, 6050)), #  [range(400, 1400)],    # [0, ],
             "pvbas" : [range(30, 80)], # [0, ], #
             "olm" :   [range(10)], # [0, ], # [0, 1, 3],
             "cckbas" : [range(10)], # #[0, ],
@@ -1590,9 +1590,9 @@ def get_basic_params():
             },
             
             "ngf2ngf" : {
-                "r" : 1e6,
+                "r" : 1e5,
                 "r_std" : 10,
-                "prob": 0.7,
+                "prob": 0.4, # 0.7,
                 "compartment1" : "dendrite_list",
                 "compartment2" : "dendrite_list",
             },
