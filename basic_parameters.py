@@ -29,6 +29,8 @@ def get_basic_params():
     Function return dictionary of hyperparameters of the model
     """
     
+    
+    
     Npyr = 9000             #  number of pyramidal cells
     Npvbas = 200            #  number of pvbas cells
     Nca3_spatial = 3500     #  number of ca3 spatial cells
@@ -59,7 +61,7 @@ def get_basic_params():
 
         "file_results":  "./Results/theta_state.hdf5", # file for saving results
         "file_params" : "./Results/params.pickle",
-        "duration" : 10200, # 10 sec simulation time
+        "duration" : 1200, # 10 sec simulation time
 
         "del_start_time" : 200, # time after start for remove
         
