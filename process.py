@@ -13,7 +13,7 @@ processing_param = {
     "freqs_step" : 10,      # количество частот, для которых вычисляется вейвлет за один цикл
     "max_freq_lfp" : 500,   # Гц, анализируем только до этой частоты 
 
-    "number_pyr_layer" : 2, # number of channel from pyramidal layer
+    "number_pyr_layer" : 3, # number of channel from pyramidal layer
 
     "butter_order" : 2,     # Порядок для фильтра Баттерворда
     "filt_bands" : {

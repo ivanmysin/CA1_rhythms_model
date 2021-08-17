@@ -141,7 +141,7 @@ with h5py.File(filepath, 'r') as h5file:
         is_inside = np.abs(fir_during_place) < 2.0
 
 
-        if np.sum(is_inside) < 8: continue
+        if np.sum(is_inside) < 12: continue
 
 
         fir_phases = theta_phases[np.floor(fir*sampling_rate).astype(np.int) - 1]

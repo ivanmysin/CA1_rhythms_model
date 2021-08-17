@@ -38,14 +38,17 @@ with h5py.File(filepath, 'r') as h5file:
 
         ax[1].plot(t[:raw_lfp.size], theta_band)
         ax[1].plot(t[:raw_lfp.size], slow_gamma_band)
+        ax[1].set_ylim(-60, 60)
 
 
         ax[2].plot(t[:raw_lfp.size], theta_band)
         ax[2].plot(t[:raw_lfp.size], middle_gamma_band)
+        ax[2].set_ylim(-60, 60)
 
 
         ax[3].plot(t[:raw_lfp.size], theta_band)
         ax[3].plot(t[:raw_lfp.size], fast_gamma_band)
+        ax[3].set_ylim(-60, 60)
 
 
 
