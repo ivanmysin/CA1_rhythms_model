@@ -367,7 +367,7 @@ def run_simulation(params):
     electrodes = []
 
     for idx_el in range(el_x.size):
-        if is_pyrs_thread and pc.id() != 0:
+        if is_pyrs_thread:
             le = LfpElectrode(x=el_x[idx_el], y=el_y[idx_el], z=el_z[idx_el], sampling_period=h.dt, \
                               method='Line', sec_list=pyramidal_sec_list)
             electrodes.append(le)
@@ -399,19 +399,7 @@ def run_simulation(params):
     if pc.id() == 0:
         print("End of the simulation!")
         print("Time of simulation in sec ", time()-timer)
-    
-    filepath = "./Results/" + str( pc.id() ) + ".hdf5"
-    with h5py.File(filepath, 'w') as h5file:
-        for el_idx, el in enumerate(electrodes):
-            lfp = el.values
-            lfp_time = el.times
-                   
-            h5file.create_dataset(str(el_idx), data=lfp)
-            h5file.create_dataset(str(el_idx) + "time", data=lfp_time)
-                   
-                   
-    
-    
+
 
     # unite data from all threads to 0 thread
     comm = MPI.COMM_WORLD

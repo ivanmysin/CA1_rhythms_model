@@ -58,7 +58,7 @@ def get_basic_params():
 
         "file_results":  "./Results/theta_state.hdf5", # file for saving results
         "file_params" : "./Results/params.pickle",
-        "duration" : 1200, # 10 sec simulation time
+        "duration" : 10200, # 10 sec simulation time
 
         "del_start_time" : 200, # time after start for remove
         
@@ -1589,9 +1589,9 @@ def get_basic_params():
             },
             
             "ngf2ngf" : {
-                "r" : 1e5,
+                "r" : 1e6,
                 "r_std" : 10,
-                "prob": 0.4, # 0.7,
+                "prob": 0.7,
                 "compartment1" : "dendrite_list",
                 "compartment2" : "dendrite_list",
             },
