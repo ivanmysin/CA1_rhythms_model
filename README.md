@@ -40,6 +40,7 @@ You need:
 * Install NEURON (see [instaction](https://www.neuron.yale.edu/neuron/download/compile_linux) )
   and another dependencies via *pip*
 * Clone this repository and repository with LFPsimpy <https://github.com/ivanmysin/LFPsimpy> to same directory.
+* Compile *.mod* files in *./mods* directory with *nrnivmodl* 
 * Run in terminal:
   
         mpiexec -n nthreads python base_model.py
