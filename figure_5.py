@@ -11,7 +11,7 @@ from basic_parameters import get_basic_params
 basic_params = get_basic_params()
 filepath = basic_params["file_results"]
 
-figfilepath = "./Results/figure_4.png"
+figfilepath = "./Results/figure_5.png"
 
 gridspec_kw = {
     "width_ratios" : [0.1, 0.5, 0.5, 0.5, 0.5, 2.0],
