@@ -3,19 +3,18 @@ from elephant import signal_processing as sigp
 import matplotlib.pyplot as plt
 import h5py
 import processingLib as plib
-from scipy.stats import zscore
 from scipy.ndimage import zoom
 
 processing_param = {
 
 
-    "morlet_w0" : 8.0,      # центральная частота для вейвлета Морле
-    "freqs_step" : 10,      # количество частот, для которых вычисляется вейвлет за один цикл
-    "max_freq_lfp" : 500,   # Гц, анализируем только до этой частоты 
+    "morlet_w0" : 8.0,      # Central frequency of Morlet wavelet
+    "freqs_step" : 10,      # the number of frequencies for which the wavelet is calculated in one cycle
+    "max_freq_lfp" : 500,   # Hz, maximal frequency for LFP analysis
 
     "number_pyr_layer" :3, # number of channel from pyramidal layer
 
-    "butter_order" : 2,     # Порядок для фильтра Баттерворда
+    "butter_order" : 2,     # Order of Butterword filter
     "filt_bands" : {
         "delta" : [1, 4], 
         "theta" : [4, 12], 
