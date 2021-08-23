@@ -126,7 +126,7 @@ def get_phase_disrtibution(train, lfp, fs):
     compute disrtibution of spikes by phases of LFP
     """
     if train.size == 0:
-        return np.empty(0, dtype=np.float), np.empty(0, dtype=np.float)
+        return np.empty(0, dtype=np.float), np.empty(0, dtype=np.float), np.empty(0, dtype=np.float)
 
     nkernel = 15
 
