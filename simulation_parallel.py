@@ -69,7 +69,7 @@ def run_simulation(params):
     """
     pc = h.ParallelContext()
     
-    pc.timeout(1200)
+    pc.timeout(3600)
     h.load_file("stdgui.hoc")
     h.load_file("stdrun.hoc")
     h.load_file("import3d.hoc")
@@ -77,10 +77,10 @@ def run_simulation(params):
     RNG = np.random.default_rng()
     
     load_mechanisms("./mods/")
-    h.dt = 0.1 * ms
+    # h.dt = 0.1 * ms
     h.cvode.use_fast_imem(1)
-    h.CVode().fixed_step(1)
-    h.cvode.use_local_dt(1)
+    # h.CVode().fixed_step(1)
+    # h.cvode.use_local_dt(1)
 
     sys.path.append("../LFPsimpy/") # path to LFPsimpy
     from LFPsimpy import LfpElectrode
@@ -154,10 +154,6 @@ def run_simulation(params):
 
     
             firing = h.NetCon(cell.soma[0](0.5)._ref_v, None, sec=cell.soma[0])
-            
-#             if celltypename == "ngf":
-#                 firing.threshold = -5 * mV
-#             else:
             firing.threshold = -30 * mV
 
         else:

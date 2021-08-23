@@ -54,9 +54,8 @@ def get_basic_params():
         },
 
         "PyrDencity" : 0.2,    # pyramidal cells / micrometer^2
-        "min_dist_to_el" : 20, # minimal diatance of pyramidal cell to cite of LFP calculation, micrometer^2
 
-        "file_results":  "./Results/theta_state.hdf5", # file for saving results
+        "file_results":  "./Results/theta_state.hdf5", # non_theta_state_ripples.hdf5",   #file for saving results
         "file_params" : "./Results/params.pickle",
         "duration" : 10200, # 10 sec simulation time
 
