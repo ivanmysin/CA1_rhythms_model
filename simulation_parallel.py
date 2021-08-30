@@ -103,7 +103,7 @@ def run_simulation(params):
     pyramidal_sec_list = h.SectionList()
     is_pyrs_thread = False
     radius_for_pyramids = params["common_params"]["radius4piramids"]
-    min_dist_to_el = params["common_params"]["min_dist_to_el"]
+
 
     spike_count_obj = []
     spike_times_vecs = []
