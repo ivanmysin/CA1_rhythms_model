@@ -5,10 +5,16 @@ This is a large-scale biologically plausible network model of rhythms in the hip
 
 Dependencies
 -----------------------------------
-Model is runned under Python 7. OS is Ubuntu 18.04, another os in not tested.
+Model is runned under Python 3.7. OS is Ubuntu 18.04 or Ubuntu 20.04, another os in not tested.
 
-Packages for simulations:
-* NEURON 7.6
+We will need to install git, pip, and mpich for MPI support:
+
+    sudo apt update
+    sudo apt install git python3-pip mpich
+
+
+Python packages for simulations:
+* NEURON 7.6+
 * LFPsimpy with our modifications <https://github.com/ivanmysin/LFPsimpy>
 * mpi4py
 
@@ -17,6 +23,9 @@ Packages for saving, processing and plotting:
 * h5py
 * elephant
 
+Installation pakages via pip:
+      
+    sudo pip3 install numpy scipy matplotlib neuron mpi4py h5py elephant
 
 Directories and files
 -----------------------------------
@@ -37,26 +46,37 @@ Directories and files
 How to run
 -----------------------------------
 You need:
-* Install NEURON (see [instaction](https://www.neuron.yale.edu/neuron/download/compile_linux) )
-  and another dependencies via *pip*
 * Clone this repository and repository with LFPsimpy <https://github.com/ivanmysin/LFPsimpy> to same directory.
+Open terminal in working directory and execute comants:
+
+      git clone https://github.com/ivanmysin/CA1_rhythms_model
+      git clone https://github.com/ivanmysin/LFPsimpy
+
 * Compile *.mod* files in *./mods* directory with *nrnivmodl* 
+
+      cd ./CA1_rhythms_model/mods 
+      nrnivmodl
+      cd ../
+
 * Run in terminal:
   
-        mpiexec -n nthreads python base_model.py
+        mpiexec -n nthreads python3 base_model.py
   
 where *nthreads* is numbers of CPU cores used for simulation
 Simulation results are saved to hdf5 file.
+*python3* is the default command for calling the python 3 interpreter, however, it may be different on your system.
+Substitute the call of the interpreter for which you have installed dependencies.
+
 * To process the results, run *process.py*.  It will process and save
 in the same file, wavelet spectra, bands, distribution of neurons by rhythm phases, etc.
   
-      python process.py
+      python3 process.py
 
 * Run one of the *figure_2(4, 5, 7, 8).py* file to plot figure. For example:
 
-      python figure_2.py
+      python3 figure_2.py
 
-Full simulation need 70 Gb RAM.
+Full simulation need 70 Gb RAM!
 Full simulation: 9000 pyramidal cell and CA3 gererators, 200 PV basket cells etc.
 You can change cells numbers in *basic_parameters.py* file to reduce RAM usage and computational resources. 
 
